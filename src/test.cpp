@@ -31,30 +31,30 @@ int main() {
     // By default, freshly encrypted ciphertexts are bootstrapped.
     // If you wish to get a fresh encryption without bootstrapping, write
     // auto   ct1 = cc.Encrypt(sk, 1, FRESH);
-    auto ct1 = cc.Encrypt(sk, 1);
+    auto ct1 = cc.Encrypt(sk, 0);
     auto ct2 = cc.Encrypt(sk, 0);
 
     // Sample Program: Step 4: Evaluation
 
     // Compute (1 AND 1) = 1; Other binary gate options are OR, NAND, and NOR
-    auto ctAND1 = cc.EvalBinGate(AND, ct1, ct2);
+    auto ctAND1 = cc.EvalBinGate(OR, ct1, ct2);
 
     // Compute (NOT 1) = 0
-    auto ct2Not = cc.EvalNOT(ct2);
+    // auto ct2Not = cc.EvalNOT(ct2);
 
-    // Compute (1 AND (NOT 1)) = 0
-    auto ctAND2 = cc.EvalBinGate(AND, ct2Not, ct1);
+    // // Compute (1 AND (NOT 1)) = 0
+    // auto ctAND2 = cc.EvalBinGate(AND, ct2Not, ct1);
 
-    // Computes OR of the results in ctAND1 and ctAND2 = 1
-    auto ctResult = cc.EvalBinGate(OR, ctAND1, ctAND2);
+    // // Computes OR of the results in ctAND1 and ctAND2 = 1
+    // auto ctResult = cc.EvalBinGate(OR, ctAND1, ctAND2);
 
     // Sample Program: Step 5: Decryption
 
     LWEPlaintext result;
 
-    cc.Decrypt(sk, ctResult, &result);
+    cc.Decrypt(sk, ctAND1, &result);
 
-    std::cout << "Result of encrypted computation of (1 AND 1) OR (1 AND (NOT 1)) = " << result << std::endl;
+    std::cout << "Result of encrypted computation is: " << result << std::endl;
 
     return 0;
 }
