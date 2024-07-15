@@ -1,0 +1,8 @@
+{
+"C_Cpp.default.includePath": [
+    "/usr/local/include/openfhe/core",
+    "/usr/local/include/openfhe/pke",
+    "/usr/local/include/openfhe/cereal",
+    "/usr/local/include/openfhe/binfhe"
+],
+}
