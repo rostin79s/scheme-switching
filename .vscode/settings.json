@@ -5,4 +5,9 @@
     "/usr/local/include/openfhe/cereal",
     "/usr/local/include/openfhe/binfhe"
 ],
+"files.associations": {
+    "iostream": "cpp",
+    "chrono": "cpp"
+},
+"python.envFile": "${workspaceFolder}/.env"
 }
