@@ -7,34 +7,33 @@
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/Support/raw_ostream.h>
+#include <unordered_map>
+#include <vector>
+#include <set>
 
 using namespace llvm;
 
-class InstructionInfo {
+// Class to represent a node in the DAG
+class DAGNode {
 public:
+    Instruction *inst;
     std::string result;
     std::string operation;
     std::vector<std::string> operands;
     std::vector<std::string> operandTypes;
-    void setResult(const std::string &res) {
-        result = res;
-    }
+    std::vector<DAGNode*> dependencies; // List of nodes that this node depends on
 
-    void setOperation(const std::string &op) {
-        operation = op;
-    }
+    DAGNode(Instruction *i, const std::string &res, const std::string &op, 
+            const std::vector<std::string> &ops, const std::vector<std::string> &types)
+        : inst(i), result(res), operation(op), operands(ops), operandTypes(types) {}
 
-    void addOperand(const std::string &operand) {
-        operands.push_back(operand);
-    }
-
-    void addOperandType(const std::string &type) {
-        operandTypes.push_back(type);
+    void addDependency(DAGNode *node) {
+        dependencies.push_back(node);
     }
 
     void print(raw_ostream &OS) const {
+        OS << "Node: " << operation << "\n";
         OS << "Result: " << result << "\n";
-        OS << "Operation: " << operation << "\n";
         OS << "Operands: ";
         for (const auto &operand : operands) {
             OS << operand << " ";
@@ -45,46 +44,98 @@ public:
             OS << type << " ";
         }
         OS << "\n";
+        OS << "Dependencies: ";
+        for (const auto &dep : dependencies) {
+            OS << dep->operation << " ";
+        }
+        OS << "\n";
     }
 };
 
-InstructionInfo processInstruction(Instruction &I) {
-    InstructionInfo info;
-
-    // Extract the result (left-hand side of the assignment)
-    Value *result = &I; // The result is the instruction itself
-    std::string resultStr;
-    raw_string_ostream rso(resultStr);
-    result->printAsOperand(rso, false);
-    info.setResult(rso.str());
-
-
-    // Extract the operation
-    info.setOperation(I.getOpcodeName());
-
-    if (info.operation == "ret"){
-        info.setResult("");
+// Class to represent the Directed Acyclic Graph (DAG)
+class DAG {
+public:
+    std::unordered_map<Instruction*, DAGNode*> nodeMap;
+    std::vector<DAGNode*> nodes;
+    DAGNode* addNode(Instruction *inst, const std::string &res, const std::string &op,
+                     const std::vector<std::string> &ops, const std::vector<std::string> &types) {
+        if (nodeMap.find(inst) == nodeMap.end()) {
+            DAGNode *node = new DAGNode(inst, res, op, ops, types);
+            nodeMap[inst] = node;
+            nodes.push_back(node);
+            return node;
+        }
+        return nodeMap[inst];
     }
 
-    // Extract operands and their types
-    for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
-        Value *operand = I.getOperand(opIdx);
-
-        // Convert operand to string
-        std::string operandStr;
-        raw_string_ostream rsoOperand(operandStr);
-        operand->printAsOperand(rsoOperand, false);
-        info.addOperand(rsoOperand.str());
-
-        // Convert operand type to string
-        Type *type = operand->getType();
-        std::string typeStr;
-        raw_string_ostream rstoType(typeStr);
-        type->print(rstoType);
-        info.addOperandType(rstoType.str());
+    void addEdge(DAGNode *from, DAGNode *to) {
+        from->addDependency(to);
     }
 
-    return info;
+    void print(raw_ostream &OS) const {
+        for (const auto &node : nodes) {
+            node->print(OS);
+            OS << "\n";
+        }
+    }
+};
+
+// Function to process each instruction and build the DAG
+DAG* buildDAGFromInstructions(Function &F) {
+    DAG *dag = new DAG();
+
+    // Iterate over instructions and build nodes and edges
+    for (BasicBlock &BB : F) {
+        for (Instruction &I : BB) {
+            // Ignore allocation instructions
+            if (isa<AllocaInst>(&I)) {
+                continue;
+            }
+
+            // Extract result, operation, operands, and operand types
+            Value *result = &I; // The result is the instruction itself
+            std::string resultStr;
+            raw_string_ostream rso(resultStr);
+            result->printAsOperand(rso, false);
+
+            std::string operationStr = I.getOpcodeName();
+            std::vector<std::string> operandStrs;
+            std::vector<std::string> operandTypes;
+
+            for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
+                Value *operand = I.getOperand(opIdx);
+
+                // Convert operand to string
+                std::string operandStr;
+                raw_string_ostream rsoOperand(operandStr);
+                operand->printAsOperand(rsoOperand, false);
+                operandStrs.push_back(rsoOperand.str());
+
+                // Convert operand type to string
+                Type *type = operand->getType();
+                std::string typeStr;
+                raw_string_ostream rstoType(typeStr);
+                type->print(rstoType);
+                operandTypes.push_back(rstoType.str());
+            }
+
+            // Create a node for the instruction
+            DAGNode *node = dag->addNode(&I, resultStr, operationStr, operandStrs, operandTypes);
+
+            // Create edges based on operand dependencies
+            for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
+                Value *operand = I.getOperand(opIdx);
+                if (Instruction *opInst = dyn_cast<Instruction>(operand)) {
+                    if (dag->nodeMap.find(opInst) != dag->nodeMap.end()) {
+                        DAGNode *opNode = dag->nodeMap[opInst];
+                        dag->addEdge(opNode, node);
+                    }
+                }
+            }
+        }
+    }
+
+    return dag;
 }
 
 int main(int argc, char** argv) {
@@ -102,22 +153,14 @@ int main(int argc, char** argv) {
     for (Function &F : *M) {
         errs() << "Function: " << F.getName() << "\n";
 
-        for (BasicBlock &BB : F) {
-            errs() << "BasicBlock: " << BB.getName() << "\n";
+        // Build the DAG for the function
+        DAG *dag = buildDAGFromInstructions(F);
 
-            for (Instruction &I : BB) {
-                // Ignore allocation instructions
-                if (isa<AllocaInst>(&I)) {
-                    continue;
-                }
+        // Print the DAG
+        dag->print(errs());
 
-                // Process each instruction and store its information
-                errs() << I << "\n";
-                InstructionInfo info = processInstruction(I);
-                info.print(errs());
-                errs() << "\n";
-            }
-        }
+        // Clean up
+        delete dag;
     }
 
     return 0;

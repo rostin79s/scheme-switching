@@ -1,4 +1,6 @@
-int square(int x){
+int rostin(int x){
     int y = x*x;
-    return y + 2;
+    int z = x+2;
+    int res = y&z;
+    return res;
 }
