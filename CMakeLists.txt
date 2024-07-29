@@ -16,7 +16,7 @@ cmake_minimum_required (VERSION 3.5.1)
 ### After you run "make install" in your build directory, you can build your custom application.
 ### If you need your application to be linked statically, then run "cmake .. -DBUILD_STATIC=ON"
 
-project(demo CXX)
+project(FHEcompiler)
 set(CMAKE_CXX_STANDARD 17)
 option( BUILD_STATIC "Set to ON to include static versions of the library" OFF)
 
@@ -53,6 +53,7 @@ else()
 endif()
 
 ### ADD YOUR EXECUTABLE(s) HERE
+add_executable( main src/main.cpp )
 add_executable( test src/test.cpp )
 ###
 ### EXAMPLE:
