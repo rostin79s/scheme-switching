@@ -1,9 +1,4 @@
-
-
-using namespace std;
-
-int main(){
-    int x = 2*3;
-    x = x+2;
-    return 0;
+int square(int x){
+    int y = x*x;
+    return y + 2;
 }
