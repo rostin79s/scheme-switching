@@ -4,11 +4,12 @@ target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16
 target triple = "x86_64-pc-linux-gnu"
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind readnone uwtable willreturn
-define dso_local noundef i32 @_Z6rostini(i32 noundef %0) local_unnamed_addr #0 {
-  %2 = mul nsw i32 %0, %0
-  %3 = add nsw i32 %0, 2
-  %4 = and i32 %2, %3
-  ret i32 %4
+define dso_local noundef i32 @_Z6rostinii(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
+  %3 = mul nsw i32 %0, %0
+  %4 = add nsw i32 %0, 2
+  %5 = and i32 %3, %4
+  %6 = add nsw i32 %5, %1
+  ret i32 %6
 }
 
 attributes #0 = { mustprogress nofree norecurse nosync nounwind readnone uwtable willreturn "frame-pointer"="none" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }

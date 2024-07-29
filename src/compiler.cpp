@@ -80,8 +80,31 @@ public:
     }
 };
 
+void printFunctionArguments(Function &F) {
+    errs() << "Function: " << F.getName() << "\n";
+
+    for (auto &Arg : F.args()) {
+        // Print the name of the parameter
+        Value *result = &Arg; // The result is the instruction itself
+        std::string resultStr;
+        raw_string_ostream rso(resultStr);
+        result->printAsOperand(rso, false);
+
+        // Print the type of the parameter
+        std::string paramType;
+        raw_string_ostream rsoType(paramType);
+        Arg.getType()->print(rsoType);
+
+        // Output parameter information
+        errs() << "Parameter: " << resultStr << ", Type: " << rsoType.str() << "\n";
+    }
+}
+
 // Function to process each instruction and build the DAG
 DAG* buildDAGFromInstructions(Function &F) {
+
+    printFunctionArguments(F);
+
     DAG *dag = new DAG();
 
     // Iterate over instructions and build nodes and edges
@@ -137,6 +160,8 @@ DAG* buildDAGFromInstructions(Function &F) {
 
     return dag;
 }
+
+
 
 int main(int argc, char** argv) {
     LLVMContext Context;
