@@ -1,4 +1,3 @@
 /home/rostin/scheme-switching/build/CMakeFiles/main.dir
-/home/rostin/scheme-switching/build/CMakeFiles/test.dir
 /home/rostin/scheme-switching/build/CMakeFiles/edit_cache.dir
 /home/rostin/scheme-switching/build/CMakeFiles/rebuild_cache.dir

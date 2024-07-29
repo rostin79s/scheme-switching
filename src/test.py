@@ -1,4 +1,5 @@
 from openfhe import *
+import time
 
 ## Sample Program: Step 1: Set CryptoContext
 
@@ -35,7 +36,13 @@ ct2 = cc.Encrypt(sk, 1)
 # Sample Program: Step 4: Evaluation
 
 # Compute (1 AND 1) = 1; Other binary gate options are OR, NAND, and NOR
+start = time.time()
 ctAND1 = cc.EvalBinGate(AND, ct1, ct2)
+end_time = time.time()
+
+# Calculate and print the duration
+duration = end_time - start
+print(f"Execution time: {duration} seconds")
 
 # Compute (NOT 1) = 0
 ct2Not = cc.EvalNOT(ct2)
