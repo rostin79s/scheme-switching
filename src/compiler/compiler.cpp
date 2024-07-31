@@ -2,12 +2,14 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
+
+#include "frontend.hpp"
 #include "dag.hpp"
 
 
 
 
-
+    
 int main(int argc, char** argv) {
     llvm::LLVMContext Context;
     llvm::SMDiagnostic Err;
@@ -22,6 +24,8 @@ int main(int argc, char** argv) {
     // Iterate over the functions in the module
     for (llvm::Function &F : *M) {
         llvm::errs() << "Function: " << F.getName() << "\n";
+
+        printFunctionArguments(F);
 
         // Build the DAG for the function
         DAG *dag = buildDAGFromInstructions(F);

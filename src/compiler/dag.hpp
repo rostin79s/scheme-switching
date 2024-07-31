@@ -35,6 +35,4 @@ public:
     void print(llvm::raw_ostream &OS) const;
 };
 
-DAG* buildDAGFromInstructions(llvm::Function &F);
-
 #endif
