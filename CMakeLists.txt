@@ -53,7 +53,7 @@ else()
 endif()
 
 ### ADD YOUR EXECUTABLE(s) HERE
-add_executable( main src/main.cpp )
+add_executable( main src/backend/main.cpp )
 ###
 ### EXAMPLE:
 ### add_executable( test demo-simple-example.cpp )

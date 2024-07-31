@@ -1,26 +1,29 @@
-# Makefile
-
-# Define the compiler and flags
+# Compiler and flags
 CXX = clang++
-CXXFLAGS = -std=c++17 -I/usr/include/llvm -I/usr/include/clang
-LDFLAGS = -L/usr/lib/llvm -lLLVM -lclang
+LLVM_CONFIG = llvm-config
+CXXFLAGS = `$(LLVM_CONFIG) --cxxflags`
+LDFLAGS = `$(LLVM_CONFIG) --ldflags --system-libs --libs core`
 
-# Define the directories and files
-SRC_DIR = src/compiler
-BUILD_DIR = build
-TARGET = $(BUILD_DIR)/parse
+# Directories and files
+SRCDIR = src/compiler
+BUILDDIR = src/compiler
+TARGET = $(BUILDDIR)/test
 
-# Create the build directory if it doesn't exist
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+# Source files
+SOURCES = $(SRCDIR)/compiler.cpp $(SRCDIR)/frontend.cpp $(SRCDIR)/dag.cpp
+OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(BUILDDIR)/%.o, $(SOURCES))
 
-# Rule to compile parse.cpp
-$(TARGET): $(SRC_DIR)/parse.cpp | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(SRC_DIR)/parse.cpp -o $(TARGET) $(LDFLAGS)
+# Default target
+all: $(TARGET)
 
-# Rule to clean the build directory
+# Custom clang++ command to generate src/compiler/test
+$(TARGET): $(SRCDIR)/compiler.cpp $(OBJECTS)
+	$(CXX) -o $@ $(CXXFLAGS) $(LDFLAGS) $(SOURCES)
+
+# Rule to compile object files
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+# Clean up build files
 clean:
-	rm -rf $(BUILD_DIR)
-
-# Phony targets
-.PHONY: clean
+	rm -f $(BUILDDIR)/*.o $(TARGET)

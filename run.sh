@@ -1,3 +1,7 @@
-clang++ -S -emit-llvm -O3 ./src/test.cpp -o ./src/test.ll
-clang++ -o ./src/test `llvm-config --cxxflags --ldflags --system-libs --libs core` ./src/compiler.cpp
-cd src && ./test
+original_dir=$(pwd)
+
+clang++ -S -emit-llvm -O3 ./src/compiler/test.cpp -o ./src/compiler/test.ll
+make
+cd src/compiler && ./test
+cd "$original_dir"
+make clean
