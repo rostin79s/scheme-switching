@@ -3,7 +3,7 @@
 
 #include "dag.hpp"
 
-void printFunctionArguments(llvm::Function &F);
+std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Function &F);
 
 DAG* buildDAGFromInstructions(llvm::Function &F);
 

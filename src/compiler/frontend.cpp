@@ -3,24 +3,32 @@
 #include "dag.hpp"
 
 
-void printFunctionArguments(llvm::Function &F) {
+std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Function &F) {
+
     llvm::errs() << "Function: " << F.getName() << "\n";
 
+    std::unordered_map<std::string, std::string> ciphertextArgs;
+
     for (auto &Arg : F.args()) {
-        // Print the name of the parameter
-        llvm::Value *result = &Arg; // The result is the instruction itself
+        llvm::Value *result = &Arg;
         std::string resultStr;
         llvm::raw_string_ostream rso(resultStr);
         result->printAsOperand(rso, false);
 
-        // Print the type of the parameter
         std::string paramType;
         llvm::raw_string_ostream rsoType(paramType);
         Arg.getType()->print(rsoType);
 
-        // Output parameter information
+        // Here, we'll assume that we identify a ciphertext by its type or name.
+        // For demonstration, let's assume that any type containing "Ciphertext" is a ciphertext.
+        if (rsoType.str().find("Ciphertext") != std::string::npos) {
+            ciphertextArgs[resultStr] = rsoType.str();
+        }
+
         llvm::errs() << "Parameter: " << resultStr << ", Type: " << rsoType.str() << "\n";
     }
+
+    return ciphertextArgs;
 }
 
 
@@ -29,12 +37,11 @@ DAG* buildDAGFromInstructions(llvm::Function &F) {
 
     DAG *dag = new DAG();
 
+    dag->functionInputs = getCiphertextArguments(F);
+
     // Iterate over instructions and build nodes and edges
     for (llvm::BasicBlock &BB : F) {
-        for (llvm::Instruction &I : BB) {
-            // if (llvm::isa<llvm::AllocaInst>(&I)) {
-            //     continue;
-            // }
+        for (llvm::Instruction &I : BB) {   
 
             // Extract result, operation, operands, and operand types
             llvm::Value *result = &I; // The result is the instruction itself
@@ -44,7 +51,7 @@ DAG* buildDAGFromInstructions(llvm::Function &F) {
 
             std::string operationStr = I.getOpcodeName();
             std::vector<std::string> operandStrs;
-            std::vector<std::string> operandTypes;
+            std::string operandType;
 
             for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
                 llvm::Value *operand = I.getOperand(opIdx);
@@ -60,11 +67,11 @@ DAG* buildDAGFromInstructions(llvm::Function &F) {
                 std::string typeStr;
                 llvm::raw_string_ostream rstoType(typeStr);
                 type->print(rstoType);
-                operandTypes.push_back(rstoType.str());
+                operandType = rstoType.str();
             }
 
             // Create a node for the instruction
-            DAGNode *node = dag->addNode(&I, resultStr, operationStr, operandStrs, operandTypes);
+            DAGNode *node = dag->addNode(&I, resultStr, operationStr, operandStrs, operandType);
 
             // Create edges based on operand dependencies
             for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
