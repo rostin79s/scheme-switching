@@ -10,7 +10,7 @@ BUILDDIR = src/compiler
 TARGET = $(BUILDDIR)/test
 
 # Source files
-SOURCES = $(SRCDIR)/compiler.cpp $(SRCDIR)/frontend.cpp $(SRCDIR)/dag.cpp
+SOURCES = $(SRCDIR)/compiler.cpp $(SRCDIR)/frontend.cpp $(SRCDIR)/dag.cpp $(SRCDIR)/fhedag.cpp
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(BUILDDIR)/%.o, $(SOURCES))
 
 # Default target

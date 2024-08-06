@@ -5,11 +5,8 @@
 
 #include "frontend.hpp"
 #include "dag.hpp"
+#include "fhedag.hpp"
 
-
-
-
-    
 int main(int argc, char** argv) {
     llvm::LLVMContext Context;
     llvm::SMDiagnostic Err;
@@ -23,18 +20,23 @@ int main(int argc, char** argv) {
 
     // Iterate over the functions in the module
     for (llvm::Function &F : *M) {
-        llvm::errs() << "Function: " << F.getName() << "\n";
-
-        printFunctionArguments(F);
-
         // Build the DAG for the function
         DAG *dag = buildDAGFromInstructions(F);
 
-        // Print the DAG
-        dag->print(llvm::errs());
+
+        // Convert the DAG to an FHE DAG
+        FHEDAG *fhedag = new FHEDAG();
+
+        fhedag->convertToFHEDAG(dag);
+
+        // Print the FHE DAG
+        dag->print();
+
+        // fhedag->print();
 
         // Clean up
         delete dag;
+        delete fhedag;
     }
     
     return 0;

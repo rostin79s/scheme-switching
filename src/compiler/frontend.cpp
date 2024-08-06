@@ -3,81 +3,88 @@
 #include "dag.hpp"
 
 
-void printFunctionArguments(llvm::Function &F) {
+std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Function &F) {
+
     llvm::errs() << "Function: " << F.getName() << "\n";
 
+    std::unordered_map<std::string, std::string> ciphertextArgs;
+
     for (auto &Arg : F.args()) {
-        // Print the name of the parameter
-        llvm::Value *result = &Arg; // The result is the instruction itself
+        llvm::Value *result = &Arg;
         std::string resultStr;
         llvm::raw_string_ostream rso(resultStr);
         result->printAsOperand(rso, false);
 
-        // Print the type of the parameter
         std::string paramType;
         llvm::raw_string_ostream rsoType(paramType);
         Arg.getType()->print(rsoType);
 
-        // Output parameter information
+        // Here, we'll assume that we identify a ciphertext by its type or name.
+        // For demonstration, let's assume that any type containing "Ciphertext" is a ciphertext.
+        if (rsoType.str().find("Ciphertext") != std::string::npos) {
+            ciphertextArgs[resultStr] = rsoType.str();
+        }
+
         llvm::errs() << "Parameter: " << resultStr << ", Type: " << rsoType.str() << "\n";
     }
+
+    return ciphertextArgs;
 }
 
 
-// Function to process each instruction and build the DAG
 DAG* buildDAGFromInstructions(llvm::Function &F) {
-
     DAG *dag = new DAG();
 
-    // Iterate over instructions and build nodes and edges
+    // Node map to store instructions to DAG nodes mapping
+    std::unordered_map<llvm::Instruction*, DAGNode*> nodeMap;
+
+    // First pass: Create all nodes
     for (llvm::BasicBlock &BB : F) {
         for (llvm::Instruction &I : BB) {
-            // if (llvm::isa<llvm::AllocaInst>(&I)) {
-            //     continue;
-            // }
-
-            // Extract result, operation, operands, and operand types
-            llvm::Value *result = &I; // The result is the instruction itself
+            llvm::Value *result = &I;
             std::string resultStr;
             llvm::raw_string_ostream rso(resultStr);
             result->printAsOperand(rso, false);
 
             std::string operationStr = I.getOpcodeName();
             std::vector<std::string> operandStrs;
-            std::vector<std::string> operandTypes;
+            std::string operandType;
 
             for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
                 llvm::Value *operand = I.getOperand(opIdx);
 
-                // Convert operand to string
                 std::string operandStr;
                 llvm::raw_string_ostream rsoOperand(operandStr);
                 operand->printAsOperand(rsoOperand, false);
                 operandStrs.push_back(rsoOperand.str());
 
-                // Convert operand type to string
                 llvm::Type *type = operand->getType();
                 std::string typeStr;
                 llvm::raw_string_ostream rstoType(typeStr);
                 type->print(rstoType);
-                operandTypes.push_back(rstoType.str());
+                operandType = rstoType.str();
             }
 
-            // Create a node for the instruction
-            DAGNode *node = dag->addNode(&I, resultStr, operationStr, operandStrs, operandTypes);
+            // Add the node only if it doesn't already exist
+            DAGNode* node;
+            if (nodeMap.find(&I) == nodeMap.end()) {
+                node = dag->addNode(resultStr, operationStr, operandStrs, operandType);
+                nodeMap[&I] = node;
+            }
 
-            // Create edges based on operand dependencies
             for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
                 llvm::Value *operand = I.getOperand(opIdx);
                 if (llvm::Instruction *opInst = llvm::dyn_cast<llvm::Instruction>(operand)) {
-                    if (dag->nodeMap.find(opInst) != dag->nodeMap.end()) {
-                        DAGNode *opNode = dag->nodeMap[opInst];
+                    if (nodeMap.find(opInst) != nodeMap.end()) {
+                        DAGNode *opNode = nodeMap[opInst];
                         dag->addEdge(opNode, node);
                     }
                 }
             }
+
         }
     }
 
     return dag;
 }
+
