@@ -54,6 +54,36 @@ void DAG::print() const {
 }
 
 void DAG::convert() {
-    
+    std::unordered_map<std::string, std::string> ciphertexts = functionInputs;
+
+    for (DAGNode *node : nodes) {
+        std::string op = node->operation;
+        std::vector<std::string> ops = node->operands;
+        std::string type = node->operandType;
+
+        bool isCiphertextOperation = false;
+        bool hasPlaintext = false;
+
+        // Determine if the operation should be a FHE operation based on its operands
+        for (const auto &operand : ops) {
+            std::cout<<operand;
+            if (ciphertexts.find(operand) != ciphertexts.end()) {
+                isCiphertextOperation = true;
+            } else {
+                hasPlaintext = true;
+            }
+        }
+
+        // Convert the operation name accordingly
+        if (isCiphertextOperation) {
+            if (hasPlaintext) {
+                op = "FHE" + op + "P";
+            } else {
+                op = "FHE" + op;
+            }
+            node->operation = op;
+        }
+        ciphertexts[node->result] = node->operandType;
+    }
 }
 

@@ -19,11 +19,7 @@ std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Functi
         llvm::raw_string_ostream rsoType(paramType);
         Arg.getType()->print(rsoType);
 
-        // Here, we'll assume that we identify a ciphertext by its type or name.
-        // For demonstration, let's assume that any type containing "Ciphertext" is a ciphertext.
-        if (rsoType.str().find("Ciphertext") != std::string::npos) {
-            ciphertextArgs[resultStr] = rsoType.str();
-        }
+        ciphertextArgs[resultStr] = rsoType.str();
 
         llvm::errs() << "Parameter: " << resultStr << ", Type: " << rsoType.str() << "\n";
     }

@@ -27,6 +27,8 @@ int main(int argc, char** argv) {
         // Build the DAG for the function
         DAG *dag = buildDAGFromInstructions(F);
 
+        dag->convert();
+
         // Print the DAG
         dag->print();
 
