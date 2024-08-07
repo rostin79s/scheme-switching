@@ -34,6 +34,7 @@ DAG* buildDAGFromInstructions(llvm::Function &F) {
     DAG *dag = new DAG();
 
     dag->functionInputs = getCiphertextArguments(F);
+    dag->name = F.getName().str();
 
     // Iterate over instructions and build nodes and edges
     for (llvm::BasicBlock &BB : F) {

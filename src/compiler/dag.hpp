@@ -30,6 +30,7 @@ public:
     std::unordered_map<llvm::Instruction*, DAGNode*> nodeMap;
     std::vector<DAGNode*> nodes;
     std::unordered_map<std::string, std::string> functionInputs;
+    std::string name;
 
     DAGNode* addNode(llvm::Instruction *inst, const std::string &res, const std::string &op,
                      const std::vector<std::string> &ops, const std::string &type);
@@ -37,6 +38,11 @@ public:
     void addEdge(DAGNode *from, DAGNode *to);
     void print() const;
     void convert();
+
+
+    void optimize();
+    void sort();
+    void generateBackend();
 };
 
 #endif

@@ -3,6 +3,8 @@
 #include <llvm/IR/Instructions.h>
 #include <llvm/Support/raw_ostream.h>
 
+#include <fstream>
+
 
 DAGNode::DAGNode(llvm::Instruction *i, const std::string &res, const std::string &op, 
             const std::vector<std::string> &ops, const std::string &type)
@@ -87,3 +89,79 @@ void DAG::convert() {
     }
 }
 
+void DAG::optimize() {
+
+}
+
+void DAG::sort() {
+
+}
+
+void DAG::generateBackend() {
+    std::ofstream IR("../backend/ir.cpp");
+    if (!IR.is_open()) {
+        std::cerr << "Failed to open ir.cpp for writing\n";
+        return;
+    }
+
+    IR << "#include \"fhe_operations.hpp\"\n\n";
+
+    // Function declaration
+    IR << "void myFHEFunction(";
+    bool first = true;
+    for (const auto &input : functionInputs) {
+        if (!first) IR << ", ";
+        IR << "Ciphertext " << input.first;
+        first = false;
+    }
+    IR << ") {\n";
+
+    // Generate function body
+    for (const auto &node : nodes) {
+        std::string operation = node->operation;
+        std::string result = node->result;
+        std::vector<std::string> operands = node->operands;
+
+        if (operation.find("FHE") == 0) {
+            if (operation == "FHEret") {
+                IR << "    return " << operands[0] << ";\n";
+                continue;
+            }
+            
+            IR << "    " << result << " = " << operation << "(";
+            for (size_t i = 0; i < operands.size(); ++i) {
+                IR << operands[i];
+                if (i < operands.size() - 1) {
+                    IR << ", ";
+                }
+            }
+            IR << ");\n";
+        }
+    }
+
+    IR << "}\n\n";
+
+    // Create main function
+    IR << "int main() {\n";
+    IR << "    std::vector<double> inputs = {/* User inputs */};\n";
+    IR << "    std::vector<Ciphertext> encryptedInputs;\n";
+    for (const auto &input : functionInputs) {
+        IR << "    Ciphertext " << input.first << " = FHEencrypt(inputs[" << input.first << "]);\n";
+    }
+
+    IR << "    Ciphertext result = myFHEFunction(";
+    first = true;
+    for (const auto &input : functionInputs) {
+        if (!first) IR << ", ";
+        IR << input.first;
+        first = false;
+    }
+    IR << ");\n";
+
+    IR << "    double finalResult = FHEdecrypt(result);\n";
+    IR << "    std::cout << \"Result: \" << finalResult << std::endl;\n";
+    IR << "    return 0;\n";
+    IR << "}\n";
+
+    IR.close();
+}

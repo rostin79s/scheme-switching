@@ -32,6 +32,8 @@ int main(int argc, char** argv) {
         // Print the DAG
         dag->print();
 
+        dag->generateBackend();
+
         // Clean up
         delete dag;
     }
