@@ -83,6 +83,7 @@ void DAG::convert() {
             } else {
                 op = "FHE" + op;
             }
+            node->operandType = "FHE" + type;
             node->operation = op;
         }
         ciphertexts[node->result] = node->operandType;
@@ -107,7 +108,7 @@ void DAG::generateBackend() {
     IR << "#include \"fhe_operations.hpp\"\n\n";
 
     // Function declaration
-    IR << "void myFHEFunction(";
+    IR << "void "<<name<<"(";
     bool first = true;
     for (const auto &input : functionInputs) {
         if (!first) IR << ", ";
@@ -149,7 +150,7 @@ void DAG::generateBackend() {
         IR << "    Ciphertext " << input.first << " = FHEencrypt(inputs[" << input.first << "]);\n";
     }
 
-    IR << "    Ciphertext result = myFHEFunction(";
+    IR << "    Ciphertext result = "<<name<<"(";
     first = true;
     for (const auto &input : functionInputs) {
         if (!first) IR << ", ";

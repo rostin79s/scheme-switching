@@ -48,7 +48,7 @@ print(f"Execution time: {duration} seconds")
 ct2Not = cc.EvalNOT(ct2)
 
 # Compute (1 AND (NOT 1)) = 0
-ctAND2 = cc.EvalBinGate(AND, ct2Not, ct1)
+ctAND2 = cc.EvalBinGate(XOR, ct2Not, ct1)
 
 # Compute OR of the result in ctAND1 and ctAND2
 ctResult = cc.EvalBinGate(OR, ctAND1, ctAND2)

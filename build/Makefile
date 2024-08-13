@@ -129,29 +129,29 @@ main/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 .PHONY : main/fast
 
-src/main.o: src/main.cpp.o
-.PHONY : src/main.o
+src/backend/main.o: src/backend/main.cpp.o
+.PHONY : src/backend/main.o
 
 # target to build an object file
-src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.o
-.PHONY : src/main.cpp.o
+src/backend/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/backend/main.cpp.o
+.PHONY : src/backend/main.cpp.o
 
-src/main.i: src/main.cpp.i
-.PHONY : src/main.i
+src/backend/main.i: src/backend/main.cpp.i
+.PHONY : src/backend/main.i
 
 # target to preprocess a source file
-src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.i
-.PHONY : src/main.cpp.i
+src/backend/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/backend/main.cpp.i
+.PHONY : src/backend/main.cpp.i
 
-src/main.s: src/main.cpp.s
-.PHONY : src/main.s
+src/backend/main.s: src/backend/main.cpp.s
+.PHONY : src/backend/main.s
 
 # target to generate assembly for a file
-src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.s
-.PHONY : src/main.cpp.s
+src/backend/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/backend/main.cpp.s
+.PHONY : src/backend/main.cpp.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... main"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
+	@echo "... src/backend/main.o"
+	@echo "... src/backend/main.i"
+	@echo "... src/backend/main.s"
 .PHONY : help
 
 
