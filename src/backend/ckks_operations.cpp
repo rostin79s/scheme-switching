@@ -15,7 +15,7 @@ public:
     KeyPair<DCRTPoly> keyPair;
 };
 
-CKKS_scheme::CKKS_scheme(int multDepth = 1,int scaleModSize = 50, int batchSize = 8)
+CKKS_scheme::CKKS_scheme(int multDepth = 1,int scaleModSize = 50, int batchSize = 1)
     : multDepth(multDepth), scaleModSize(scaleModSize), batchSize(batchSize) {
     CCParams<CryptoContextCKKSRNS> parameters;
     parameters.SetMultiplicativeDepth(multDepth);
@@ -43,65 +43,65 @@ Plaintext CKKS_scheme::FHEencode(std::vector<double> a){
     return ptxt;
 }
 
-FHEi32* CKKS_scheme::FHEencrypt(Plaintext a){
+FHEdouble* CKKS_scheme::FHEencrypt(Plaintext a){
     auto result = context->cc->Encrypt(keys->keyPair.publicKey, a);
-    return new FHEi32(result);
+    return new FHEdouble(result);
 }
         
-Plaintext CKKS_scheme::FHEdecrypt(const FHEi32* a){
+Plaintext CKKS_scheme::FHEdecrypt(const FHEdouble* a){
     Plaintext result;
     context->cc->Decrypt(keys->keyPair.secretKey, a->getCiphertext(), &result);
     result->SetLength(batchSize);
     return result;
 }
 
-// Arithmetic Operations for FHEi32
-FHEi32* CKKS_scheme::FHEadd(const FHEi32* a, const FHEi32* b) {
+// Arithmetic Operations for FHEdouble
+FHEdouble* CKKS_scheme::FHEadd(const FHEdouble* a, const FHEdouble* b) {
     auto result = context->cc->EvalAdd(a->getCiphertext(), b->getCiphertext());
-    return new FHEi32(result);
+    return new FHEdouble(result);
 }
 
-FHEi32* CKKS_scheme::FHEsub(const FHEi32* a, const FHEi32* b) {
+FHEdouble* CKKS_scheme::FHEsub(const FHEdouble* a, const FHEdouble* b) {
     auto result = context->cc->EvalSub(a->getCiphertext(), b->getCiphertext());
-    return new FHEi32(result);
+    return new FHEdouble(result);
 }
 
-FHEi32* CKKS_scheme::FHEmul(const FHEi32* a, const FHEi32* b) {
+FHEdouble* CKKS_scheme::FHEmul(const FHEdouble* a, const FHEdouble* b) {
     auto result = context->cc->EvalMult(a->getCiphertext(), b->getCiphertext());
-    return new FHEi32(result);
+    return new FHEdouble(result);
 }
 
-FHEi32* CKKS_scheme::FHEdiv(const FHEi32* a, const FHEi32* b) {
+FHEdouble* CKKS_scheme::FHEdiv(const FHEdouble* a, const FHEdouble* b) {
     auto temp = context->cc->EvalDivide(b->getCiphertext(), 1.0, 4294967295.0, 10);
-    auto result = context->cc->EvalMult((new FHEi32(temp))->getCiphertext(),a->getCiphertext());
-    return new FHEi32(result);
+    auto result = context->cc->EvalMult((new FHEdouble(temp))->getCiphertext(),a->getCiphertext());
+    return new FHEdouble(result);
 }
 
 // Arithmetic Operations with Plaintext
-FHEi32* CKKS_scheme::FHEaddP(const FHEi32* a, double b) {
+FHEdouble* CKKS_scheme::FHEaddP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalAdd(a->getCiphertext(), b);
-    return new FHEi32(result);
+    return new FHEdouble(result);
 }
 
-FHEi32* CKKS_scheme::FHEsubP(const FHEi32* a, double b) {
+FHEdouble* CKKS_scheme::FHEsubP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalSub(a->getCiphertext(), b);
-    return new FHEi32(result);
+    return new FHEdouble(result);
 }
 
-FHEi32* CKKS_scheme::FHEmulP(const FHEi32* a, double b) {
+FHEdouble* CKKS_scheme::FHEmulP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalMult(a->getCiphertext(), b);
-    return new FHEi32(result);
+    return new FHEdouble(result);
 }
 
-FHEi32* CKKS_scheme::FHEdivP(const FHEi32* a, double b) {
+FHEdouble* CKKS_scheme::FHEdivP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalDivide(a->getCiphertext(), 1.0, 4294967295.0, 10);
-    return new FHEi32(result);
+    return new FHEdouble(result);
 }
 
-FHEi32* CKKS_scheme::FHEdivP(double b, const FHEi32* a) {
+FHEdouble* CKKS_scheme::FHEdivP(double b, const FHEdouble* a) {
     auto temp = context->cc->EvalDivide(a->getCiphertext(), 1.0, 4294967295.0, 10);
-    auto result = context->cc->EvalMult((new FHEi32(temp))->getCiphertext(),b);
-    return new FHEi32(result);
+    auto result = context->cc->EvalMult((new FHEdouble(temp))->getCiphertext(),b);
+    return new FHEdouble(result);
 }
 
 }

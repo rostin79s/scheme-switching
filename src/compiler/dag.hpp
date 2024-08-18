@@ -31,6 +31,7 @@ public:
     std::vector<DAGNode*> nodes;
     std::unordered_map<std::string, std::string> functionInputs;
     std::string name;
+    std::string returnType;
 
     DAGNode* addNode(llvm::Instruction *inst, const std::string &res, const std::string &op,
                      const std::vector<std::string> &ops, const std::string &type);

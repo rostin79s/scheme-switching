@@ -5,9 +5,9 @@
 
 namespace CKKS {
 
-class FHEi32 {
+class FHEdouble {
 public:
-    FHEi32(const lbcrypto::Ciphertext<lbcrypto::DCRTPoly>& cipher) : ciphertext(cipher) {}
+    FHEdouble(const lbcrypto::Ciphertext<lbcrypto::DCRTPoly>& cipher) : ciphertext(cipher) {}
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> getCiphertext() const { return ciphertext; }
 
 private:

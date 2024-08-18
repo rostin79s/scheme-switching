@@ -5,6 +5,8 @@
 
 std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Function &F);
 
+void naming(DAG* dag);
+
 DAG* buildDAGFromInstructions(llvm::Function &F);
 
 #endif

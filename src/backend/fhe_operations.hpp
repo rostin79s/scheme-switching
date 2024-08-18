@@ -35,21 +35,21 @@ namespace CKKS {
     public:
         CKKS_scheme(int multDepth = 1, int scaleModSize = 50, int batchSize = 8);
 
-        FHEi32* FHEadd(const FHEi32* a, const FHEi32* b);
-        FHEi32* FHEsub(const FHEi32* a, const FHEi32* b);
-        FHEi32* FHEmul(const FHEi32* a, const FHEi32* b);
-        FHEi32* FHEdiv(const FHEi32* a, const FHEi32* b);
+        FHEdouble* FHEadd(const FHEdouble* a, const FHEdouble* b);
+        FHEdouble* FHEsub(const FHEdouble* a, const FHEdouble* b);
+        FHEdouble* FHEmul(const FHEdouble* a, const FHEdouble* b);
+        FHEdouble* FHEdiv(const FHEdouble* a, const FHEdouble* b);
 
         // Arithmetic Operations with Plaintext
-        FHEi32* FHEaddP(const FHEi32* a, const double b);
-        FHEi32* FHEsubP(const FHEi32* a, const double b);
-        FHEi32* FHEmulP(const FHEi32* a, const double b);
-        FHEi32* FHEdivP(const FHEi32* a, const double b);
-        FHEi32* FHEdivP(double b, const FHEi32* a);
+        FHEdouble* FHEaddP(const FHEdouble* a, const double b);
+        FHEdouble* FHEsubP(const FHEdouble* a, const double b);
+        FHEdouble* FHEmulP(const FHEdouble* a, const double b);
+        FHEdouble* FHEdivP(const FHEdouble* a, const double b);
+        FHEdouble* FHEdivP(double b, const FHEdouble* a);
 
         Plaintext CKKS_scheme::FHEencode(std::vector<double> a);
-        FHEi32* FHEencrypt(Plaintext p);
-        Plaintext FHEdecrypt(const FHEi32* a);
+        FHEdouble* FHEencrypt(Plaintext p);
+        Plaintext FHEdecrypt(const FHEdouble* a);
 
     private:
         int multDepth;

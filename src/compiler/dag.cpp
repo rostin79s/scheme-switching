@@ -49,6 +49,12 @@ void DAG::addEdge(DAGNode *from, DAGNode *to) {
 }
 
 void DAG::print() const {
+    std::cout<< "Function " << name << "\n";
+    for (auto arg : functionInputs){
+        std::cout<< arg.first << " " << arg.second << "\n";
+    }
+    std::cout<< "return type: " << returnType << "\n";
+    std::cout<< "\n\n";
     for (const auto &node : nodes) {
         node->print();
         std::cout << "\n";
@@ -68,7 +74,6 @@ void DAG::convert() {
 
         // Determine if the operation should be a FHE operation based on its operands
         for (const auto &operand : ops) {
-            std::cout<<operand;
             if (ciphertexts.find(operand) != ciphertexts.end()) {
                 isCiphertextOperation = true;
             } else {
@@ -85,6 +90,7 @@ void DAG::convert() {
             }
             node->operandType = "FHE" + type;
             node->operation = op;
+            
         }
         ciphertexts[node->result] = node->operandType;
     }
@@ -105,23 +111,30 @@ void DAG::generateBackend() {
         return;
     }
 
-    IR << "#include \"fhe_operations.hpp\"\n\n";
+    IR << "#include \"fhe_operations.hpp\"\n";
+    IR << "#include \"fhe_types.hpp\"\n\n";
+
+    IR << "using namespace CKKS;\n";
+    IR << "using namespace TFHE;\n\n";
 
     // Function declaration
     IR << "void "<<name<<"(";
     bool first = true;
     for (const auto &input : functionInputs) {
         if (!first) IR << ", ";
-        IR << "Ciphertext " << input.first;
+        IR << input.second << " " << input.first;
         first = false;
     }
     IR << ") {\n";
+
+    IR << "CKKS_scheme ck;\n";
 
     // Generate function body
     for (const auto &node : nodes) {
         std::string operation = node->operation;
         std::string result = node->result;
         std::vector<std::string> operands = node->operands;
+        std::string type = node->operandType;
 
         if (operation.find("FHE") == 0) {
             if (operation == "FHEret") {
@@ -129,7 +142,7 @@ void DAG::generateBackend() {
                 continue;
             }
             
-            IR << "    " << result << " = " << operation << "(";
+            IR << "    " << type << " "<< result << " = " << "ck." <<operation << "(";
             for (size_t i = 0; i < operands.size(); ++i) {
                 IR << operands[i];
                 if (i < operands.size() - 1) {
@@ -145,12 +158,12 @@ void DAG::generateBackend() {
     // Create main function
     IR << "int main() {\n";
     IR << "    std::vector<double> inputs = {/* User inputs */};\n";
-    IR << "    std::vector<Ciphertext> encryptedInputs;\n";
+    IR << "    std::vector<"<< "Ciphertext"<< "> encryptedInputs;\n";
     for (const auto &input : functionInputs) {
-        IR << "    Ciphertext " << input.first << " = FHEencrypt(inputs[" << input.first << "]);\n";
+        IR << "    "<< input.second<< " " << input.first << " = FHEencrypt(inputs[" << input.first << "]);\n";
     }
 
-    IR << "    Ciphertext result = "<<name<<"(";
+    IR << "    "<< "Ciphertext" << " result = "<<name<<"(";
     first = true;
     for (const auto &input : functionInputs) {
         if (!first) IR << ", ";

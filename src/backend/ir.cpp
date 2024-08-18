@@ -1,19 +1,24 @@
 #include "fhe_operations.hpp"
+#include "fhe_types.hpp"
 
-void _Z6rostinii(Ciphertext %1, Ciphertext %0) {
-    %3 = FHEmul(%0, %0);
-    %4 = FHEaddP(%0, 2);
-    %5 = FHEand(%3, %4);
-    %6 = FHEadd(%5, %1);
-    return %6;
+using namespace CKKS;
+using namespace TFHE;
+
+void _Z6rostinii(FHEi32 _tmp0, FHEi32 _tmp1) {
+CKKS_scheme ck;
+    FHEi32 _tmp3 = ck.FHEmul(_tmp0, _tmp0);
+    FHEi32 _tmp4 = ck.FHEaddP(_tmp0, 2);
+    FHEi32 _tmp5 = ck.FHEand(_tmp3, _tmp4);
+    FHEi32 _tmp6 = ck.FHEadd(_tmp5, _tmp1);
+    return _tmp6;
 }
 
 int main() {
     std::vector<double> inputs = {/* User inputs */};
     std::vector<Ciphertext> encryptedInputs;
-    Ciphertext %1 = FHEencrypt(inputs[%1]);
-    Ciphertext %0 = FHEencrypt(inputs[%0]);
-    Ciphertext result = _Z6rostinii(%1, %0);
+    FHEi32 _tmp0 = FHEencrypt(inputs[_tmp0]);
+    FHEi32 _tmp1 = FHEencrypt(inputs[_tmp1]);
+    Ciphertext result = _Z6rostinii(_tmp0, _tmp1);
     double finalResult = FHEdecrypt(result);
     std::cout << "Result: " << finalResult << std::endl;
     return 0;

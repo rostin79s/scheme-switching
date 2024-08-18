@@ -5,8 +5,6 @@
 
 std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Function &F) {
 
-    llvm::errs() << "Function: " << F.getName() << "\n";
-
     std::unordered_map<std::string, std::string> ciphertextArgs;
 
     for (auto &Arg : F.args()) {
@@ -21,10 +19,54 @@ std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Functi
 
         ciphertextArgs[resultStr] = rsoType.str();
 
-        llvm::errs() << "Parameter: " << resultStr << ", Type: " << rsoType.str() << "\n";
     }
 
     return ciphertextArgs;
+}
+
+void naming(DAG* dag) {
+    // New map for function inputs
+    std::unordered_map<std::string, std::string> updatedFunctionInputs;
+
+    // Replace % with _tmp in function inputs and add "FHE" to the type
+    for (const auto &entry : dag->functionInputs) {
+        std::string oldName = entry.first;
+        std::string newName = oldName;
+        size_t pos = newName.find('%');
+        if (pos != std::string::npos) {
+            newName.replace(pos, 1, "_tmp");
+        }
+
+        // Add "FHE" to the start of the type
+        std::string updatedType = "FHE" + entry.second;
+
+        // Store the updated name and type in the new map
+        updatedFunctionInputs[newName] = updatedType;
+    }
+
+    // Replace the old map with the updated one
+    dag->functionInputs = std::move(updatedFunctionInputs);
+
+    // Replace % with _tmp in DAG nodes
+    for (auto &node : dag->nodes) {
+        // Update result name
+        std::string newResult = node->result;
+        size_t pos = newResult.find('%');
+        if (pos != std::string::npos) {
+            newResult.replace(pos, 1, "_tmp");
+        }
+        node->result = newResult;
+
+        // Update operand names
+        for (auto &operand : node->operands) {
+            std::string newOperand = operand;
+            pos = newOperand.find('%');
+            if (pos != std::string::npos) {
+                newOperand.replace(pos, 1, "_tmp");
+            }
+            operand = newOperand;
+        }
+    }
 }
 
 
@@ -35,6 +77,14 @@ DAG* buildDAGFromInstructions(llvm::Function &F) {
 
     dag->functionInputs = getCiphertextArguments(F);
     dag->name = F.getName().str();
+
+
+    // added return type
+    auto temp = F.getFunctionType()->getReturnType();
+    std::string rettype;
+    llvm::raw_string_ostream rso(rettype);
+    temp->print(rso);
+    dag->returnType = rso.str();
 
     // Iterate over instructions and build nodes and edges
     for (llvm::BasicBlock &BB : F) {
@@ -82,6 +132,8 @@ DAG* buildDAGFromInstructions(llvm::Function &F) {
             }
         }
     }
+
+    naming(dag);
 
     return dag;
 }
