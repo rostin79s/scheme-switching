@@ -30,17 +30,14 @@ void printHeaders(std::ofstream& IR) {
 
 // Function to print the user-defined function
 void printUserFunction(std::ofstream& IR, const DAG& dag) {
-    IR << "FHEdouble* " << dag.name << "(";
+    // Add ck as the first argument
+    IR << "FHEdouble* " << dag.name << "(CKKS_scheme& ck";
 
-    bool first = true;
+    // Continue with the other function inputs
     for (const auto &input : dag.functionInputs) {
-        if (!first) IR << ", ";
-        IR << "FHEdouble*" << " " << input.first;
-        first = false;
+        IR << ", FHEdouble* " << input.first;
     }
     IR << ") {\n";
-
-    IR << "\tCKKS_scheme ck;\n";
 
     // Generate function body
     for (const auto &node : dag.nodes) {
@@ -76,20 +73,20 @@ void printMainFunction(std::ofstream& IR, const DAG& dag) {
     IR << "\tstd::vector<double> inputs = {/* User inputs */};\n";
     IR << "\tstd::vector<FHEdouble*> encryptedInputs;\n";
 
+    // Encrypt the inputs
     for (const auto &input : dag.functionInputs) {
         IR << "    FHEdouble* " << input.first << " = ck.FHEencrypt(inputs[" << input.first << "]);\n";
     }
 
-    IR << "    FHEdouble* result = " << dag.name << "(";
-    bool first = true;
+    // Pass ck as the first argument to the user-defined function
+    IR << "    FHEdouble* result = " << dag.name << "(ck";
     for (const auto &input : dag.functionInputs) {
-        if (!first) IR << ", ";
-        IR << input.first;
-        first = false;
+        IR << ", " << input.first;
     }
     IR << ");\n";
 
-    IR << "    double finalResult = FHEdecrypt(result);\n";
+    // Decrypt and print the result
+    IR << "    double finalResult = ck.FHEdecrypt(result);\n";
     IR << "    std::cout << \"Result: \" << finalResult << std::endl;\n";
     IR << "    return 0;\n";
     IR << "}\n";

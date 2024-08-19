@@ -88,6 +88,11 @@ FHEdouble* CKKS_scheme::FHEsubP(const FHEdouble* a, double b) {
     return new FHEdouble(result);
 }
 
+FHEdouble* CKKS_scheme::FHEsubP(double b, const FHEdouble* a) {
+    auto result = context->cc->EvalSub(b, a->getCiphertext());
+    return new FHEdouble(result);
+}
+
 FHEdouble* CKKS_scheme::FHEmulP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalMult(a->getCiphertext(), b);
     return new FHEdouble(result);

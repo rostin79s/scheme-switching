@@ -43,11 +43,12 @@ namespace CKKS {
         // Arithmetic Operations with Plaintext
         FHEdouble* FHEaddP(const FHEdouble* a, const double b);
         FHEdouble* FHEsubP(const FHEdouble* a, const double b);
+        FHEdouble* FHEsubP(double b, const FHEdouble* a);
         FHEdouble* FHEmulP(const FHEdouble* a, const double b);
         FHEdouble* FHEdivP(const FHEdouble* a, const double b);
         FHEdouble* FHEdivP(double b, const FHEdouble* a);
 
-        Plaintext CKKS_scheme::FHEencode(std::vector<double> a);
+        Plaintext FHEencode(std::vector<double> a);
         FHEdouble* FHEencrypt(Plaintext p);
         Plaintext FHEdecrypt(const FHEdouble* a);
 
