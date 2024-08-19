@@ -5,12 +5,12 @@ CXXFLAGS = `$(LLVM_CONFIG) --cxxflags`
 LDFLAGS = `$(LLVM_CONFIG) --ldflags --system-libs --libs core`
 
 # Directories and files
-SRCDIR = src/compiler
-BUILDDIR = src/compiler
+SRCDIR = src
+BUILDDIR = src
 TARGET = $(BUILDDIR)/test
 
 # Source files
-SOURCES = $(SRCDIR)/compiler.cpp $(SRCDIR)/frontend.cpp $(SRCDIR)/dag.cpp
+SOURCES = $(SRCDIR)/compiler.cpp $(SRCDIR)/frontend/frontend.cpp $(SRCDIR)/frontend/dag.cpp $(SRCDIR)/backend/backend.cpp
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(BUILDDIR)/%.o, $(SOURCES))
 
 # Default target

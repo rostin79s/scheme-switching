@@ -3,8 +3,8 @@
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
 
-#include "frontend.hpp"
-#include "dag.hpp"
+#include "./frontend/frontend.hpp"
+#include "./frontend/dag.hpp"
 
 
 

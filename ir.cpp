@@ -1,5 +1,5 @@
 #include "fhe_operations.hpp"
-#include "fhe_types.hpp"
+#include "<vector>"
 
 using namespace CKKS;
 using namespace TFHE;
