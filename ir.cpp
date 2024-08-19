@@ -19,7 +19,7 @@ int main() {
 	std::vector<FHEdouble*> encryptedInputs;
     FHEdouble* _tmp0 = ck.FHEencrypt(inputs[_tmp0]);
     FHEdouble* _tmp1 = ck.FHEencrypt(inputs[_tmp1]);
-    FHEdouble* result = _Z6rostinii(_tmp0, _tmp1, ck);
+    FHEdouble* result = _Z6rostinii(_tmp0, _tmp1);
     double finalResult = FHEdecrypt(result);
     std::cout << "Result: " << finalResult << std::endl;
     return 0;

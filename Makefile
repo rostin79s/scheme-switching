@@ -26,4 +26,4 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 # Clean up build files
 clean:
-	rm -f $(BUILDDIR)/*.o $(TARGET)
+	rm -f $(BUILDDIR)/*.o $(BUILDDIR)/frontend/*.o $(BUILDDIR)/backend/*.o

@@ -3,5 +3,9 @@
 
 #include "../frontend/dag.hpp"
 
+void printHeaders(std::ofstream& IR);
+void printUserFunction(std::ofstream& IR, const DAG& dag);
+void printMainFunction(std::ofstream& IR, const DAG& dag);
+
 
 #endif
