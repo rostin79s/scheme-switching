@@ -25,6 +25,9 @@ std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Functi
 }
 
 void naming(DAG* dag) {
+
+    dag->returnType = "FHE" + dag->returnType;
+
     // New map for function inputs
     std::unordered_map<std::string, std::string> updatedFunctionInputs;
 

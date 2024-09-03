@@ -43,7 +43,7 @@ public:
 
     void optimize();
     void sort();
-    void generateBackend();
+    void generateBackend(llvm::LLVMContext &context);
 };
 
 #endif

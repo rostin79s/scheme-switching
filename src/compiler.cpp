@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
         // Print the DAG
         dag->print();
 
-        dag->generateBackend();
+        dag->generateBackend(Context);
 
         // Clean up
         delete dag;
