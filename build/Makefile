@@ -117,41 +117,78 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named main
+# Target rules for targets named my_custom_lib
 
 # Build rule for target.
-main: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main
-.PHONY : main
+my_custom_lib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 my_custom_lib
+.PHONY : my_custom_lib
 
 # fast build rule for target.
-main/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-.PHONY : main/fast
+my_custom_lib/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/build
+.PHONY : my_custom_lib/fast
 
-src/backend/main.o: src/backend/main.cpp.o
-.PHONY : src/backend/main.o
+#=============================================================================
+# Target rules for targets named ir
+
+# Build rule for target.
+ir: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ir
+.PHONY : ir
+
+# fast build rule for target.
+ir/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/build
+.PHONY : ir/fast
+
+src/backend/ckks_operations.o: src/backend/ckks_operations.cpp.o
+.PHONY : src/backend/ckks_operations.o
 
 # target to build an object file
-src/backend/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/backend/main.cpp.o
-.PHONY : src/backend/main.cpp.o
+src/backend/ckks_operations.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o
+.PHONY : src/backend/ckks_operations.cpp.o
 
-src/backend/main.i: src/backend/main.cpp.i
-.PHONY : src/backend/main.i
+src/backend/ckks_operations.i: src/backend/ckks_operations.cpp.i
+.PHONY : src/backend/ckks_operations.i
 
 # target to preprocess a source file
-src/backend/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/backend/main.cpp.i
-.PHONY : src/backend/main.cpp.i
+src/backend/ckks_operations.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.i
+.PHONY : src/backend/ckks_operations.cpp.i
 
-src/backend/main.s: src/backend/main.cpp.s
-.PHONY : src/backend/main.s
+src/backend/ckks_operations.s: src/backend/ckks_operations.cpp.s
+.PHONY : src/backend/ckks_operations.s
 
 # target to generate assembly for a file
-src/backend/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/backend/main.cpp.s
-.PHONY : src/backend/main.cpp.s
+src/backend/ckks_operations.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.s
+.PHONY : src/backend/ckks_operations.cpp.s
+
+src/ir.o: src/ir.cpp.o
+.PHONY : src/ir.o
+
+# target to build an object file
+src/ir.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/src/ir.cpp.o
+.PHONY : src/ir.cpp.o
+
+src/ir.i: src/ir.cpp.i
+.PHONY : src/ir.i
+
+# target to preprocess a source file
+src/ir.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/src/ir.cpp.i
+.PHONY : src/ir.cpp.i
+
+src/ir.s: src/ir.cpp.s
+.PHONY : src/ir.s
+
+# target to generate assembly for a file
+src/ir.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/src/ir.cpp.s
+.PHONY : src/ir.cpp.s
 
 # Help Target
 help:
@@ -161,10 +198,14 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... main"
-	@echo "... src/backend/main.o"
-	@echo "... src/backend/main.i"
-	@echo "... src/backend/main.s"
+	@echo "... ir"
+	@echo "... my_custom_lib"
+	@echo "... src/backend/ckks_operations.o"
+	@echo "... src/backend/ckks_operations.i"
+	@echo "... src/backend/ckks_operations.s"
+	@echo "... src/ir.o"
+	@echo "... src/ir.i"
+	@echo "... src/ir.s"
 .PHONY : help
 
 

@@ -63,7 +63,8 @@ CMAKE_BINARY_DIR = /home/rostin/scheme-switching/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/main.dir/all
+all: CMakeFiles/my_custom_lib.dir/all
+all: CMakeFiles/ir.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -71,34 +72,61 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/main.dir/clean
+clean: CMakeFiles/my_custom_lib.dir/clean
+clean: CMakeFiles/ir.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/main.dir
+# Target rules for target CMakeFiles/my_custom_lib.dir
 
 # All Build rule for target.
-CMakeFiles/main.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=1,2 "Built target main"
-.PHONY : CMakeFiles/main.dir/all
+CMakeFiles/my_custom_lib.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=3,4 "Built target my_custom_lib"
+.PHONY : CMakeFiles/my_custom_lib.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/main.dir/rule: cmake_check_build_system
+CMakeFiles/my_custom_lib.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/rostin/scheme-switching/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/main.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/my_custom_lib.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/rostin/scheme-switching/build/CMakeFiles 0
-.PHONY : CMakeFiles/main.dir/rule
+.PHONY : CMakeFiles/my_custom_lib.dir/rule
 
 # Convenience name for target.
-main: CMakeFiles/main.dir/rule
-.PHONY : main
+my_custom_lib: CMakeFiles/my_custom_lib.dir/rule
+.PHONY : my_custom_lib
 
 # clean rule for target.
-CMakeFiles/main.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/clean
-.PHONY : CMakeFiles/main.dir/clean
+CMakeFiles/my_custom_lib.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/clean
+.PHONY : CMakeFiles/my_custom_lib.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/ir.dir
+
+# All Build rule for target.
+CMakeFiles/ir.dir/all: CMakeFiles/my_custom_lib.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=1,2 "Built target ir"
+.PHONY : CMakeFiles/ir.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/ir.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rostin/scheme-switching/build/CMakeFiles 4
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ir.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rostin/scheme-switching/build/CMakeFiles 0
+.PHONY : CMakeFiles/ir.dir/rule
+
+# Convenience name for target.
+ir: CMakeFiles/ir.dir/rule
+.PHONY : ir
+
+# clean rule for target.
+CMakeFiles/ir.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/clean
+.PHONY : CMakeFiles/ir.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

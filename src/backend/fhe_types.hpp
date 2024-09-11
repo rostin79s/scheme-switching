@@ -14,7 +14,27 @@ private:
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> ciphertext;
 };
 
-} // namespace CKKS
+class FHEplain {
+public:
+    FHEplain() = default;
+    FHEplain(const lbcrypto::Plaintext& ptxt) : plaintext(ptxt) {}
+    lbcrypto::Plaintext getPlaintext() const { return plaintext; }
+
+private:
+    lbcrypto::Plaintext plaintext;
+};
+
+class FHEContext {
+public:
+    lbcrypto::CryptoContext<lbcrypto::DCRTPoly> cc;
+};
+
+class FHEKeyPair {
+public:
+    lbcrypto::KeyPair<lbcrypto::DCRTPoly> keyPair;
+};
+
+} 
 
 namespace TFHE {
 

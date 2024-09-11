@@ -1,19 +1,15 @@
 ; ModuleID = 'FHE_module'
 source_filename = "FHE_module"
 
-%FHEdouble = type opaque
+%FHEdouble.5 = type opaque
 
-define %FHEdouble @_Z6rostinii(%FHEdouble %_tmp0, %FHEdouble %_tmp1) {
+define %FHEdouble.5 @_Z6rostinii(%FHEdouble.5 %_tmp0, %FHEdouble.5 %_tmp1) {
 entry:
-  %_tmp3 = call %FHEdouble @FHEmul(%FHEdouble %_tmp0, %FHEdouble %_tmp0)
-  %_tmp4 = call %FHEdouble @FHEsubP(i32 -2, %FHEdouble %_tmp0)
-  %_tmp5 = call %FHEdouble @FHEadd(%FHEdouble %_tmp4, %FHEdouble %_tmp3)
-  %_tmp6 = call %FHEdouble @FHEadd(%FHEdouble %_tmp5, %FHEdouble %_tmp1)
-  ret %FHEdouble %_tmp6
+  %_tmp3 = call %FHEdouble.5 @FHEmul(%FHEdouble.5 %_tmp0, %FHEdouble.5 %_tmp0)
+  %_tmp4 = call %FHEdouble.5 @FHEaddP(%FHEdouble.5 %_tmp3, i32 -2)
+  ret %FHEdouble.5 %_tmp4
 }
 
-declare %FHEdouble @FHEmul(%FHEdouble, %FHEdouble)
+declare %FHEdouble.5 @FHEmul(%FHEdouble.5, %FHEdouble.5)
 
-declare %FHEdouble @FHEsubP(i32, %FHEdouble)
-
-declare %FHEdouble @FHEadd(%FHEdouble, %FHEdouble)
+declare %FHEdouble.5 @FHEaddP(%FHEdouble.5, i32)

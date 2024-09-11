@@ -52,8 +52,16 @@ else()
     link_libraries( ${OpenFHE_SHARED_LIBRARIES} )
 endif()
 
+add_library(my_custom_lib
+    src/backend/ckks_operations.cpp
+)
+
+target_link_libraries(my_custom_lib ${OpenFHE_LIBRARIES})
+
 ### ADD YOUR EXECUTABLE(s) HERE
-add_executable( main src/backend/main.cpp )
+add_executable( ir src/ir.cpp )
 ###
 ### EXAMPLE:
 ### add_executable( test demo-simple-example.cpp )
+
+target_link_libraries(ir my_custom_lib ${OpenFHE_LIBRARIES})

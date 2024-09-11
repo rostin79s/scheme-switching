@@ -4,8 +4,8 @@
 #include "fhe_types.hpp"
 
 namespace TFHE {
-    class TFHE_scheme{
-        public:
+    class TFHE_scheme {
+    public:
         FHEi32* FHEadd(const FHEi32* a, const FHEi32* b);
         FHEi32* FHEsub(const FHEi32* a, const FHEi32* b);
 
@@ -20,11 +20,8 @@ namespace TFHE {
         FHEi32* FHEXor(const FHEi32* a, const FHEi32* b);
         FHEi32* FHEnot(const FHEi32* a);
 
-        private:
-
+    private:
     };
-
-
 } // namespace TFHE
 
 namespace CKKS {
@@ -41,16 +38,17 @@ namespace CKKS {
         FHEdouble* FHEdiv(const FHEdouble* a, const FHEdouble* b);
 
         // Arithmetic Operations with Plaintext
-        FHEdouble* FHEaddP(const FHEdouble* a, const double b);
-        FHEdouble* FHEsubP(const FHEdouble* a, const double b);
+        FHEdouble* FHEaddP(const FHEdouble* a, double b);
+        FHEdouble* FHEsubP(const FHEdouble* a, double b);
         FHEdouble* FHEsubP(double b, const FHEdouble* a);
-        FHEdouble* FHEmulP(const FHEdouble* a, const double b);
-        FHEdouble* FHEdivP(const FHEdouble* a, const double b);
+        FHEdouble* FHEmulP(const FHEdouble* a, double b);
+        FHEdouble* FHEdivP(const FHEdouble* a, double b);
         FHEdouble* FHEdivP(double b, const FHEdouble* a);
 
-        Plaintext FHEencode(std::vector<double> a);
-        FHEdouble* FHEencrypt(Plaintext p);
-        Plaintext FHEdecrypt(const FHEdouble* a);
+        // Use the Plaintext class from fhe_types.hpp
+        FHEplain* FHEencode(const std::vector<double>& a);
+        FHEdouble* FHEencrypt(const CKKS::FHEplain* p);
+        FHEplain* FHEdecrypt(const FHEdouble* a);
 
     private:
         int multDepth;
@@ -61,7 +59,6 @@ namespace CKKS {
         std::unique_ptr<FHEContext> context;   // Use unique_ptr for opaque pointer to the implementation
         std::unique_ptr<FHEKeyPair> keys; 
     };
-
 }
 
 #endif // FHE_OPERATIONS_HPP

@@ -5,17 +5,7 @@ using namespace lbcrypto;
 
 namespace CKKS {
 
-class FHEContext {
-public:
-    CryptoContext<DCRTPoly> cc;
-};
-
-class FHEKeyPair {
-public:
-    KeyPair<DCRTPoly> keyPair;
-};
-
-CKKS_scheme::CKKS_scheme(int multDepth = 1,int scaleModSize = 50, int batchSize = 1)
+CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
     : multDepth(multDepth), scaleModSize(scaleModSize), batchSize(batchSize) {
     CCParams<CryptoContextCKKSRNS> parameters;
     parameters.SetMultiplicativeDepth(multDepth);
@@ -38,21 +28,21 @@ CKKS_scheme::CKKS_scheme(int multDepth = 1,int scaleModSize = 50, int batchSize 
 
 }
 
-Plaintext CKKS_scheme::FHEencode(std::vector<double> a){
-    Plaintext ptxt = context->cc->MakeCKKSPackedPlaintext(a);
-    return ptxt;
+FHEplain* CKKS_scheme::FHEencode(const std::vector<double>& a){
+    FHEplain ptxt = context->cc->MakeCKKSPackedPlaintext(a);
+    return new FHEplain(ptxt);
 }
 
-FHEdouble* CKKS_scheme::FHEencrypt(Plaintext a){
-    auto result = context->cc->Encrypt(keys->keyPair.publicKey, a);
+FHEdouble* CKKS_scheme::FHEencrypt(const FHEplain* a){
+    auto result = context->cc->Encrypt(keys->keyPair.publicKey, a->getPlaintext());
     return new FHEdouble(result);
 }
-        
-Plaintext CKKS_scheme::FHEdecrypt(const FHEdouble* a){
+
+FHEplain* CKKS_scheme::FHEdecrypt(const FHEdouble* a){
     Plaintext result;
     context->cc->Decrypt(keys->keyPair.secretKey, a->getCiphertext(), &result);
-    result->SetLength(batchSize);
-    return result;
+    FHEplain res = result;
+    return new FHEplain(result);
 }
 
 // Arithmetic Operations for FHEdouble
