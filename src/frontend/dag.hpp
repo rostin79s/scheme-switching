@@ -41,7 +41,7 @@ public:
     void convert();
 
 
-    void optimize();
+    DAG* optimize();
     void sort();
     void generateBackend(llvm::LLVMContext &context);
 };

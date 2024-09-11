@@ -96,9 +96,6 @@ void DAG::convert() {
     }
 }
 
-void DAG::optimize() {
-
-}
 
 void DAG::sort() {
 
