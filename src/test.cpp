@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cstdio>
 
 int rostin(int a, int b){
     int y = a*a;
@@ -11,5 +11,5 @@ int main(){
     int a = 32;
     int b = 21;
     int res = rostin(a,b);
-    std::cout << res << std::endl;
+    printf("%d\n", res);
 }
