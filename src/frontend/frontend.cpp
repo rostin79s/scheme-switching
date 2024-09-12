@@ -76,6 +76,14 @@ std::string demangle(const std::string &mangledName) {
     char *demangledName = llvm::itaniumDemangle(mangledName.c_str(), nullptr, nullptr, nullptr);
     std::string result(demangledName);
     free(demangledName);
+    size_t pos = result.find('(');
+
+    if (pos != std::string::npos) {
+        // Extract substring before the first parenthesis
+        result = result.substr(0, pos);
+    }
+
+    std::cout << result << std::endl;
     return result;
 }
 
