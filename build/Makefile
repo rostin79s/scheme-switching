@@ -142,6 +142,19 @@ ir/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/build
 .PHONY : ir/fast
 
+#=============================================================================
+# Target rules for targets named main
+
+# Build rule for target.
+main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main
+.PHONY : main
+
+# fast build rule for target.
+main/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
+.PHONY : main/fast
+
 src/backend/ckks_operations.o: src/backend/ckks_operations.cpp.o
 .PHONY : src/backend/ckks_operations.o
 
@@ -190,6 +203,30 @@ src/ir.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ir.dir/build.make CMakeFiles/ir.dir/src/ir.cpp.s
 .PHONY : src/ir.cpp.s
 
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -199,6 +236,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... ir"
+	@echo "... main"
 	@echo "... my_custom_lib"
 	@echo "... src/backend/ckks_operations.o"
 	@echo "... src/backend/ckks_operations.i"
@@ -206,6 +244,9 @@ help:
 	@echo "... src/ir.o"
 	@echo "... src/ir.i"
 	@echo "... src/ir.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 

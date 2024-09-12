@@ -208,6 +208,46 @@ void test(){
 
 }
 
+Ciphertext<DCRTPoly> SWITCHCKKSRNS::EvalCompareSchemeSwitching(ConstCiphertext<DCRTPoly> ciphertext1,
+                                                               ConstCiphertext<DCRTPoly> ciphertext2, uint32_t numCtxts,
+                                                               uint32_t numSlots, uint32_t pLWE, double scaleSign,
+                                                               bool unit) {
+    auto ccCKKS             = ciphertext1->GetCryptoContext();
+    const auto cryptoParams = std::dynamic_pointer_cast<CryptoParametersCKKSRNS>(ccCKKS->GetCryptoParameters());
+
+    auto cDiff = ccCKKS->EvalSub(ciphertext1, ciphertext2);
+
+    if (unit) {
+        if (pLWE == 0)
+            OPENFHE_THROW("To scale to the unit circle, pLWE must be non-zero.");
+        else {
+            cDiff = ccCKKS->EvalMult(cDiff, 1.0 / static_cast<double>(pLWE));
+            cDiff = ccCKKS->Rescale(cDiff);
+        }
+    }
+
+    // The precomputation has already been performed, but if it is scaled differently than desired, recompute it
+    if (pLWE != 0) {
+        double scaleCF = 1.0;
+        if ((pLWE != 0) && (!unit)) {
+            scaleCF = 1.0 / pLWE;
+        }
+        scaleCF *= scaleSign;
+
+        EvalCKKStoFHEWPrecompute(*ccCKKS, scaleCF);
+    }
+
+    auto LWECiphertexts = EvalCKKStoFHEW(cDiff, numCtxts);
+
+    std::vector<LWECiphertext> cSigns(LWECiphertexts.size());
+#pragma omp parallel for
+    for (uint32_t i = 0; i < LWECiphertexts.size(); i++) {
+        cSigns[i] = m_ccLWE->EvalSign(LWECiphertexts[i], true);
+    }
+
+    return EvalFHEWtoCKKS(cSigns, numCtxts, numSlots, 4, -1.0, 1.0, 0);
+}
+
 int main() {
     // SwitchFHEWtoCKKS();
     test();

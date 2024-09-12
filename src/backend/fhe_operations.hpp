@@ -30,7 +30,7 @@ namespace CKKS {
 
     class CKKS_scheme {
     public:
-        CKKS_scheme(int multDepth = 1, int scaleModSize = 50, int batchSize = 8);
+        CKKS_scheme(int multDepth = 1, int scaleModSize = 50, int batchSize = 1);
 
         FHEdouble* FHEadd(const FHEdouble* a, const FHEdouble* b);
         FHEdouble* FHEsub(const FHEdouble* a, const FHEdouble* b);

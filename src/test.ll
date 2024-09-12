@@ -6,16 +6,15 @@ target triple = "x86_64-pc-linux-gnu"
 @.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind readnone uwtable willreturn
-define dso_local noundef i32 @_Z6rostinii(i32 noundef %0, i32 %1) local_unnamed_addr #0 {
-  %3 = mul nsw i32 %0, %0
-  %4 = sub i32 -2, %0
-  %5 = add i32 %4, %3
-  ret i32 %5
+define dso_local noundef i32 @_Z6rostinii(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
+  %3 = mul nsw i32 %1, %0
+  %4 = mul nsw i32 %3, %1
+  ret i32 %4
 }
 
 ; Function Attrs: mustprogress nofree norecurse nounwind uwtable
 define dso_local noundef i32 @main() local_unnamed_addr #1 {
-  %1 = tail call i32 (i8*, ...) @printf(i8* noundef nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 noundef 990)
+  %1 = tail call i32 (i8*, ...) @printf(i8* noundef nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 noundef 92)
   ret i32 0
 }
 

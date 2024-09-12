@@ -69,28 +69,28 @@ include CMakeFiles/main.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/main.dir/flags.make
 
-CMakeFiles/main.dir/src/backend/main.cpp.o: CMakeFiles/main.dir/flags.make
-CMakeFiles/main.dir/src/backend/main.cpp.o: /home/rostin/scheme-switching/src/backend/main.cpp
-CMakeFiles/main.dir/src/backend/main.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/src/backend/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/src/backend/main.cpp.o -MF CMakeFiles/main.dir/src/backend/main.cpp.o.d -o CMakeFiles/main.dir/src/backend/main.cpp.o -c /home/rostin/scheme-switching/src/backend/main.cpp
+CMakeFiles/main.dir/src/main.cpp.o: CMakeFiles/main.dir/flags.make
+CMakeFiles/main.dir/src/main.cpp.o: /home/rostin/scheme-switching/src/main.cpp
+CMakeFiles/main.dir/src/main.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/src/main.cpp.o -MF CMakeFiles/main.dir/src/main.cpp.o.d -o CMakeFiles/main.dir/src/main.cpp.o -c /home/rostin/scheme-switching/src/main.cpp
 
-CMakeFiles/main.dir/src/backend/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/src/backend/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/src/backend/main.cpp > CMakeFiles/main.dir/src/backend/main.cpp.i
+CMakeFiles/main.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/src/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/src/main.cpp > CMakeFiles/main.dir/src/main.cpp.i
 
-CMakeFiles/main.dir/src/backend/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/src/backend/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/src/backend/main.cpp -o CMakeFiles/main.dir/src/backend/main.cpp.s
+CMakeFiles/main.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/src/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/src/main.cpp -o CMakeFiles/main.dir/src/main.cpp.s
 
 # Object files for target main
 main_OBJECTS = \
-"CMakeFiles/main.dir/src/backend/main.cpp.o"
+"CMakeFiles/main.dir/src/main.cpp.o"
 
 # External object files for target main
 main_EXTERNAL_OBJECTS =
 
-main: CMakeFiles/main.dir/src/backend/main.cpp.o
+main: CMakeFiles/main.dir/src/main.cpp.o
 main: CMakeFiles/main.dir/build.make
 main: /usr/local/lib/libOPENFHEpke.so.1.2.0
 main: /usr/local/lib/libOPENFHEbinfhe.so.1.2.0

@@ -5,4 +5,8 @@
 
 void generateMainFunction(llvm::LLVMContext &Context, llvm::Module &module);
 
+void generateIR(const DAG& dag);
+void printHeaders(std::ofstream& IR);
+void printUserFunction(std::ofstream& IR, const DAG& dag);
+void printMainFunction(std::ofstream& IR, const DAG& dag);
 #endif
