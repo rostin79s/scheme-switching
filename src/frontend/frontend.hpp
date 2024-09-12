@@ -7,6 +7,8 @@ std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Functi
 
 void naming(DAG* dag);
 
+std::string demangle(const std::string &mangledName);
+
 DAG* buildDAGFromInstructions(llvm::Function &F);
 
 #endif

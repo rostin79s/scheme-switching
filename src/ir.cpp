@@ -6,7 +6,7 @@
 using namespace CKKS;
 using namespace TFHE;
 
-FHEdouble* _Z6rostinii(CKKS_scheme* ck, FHEdouble* _tmp0, FHEdouble* _tmp1) {
+FHEdouble* rostin(CKKS_scheme* ck, FHEdouble* _tmp0, FHEdouble* _tmp1) {
     FHEdouble* _tmp3 = ck->FHEmul(_tmp0, _tmp0);
     FHEdouble* _tmp4 = ck->FHEsubP(-2, _tmp0);
     FHEdouble* _tmp5 = ck->FHEadd(_tmp4, _tmp3);
@@ -24,7 +24,7 @@ int main() {
     FHEdouble* _tmp0 = ck.FHEencrypt(ck.FHEencode(inputs1));
     FHEdouble* _tmp1 = ck.FHEencrypt(ck.FHEencode(inputs2));
 
-    FHEdouble* result = _Z6rostinii(&ck, _tmp0, _tmp1);
+    FHEdouble* result = rostin(&ck, _tmp0, _tmp1);
     FHEplain* res = ck.FHEdecrypt(result);
 
     std::cout << "Result: " << res->getPlaintext() << std::endl;

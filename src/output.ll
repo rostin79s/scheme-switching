@@ -16,3 +16,8 @@ declare %FHEdouble @FHEmul(%FHEdouble, %FHEdouble)
 declare %FHEdouble @FHEsubP(i32, %FHEdouble)
 
 declare %FHEdouble @FHEadd(%FHEdouble, %FHEdouble)
+
+define i32 @main() {
+entry:
+  ret i32 0
+}

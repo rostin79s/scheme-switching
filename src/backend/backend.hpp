@@ -3,5 +3,6 @@
 
 #include "../frontend/dag.hpp"
 
+void generateMainFunction(llvm::LLVMContext &Context, llvm::Module &module);
 
 #endif

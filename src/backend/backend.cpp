@@ -190,6 +190,9 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
     } else {
         builder.CreateRetVoid();  // Return void for void functions
     }
+
+    // Generate the main function
+    generateMainFunction(Context, module);
     // Verify the generated module
     llvm::verifyModule(module, &llvm::errs());
 
@@ -203,4 +206,29 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
 
     module.print(outFile, nullptr);  // Print the module to the file
     outFile.flush();  // Ensure the output is written to the file
+}
+
+
+void generateMainFunction(llvm::LLVMContext &Context, llvm::Module &module) {
+    llvm::IRBuilder<> builder(Context);
+
+    // Create a function type (int main())
+    llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getInt32Ty(), false);
+
+    // Create the main function with external linkage
+    llvm::Function *mainFunction = llvm::Function::Create(
+        funcType, llvm::Function::ExternalLinkage, "main", module);
+
+    // Create a basic block and set the insertion point
+    llvm::BasicBlock *entry = llvm::BasicBlock::Create(Context, "entry", mainFunction);
+    builder.SetInsertPoint(entry);
+
+    // Create a return instruction (return 0)
+    builder.CreateRet(builder.getInt32(0));
+
+    // Verify the function to check for errors
+    if (llvm::verifyFunction(*mainFunction)) {
+        llvm::errs() << "Function verification failed!\n";
+        return;
+    }
 }

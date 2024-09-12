@@ -24,7 +24,6 @@ int main(int argc, char** argv) {
     // Iterate over the functions in the module
     for (llvm::Function &F : *M) {
         if (F.isDeclaration() || F.isIntrinsic()  || !F.hasExternalLinkage() || F.getName() == "main") {
-            std::cout<<"-------------------------"<<std::endl;
             continue;
         }
         // Build the DAG for the function
