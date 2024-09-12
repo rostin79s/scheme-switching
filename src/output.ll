@@ -3,7 +3,7 @@ source_filename = "FHE_module"
 
 %FHEdouble = type opaque
 
-define %FHEdouble @_Z6rostinii(%FHEdouble %_tmp0, %FHEdouble %_tmp1) {
+define %FHEdouble @"rostin(int, int)"(%FHEdouble %_tmp0, %FHEdouble %_tmp1) {
 entry:
   %_tmp3 = call %FHEdouble @FHEmul(%FHEdouble %_tmp0, %FHEdouble %_tmp0)
   %_tmp4 = call %FHEdouble @FHEsubP(i32 -2, %FHEdouble %_tmp0)

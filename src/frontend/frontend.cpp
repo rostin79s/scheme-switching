@@ -1,5 +1,5 @@
 #include <llvm/IR/Module.h>
-
+#include <llvm/Demangle/Demangle.h>
 #include "dag.hpp"
 
 
@@ -72,6 +72,13 @@ void naming(DAG* dag) {
     }
 }
 
+std::string demangle(const std::string &mangledName) {
+    char *demangledName = llvm::itaniumDemangle(mangledName.c_str(), nullptr, nullptr, nullptr);
+    std::string result(demangledName);
+    free(demangledName);
+    return result;
+}
+
 
 // Function to process each instruction and build the DAG
 DAG* buildDAGFromInstructions(llvm::Function &F) {
@@ -79,7 +86,8 @@ DAG* buildDAGFromInstructions(llvm::Function &F) {
     DAG *dag = new DAG();
 
     dag->functionInputs = getCiphertextArguments(F);
-    dag->name = F.getName().str();
+    std::string function_name = F.getName().str();
+    dag-> name = demangle(function_name);
 
 
     // added return type
