@@ -1,0 +1,11 @@
+/home/rostin/scheme-switching/src/build/CMakeFiles/intrinsics_gen.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/omp_gen.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/acc_gen.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/RISCVTargetParserTableGen.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/mlir-tablegen-targets.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/mlir-headers.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/mlir-generic-headers.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/mlir-doc.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/compiler.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/edit_cache.dir
+/home/rostin/scheme-switching/src/build/CMakeFiles/rebuild_cache.dir

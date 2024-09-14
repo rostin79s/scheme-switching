@@ -1,44 +1,75 @@
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/Module.h>
-#include <llvm/IRReader/IRReader.h>
-#include <llvm/Support/SourceMgr.h>
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/InitLLVM.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/ToolOutputFile.h"
+#include "mlir/Dialect/Arith/IR/Arith.h"
+#include "mlir/Dialect/EmitC/IR/EmitC.h"
+#include "mlir/IR/Dialect.h"
+#include "mlir/IR/MLIRContext.h"
+#include "mlir/InitAllDialects.h"
+#include "mlir/InitAllPasses.h"
+#include "mlir/Pass/Pass.h"
+#include "mlir/Pass/PassManager.h"
+#include "mlir/Support/FileUtilities.h"
+#include "mlir/Tools/mlir-opt/MlirOptMain.h"
+#include "mlir/Parser/Parser.h"
+#include "mlir/Dialect/DLTI/DLTI.h"
+#include "mlir/Dialect/Arith/IR/Arith.h"
 
-#include "./frontend/frontend.hpp"
-#include "./frontend/dag.hpp"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/InitLLVM.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/ToolOutputFile.h"
+#include "mlir/Dialect/Arith/IR/Arith.h"
+#include "mlir/Dialect/EmitC/IR/EmitC.h"
+#include "mlir/IR/Dialect.h"
+#include "mlir/IR/MLIRContext.h"
+#include "mlir/InitAllDialects.h"
+#include "mlir/InitAllPasses.h"
+#include "mlir/Pass/Pass.h"
+#include "mlir/Pass/PassManager.h"
+#include "mlir/Support/FileUtilities.h"
+#include "mlir/Tools/mlir-opt/MlirOptMain.h"
 
+#include <string>
+#include <iostream>
 
-
-
-    
 int main(int argc, char** argv) {
-    llvm::LLVMContext Context;
-    llvm::SMDiagnostic Err;
+    // Create an MLIR context
+    mlir::MLIRContext context;
 
-    // Parse the IR file into a module
-    std::unique_ptr<llvm::Module> M = llvm::parseIRFile("test.ll", Err, Context);
-    if (!M) {
-        Err.print(argv[0], llvm::errs());
+    mlir::DialectRegistry registry;
+    // registry.insert<mlir::func::FuncDialect>();
+    // registry.insert<mlir::arith::ArithDialect>();
+    registry.insert<mlir::DLTIDialect>();  // Assuming DLTI dialect is available
+    registry.insert<mlir::arith::ArithDialect>();
+    registry.insert<mlir::LLVM::LLVMDialect>();
+    registry.insert<mlir::func::FuncDialect>();
+
+    // Attach the registry to the context
+    context.appendDialectRegistry(registry);
+
+    // Open and parse the MLIR file
+    std::string filename = "test.mlir";
+    auto module = mlir::parseSourceFile<mlir::ModuleOp>(filename, &context);
+    if (!module) {
+        llvm::errs() << "Error parsing MLIR file\n";
         return 1;
     }
 
-    // Iterate over the functions in the module
-    for (llvm::Function &F : *M) {
-        if (F.isDeclaration() || F.isIntrinsic()  || !F.hasExternalLinkage() || F.getName() == "main") {
-            continue;
+    // Iterate over all operations in the module
+    module->walk([](mlir::Operation *op) {
+        // Print the operation name
+        llvm::outs() << "Operation: " << op->getName() << "\n";
+
+        // Print operation location
+        llvm::outs() << "  Location: " << op->getLoc() << "\n";
+
+        // Print operands
+        for (auto operand : op->getOperands()) {
+            llvm::outs() << "  Operand: " << operand << "\n";
         }
-        // Build the DAG for the function
-        DAG *dag = buildDAGFromInstructions(F);
+    });
 
-        dag->convert();
-
-        // Print the DAG
-        dag->print();
-
-        dag->generateBackend(Context);
-
-        // Clean up
-        delete dag;
-    }
-    
     return 0;
 }

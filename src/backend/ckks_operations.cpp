@@ -18,6 +18,7 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
     context->cc->Enable(PKE);
     context->cc->Enable(KEYSWITCH);
     context->cc->Enable(LEVELEDSHE);
+    context->cc->Enable(FHE);
 
     ringDimension = context->cc->GetRingDimension();
 

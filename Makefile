@@ -1,29 +1,30 @@
-# Compiler and flags
+# Define variables
 CXX = clang++
-LLVM_CONFIG = llvm-config
-CXXFLAGS = `$(LLVM_CONFIG) --cxxflags`
-LDFLAGS = `$(LLVM_CONFIG) --ldflags --system-libs --libs core`
-
-# Directories and files
-SRCDIR = src
-BUILDDIR = src
-TARGET = $(BUILDDIR)/test
+CXXFLAGS = -std=c++17 -Wall -Wextra -I/usr/include/llvm -I/usr/local/include/mlir
+LDFLAGS = -L/usr/include/llvm -L/usr/local/include/mlir -lLLVM -lMLIR
 
 # Source files
-SOURCES = $(SRCDIR)/compiler.cpp $(SRCDIR)/frontend/frontend.cpp $(SRCDIR)/frontend/dag.cpp $(SRCDIR)/backend/backend.cpp
-OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(BUILDDIR)/%.o, $(SOURCES))
+SRCS = compiler.cpp
+
+# Object files
+OBJS = $(SRCS:.cpp=.o)
+
+# Executable name
+TARGET = compiler
 
 # Default target
 all: $(TARGET)
 
-# Custom clang++ command to generate src/compiler/test
-$(TARGET): $(SRCDIR)/compiler.cpp $(OBJECTS)
-	$(CXX) -o $@ $(CXXFLAGS) $(LDFLAGS) $(SOURCES)
+# Link the executable
+$(TARGET): $(OBJS)
+	$(CXX) $(LDFLAGS) -o $(TARGET) $(OBJS)
 
-# Rule to compile object files
-$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
+# Compile source files into object files
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up build files
+# Clean up
 clean:
-	rm -f $(BUILDDIR)/*.o $(BUILDDIR)/frontend/*.o $(BUILDDIR)/backend/*.o
+	rm -f $(TARGET) $(OBJS)
+
+.PHONY: all clean

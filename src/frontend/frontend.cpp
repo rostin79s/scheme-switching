@@ -73,7 +73,7 @@ void naming(DAG* dag) {
 }
 
 std::string demangle(const std::string &mangledName) {
-    char *demangledName = llvm::itaniumDemangle(mangledName.c_str(), nullptr, nullptr, nullptr);
+    char *demangledName = llvm::itaniumDemangle(mangledName.c_str());
     std::string result(demangledName);
     free(demangledName);
     size_t pos = result.find('(');

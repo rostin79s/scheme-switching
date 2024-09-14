@@ -1,6 +1,6 @@
 original_dir=$(pwd)
 
-g++ src/test.cpp -o src/test
+g++ test.cpp -o test
 ./src/test
 
 cd build && cmake ..
