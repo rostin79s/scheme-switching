@@ -93,7 +93,8 @@
     "*.inc": "cpp",
     "__errc": "cpp",
     "__string": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "variant": "cpp"
 },
 "python.envFile": "${workspaceFolder}/.env"
 }

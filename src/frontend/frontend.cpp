@@ -1,24 +1,50 @@
-#include <llvm/IR/Module.h>
+#include "mlir/IR/Builders.h"
+#include "mlir/IR/Operation.h"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/InitLLVM.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/ToolOutputFile.h"
+#include "mlir/Dialect/Arith/IR/Arith.h"
+#include "mlir/Dialect/EmitC/IR/EmitC.h"
+#include "mlir/IR/Dialect.h"
+#include "mlir/IR/MLIRContext.h"
+#include "mlir/InitAllDialects.h"
+#include "mlir/InitAllPasses.h"
+#include "mlir/Pass/Pass.h"
+#include "mlir/Pass/PassManager.h"
+#include "mlir/Support/FileUtilities.h"
+#include "mlir/Tools/mlir-opt/MlirOptMain.h"
+#include "mlir/Parser/Parser.h"
+#include "mlir/Dialect/DLTI/DLTI.h"
+#include "mlir/IR/BuiltinOps.h"
+
+
 #include <llvm/Demangle/Demangle.h>
+
+#include <unordered_map>
+#include <string>
+#include <iostream>
+
 #include "dag.hpp"
+#include "frontend.hpp"
 
+using namespace mlir;
 
-std::unordered_map<std::string, std::string> getCiphertextArguments(llvm::Function &F) {
-
+// Utility function to get operand names and types from MLIR
+std::unordered_map<std::string, std::string> getCiphertextArguments(mlir::func::FuncOp func) {
     std::unordered_map<std::string, std::string> ciphertextArgs;
 
-    for (auto &Arg : F.args()) {
-        llvm::Value *result = &Arg;
-        std::string resultStr;
-        llvm::raw_string_ostream rso(resultStr);
-        result->printAsOperand(rso, false);
-
-        std::string paramType;
-        llvm::raw_string_ostream rsoType(paramType);
-        Arg.getType()->print(rsoType);
-
-        ciphertextArgs[resultStr] = rsoType.str();
-
+    // Get function type
+    auto functionType = func.getFunctionType();
+    
+    // Iterate over function arguments
+    for (unsigned index = 0; index < functionType.getNumInputs(); ++index) {
+        auto argType = functionType.getInput(index);
+        std::string argName = "arg" + std::to_string(index); // Generate default argument names
+        std::string argTypeStr;
+        llvm::raw_string_ostream rso(argTypeStr);
+        argType.print(rso); // Print the type of the argument
+        ciphertextArgs[argName] = rso.str();
     }
 
     return ciphertextArgs;
@@ -33,18 +59,12 @@ void naming(DAG* dag) {
 
     // Replace % with _tmp in function inputs and add "FHE" to the type
     for (const auto &entry : dag->functionInputs) {
-        std::string oldName = entry.first;
-        std::string newName = oldName;
-        size_t pos = newName.find('%');
-        if (pos != std::string::npos) {
-            newName.replace(pos, 1, "_tmp");
-        }
 
         // Add "FHE" to the start of the type
         std::string updatedType = "FHE" + entry.second;
 
         // Store the updated name and type in the new map
-        updatedFunctionInputs[newName] = updatedType;
+        updatedFunctionInputs[entry.first] = updatedType;
     }
 
     // Replace the old map with the updated one
@@ -56,7 +76,7 @@ void naming(DAG* dag) {
         std::string newResult = node->result;
         size_t pos = newResult.find('%');
         if (pos != std::string::npos) {
-            newResult.replace(pos, 1, "_tmp");
+            newResult.replace(pos, 1, "var");
         }
         node->result = newResult;
 
@@ -65,13 +85,20 @@ void naming(DAG* dag) {
             std::string newOperand = operand;
             pos = newOperand.find('%');
             if (pos != std::string::npos) {
-                newOperand.replace(pos, 1, "_tmp");
+                if (newOperand[1] == 'a'){
+                    newOperand.replace(pos, 1, "");
+                }
+                else{
+                    newOperand.replace(pos, 1, "var");
+                }
+                
             }
             operand = newOperand;
         }
     }
 }
 
+// Utility function to demangle names, if necessary
 std::string demangle(const std::string &mangledName) {
     char *demangledName = llvm::itaniumDemangle(mangledName.c_str());
     std::string result(demangledName);
@@ -79,7 +106,6 @@ std::string demangle(const std::string &mangledName) {
     size_t pos = result.find('(');
 
     if (pos != std::string::npos) {
-        // Extract substring before the first parenthesis
         result = result.substr(0, pos);
     }
 
@@ -87,70 +113,103 @@ std::string demangle(const std::string &mangledName) {
     return result;
 }
 
+void printOperation(mlir::Operation *op) {
+    // Print the operation itself and some of its properties
+    llvm::errs() << "visiting op: '" << op->getName() << "' with "
+                  << op->getNumOperands() << " operands and "
+                  << op->getNumResults() << " results\n";
+    // Print the operation attributes
+    if (!op->getAttrs().empty()) {
+      llvm::errs() << op->getAttrs().size() << " attributes:\n";
+      for (auto attr : op->getAttrs())
+        llvm::errs() << " - '" << attr.getName() << "' : '"
+                      << attr.getValue() << "'\n";
+    }
 
-// Function to process each instruction and build the DAG
-DAG* buildDAGFromInstructions(llvm::Function &F) {
+    // Recurse into each of the regions attached to the operation.
+    llvm::errs() << " " << op->getNumRegions() << " nested regions:\n";
+}
 
+// Function to process each MLIR operation and build the DAG
+DAG* buildDAGFromInstructions(mlir::func::FuncOp func) {
     DAG *dag = new DAG();
 
-    dag->functionInputs = getCiphertextArguments(F);
-    std::string function_name = F.getName().str();
-    dag-> name = demangle(function_name);
+    // Set function inputs and return type
+    dag->functionInputs = getCiphertextArguments(func);
+    dag->name = demangle(func.getName().str());
 
+    
 
-    // added return type
-    auto temp = F.getFunctionType()->getReturnType();
+    // Set the return type
+    auto returnType = func.getFunctionType().getResult(0);
     std::string rettype;
     llvm::raw_string_ostream rso(rettype);
-    temp->print(rso);
+    returnType.print(rso);
     dag->returnType = rso.str();
 
-    // Iterate over instructions and build nodes and edges
-    for (llvm::BasicBlock &BB : F) {
-        for (llvm::Instruction &I : BB) {   
+    // Create a MLIR builder for traversing operations
 
-            // Extract result, operation, operands, and operand types
-            llvm::Value *result = &I; // The result is the instruction itself
-            std::string resultStr;
-            llvm::raw_string_ostream rso(resultStr);
-            result->printAsOperand(rso, false);
+    // Iterate over blocks and operations in the function
+    func->walk([&](mlir::Operation *op) {
+            
+        std::string fullName = op->getName().getStringRef().str();
+        size_t dotPos = fullName.find('.');
+        std::string operationStr = fullName.substr(dotPos + 1);
+        std::vector<std::string> operandStrs;
+        std::string operandType;
+        std::string resultStr;
 
-            std::string operationStr = I.getOpcodeName();
-            std::vector<std::string> operandStrs;
-            std::string operandType;
+        // if (operationStr == "return") {
+        //     return mlir::WalkResult::interrupt();
+        // }
 
-            for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
-                llvm::Value *operand = I.getOperand(opIdx);
 
-                // Convert operand to string
-                std::string operandStr;
-                llvm::raw_string_ostream rsoOperand(operandStr);
-                operand->printAsOperand(rsoOperand, false);
-                operandStrs.push_back(rsoOperand.str());
+        // Extract result name and type
+        if (op->getNumResults() > 0) {
+            auto result = op->getResult(0);
+            llvm::raw_string_ostream rso(resultStr);  
+            mlir::OpPrintingFlags flags;
+            result.printAsOperand(rso, flags);
+            // resultStr = "var" + std::to_string(result.getResultNumber()); // Generate a result name
+            
+            // Extract the type of the result
+            auto type = result.getType();
+            llvm::raw_string_ostream typeStream(operandType);
+            type.print(typeStream);
+            operandType = typeStream.str();
+        }
 
-                // Convert operand type to string
-                llvm::Type *type = operand->getType();
-                std::string typeStr;
-                llvm::raw_string_ostream rstoType(typeStr);
-                type->print(rstoType);
-                operandType = rstoType.str();
-            }
-
-            // Create a node for the instruction
-            DAGNode *node = dag->addNode(&I, resultStr, operationStr, operandStrs, operandType);
-
-            // Create edges based on operand dependencies
-            for (unsigned int opIdx = 0; opIdx < I.getNumOperands(); ++opIdx) {
-                llvm::Value *operand = I.getOperand(opIdx);
-                if (llvm::Instruction *opInst = llvm::dyn_cast<llvm::Instruction>(operand)) {
-                    if (dag->nodeMap.find(opInst) != dag->nodeMap.end()) {
-                        DAGNode *opNode = dag->nodeMap[opInst];
-                        dag->addEdge(opNode, node);
-                    }
-                }
+        // Extract operand names and types
+        for (auto operand : op->getOperands()) {
+            std::string temp;
+            llvm::raw_string_ostream rso(temp);  
+            mlir::OpPrintingFlags flags;
+            operand.printAsOperand(rso, flags);
+            if (auto blockArg = operand.dyn_cast<mlir::BlockArgument>()) {
+                operandStrs.push_back(temp);
+            } else if (auto defOp = operand.getDefiningOp()) {
+                operandStrs.push_back(temp);
+            } else {
+                operandStrs.push_back("unknown");
             }
         }
-    }
+
+        // Create a node for the operation
+        DAGNode *node = dag->addNode(op, resultStr, operationStr, operandStrs, operandType);
+
+        // Create edges based on operand dependencies
+        for (auto operand : op->getOperands()) {
+            if (auto *opInst = operand.getDefiningOp()) {
+                if (dag->nodeMap.find(opInst) != dag->nodeMap.end()) {
+                    DAGNode *opNode = dag->nodeMap[opInst];
+                    dag->addEdge(opNode, node);
+                }
+            }
+    
+        }
+
+        return mlir::WalkResult::advance();
+    });
 
     naming(dag);
 

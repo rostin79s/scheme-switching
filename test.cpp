@@ -1,10 +1,7 @@
-
-
-int rostin(int a, int b){
-    int y = a*a;
-    int z = a+234;
-    int res = y-z;
-    return res;
+double rostin(double a, double b){
+    double temp = a+b;
+    double temp2 = temp + a;
+    return temp2;
 }
 
 int main(){

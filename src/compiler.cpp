@@ -14,25 +14,12 @@
 #include "mlir/Tools/mlir-opt/MlirOptMain.h"
 #include "mlir/Parser/Parser.h"
 #include "mlir/Dialect/DLTI/DLTI.h"
-#include "mlir/Dialect/Arith/IR/Arith.h"
-
-#include "llvm/Support/CommandLine.h"
-#include "llvm/Support/InitLLVM.h"
-#include "llvm/Support/SourceMgr.h"
-#include "llvm/Support/ToolOutputFile.h"
-#include "mlir/Dialect/Arith/IR/Arith.h"
-#include "mlir/Dialect/EmitC/IR/EmitC.h"
-#include "mlir/IR/Dialect.h"
-#include "mlir/IR/MLIRContext.h"
-#include "mlir/InitAllDialects.h"
-#include "mlir/InitAllPasses.h"
-#include "mlir/Pass/Pass.h"
-#include "mlir/Pass/PassManager.h"
-#include "mlir/Support/FileUtilities.h"
-#include "mlir/Tools/mlir-opt/MlirOptMain.h"
 
 #include <string>
 #include <iostream>
+
+#include "frontend/dag.hpp"
+#include "frontend/frontend.hpp"
 
 int main(int argc, char** argv) {
     // Create an MLIR context
@@ -57,18 +44,26 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // Iterate over all operations in the module
-    module->walk([](mlir::Operation *op) {
-        // Print the operation name
-        llvm::outs() << "Operation: " << op->getName() << "\n";
-
-        // Print operation location
-        llvm::outs() << "  Location: " << op->getLoc() << "\n";
-
-        // Print operands
-        for (auto operand : op->getOperands()) {
-            llvm::outs() << "  Operand: " << operand << "\n";
+    module->walk([](mlir::func::FuncOp func) {
+        // Skip declarations or functions with external linkage
+        if (func.isDeclaration() || func.getName().str() == "main") {
+            return;
         }
+
+        // Build the DAG for the function
+        DAG* dag = buildDAGFromInstructions(func);
+
+        // Convert DAG
+        dag->convert();
+
+        // Print the DAG
+        dag->print();
+
+
+        // dag->generateBackend(context);
+
+        // Clean up
+        delete dag;
     });
 
     return 0;

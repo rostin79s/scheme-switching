@@ -12,18 +12,18 @@
 #include <fstream>
 #include "backend.hpp"
 
-void DAG::generateBackend(llvm::LLVMContext &Context) {
+void DAG::generateBackend(mlir::MLIRContext &context) {
 
 
     generateIR(*this);
 
 
-    llvm::Module module("FHE_module", Context);  // Declared within the function
-    llvm::IRBuilder<> builder(Context);
+    llvm::Module module("FHE_module", context);  // Declared within the function
+    llvm::IRBuilder<> builder(context);
 
     // Example FHE types - adjust these according to your specific FHE backend types
-    llvm::StructType *fheIntTy = llvm::StructType::create(Context, "FHEdouble");  // FHE encrypted int type named FHEi32
-    llvm::StructType *fheDoubleTy = llvm::StructType::create(Context, "FHEdouble");  // FHE encrypted double type named FHEdouble
+    llvm::StructType *fheIntTy = llvm::StructType::create(context, "FHEdouble");  // FHE encrypted int type named FHEi32
+    llvm::StructType *fheDoubleTy = llvm::StructType::create(context, "FHEdouble");  // FHE encrypted double type named FHEdouble
 
     // Determine the return type of the function based on `returnType`
     llvm::Type *llvmReturnType = nullptr;
@@ -70,7 +70,7 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
     }
 
     // Create the entry block for the function
-    llvm::BasicBlock *entryBlock = llvm::BasicBlock::Create(Context, "entry", function);
+    llvm::BasicBlock *entryBlock = llvm::BasicBlock::Create(context, "entry", function);
     builder.SetInsertPoint(entryBlock);
 
     // Map to store generated values
@@ -107,7 +107,7 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
                     }
                 } else if (node->operands[0].find_first_not_of("-0123456789") == std::string::npos) {
                     // First operand is a plaintext integer constant
-                    firstOperandType = llvm::Type::getInt32Ty(Context);
+                    firstOperandType = llvm::Type::getInt32Ty(context);
                 }
             }
 
@@ -120,7 +120,7 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
                     }
                 } else if (node->operands[1].find_first_not_of("-0123456789") == std::string::npos) {
                     // Second operand is a plaintext integer constant
-                    secondOperandType = llvm::Type::getInt32Ty(Context);
+                    secondOperandType = llvm::Type::getInt32Ty(context);
                 }
             }
 
@@ -148,7 +148,7 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
             if (operandName.find_first_not_of("-0123456789") == std::string::npos) {
                 // It's a numeric constant, create a constant value
                 int intValue = std::stoi(operandName);  // Convert string to integer
-                operandValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(Context), intValue);
+                operandValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), intValue);
             } else {
                 // It's a variable, try to retrieve it from the map
                 operandValue = valueMap[operandName];
@@ -163,9 +163,9 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
 
                         // Map operandType to LLVM types
                         if (operandType == "FHEi32") {
-                            type = llvm::Type::getInt32Ty(Context);
+                            type = llvm::Type::getInt32Ty(context);
                         } else if (operandType == "FHEdouble") {
-                            type = llvm::Type::getDoubleTy(Context);
+                            type = llvm::Type::getDoubleTy(context);
                         } else {
                             llvm::errs() << "Error: Unknown operand type " << operandType << "\n";
                             return;
@@ -191,14 +191,14 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
     }
 
     // Return the appropriate value based on the return type
-    if (llvmReturnType != llvm::Type::getVoidTy(Context)) {
+    if (llvmReturnType != llvm::Type::getVoidTy(context)) {
         builder.CreateRet(returnValue);
     } else {
         builder.CreateRetVoid();  // Return void for void functions
     }
 
     // Generate the main function
-    generateMainFunction(Context, module);
+    generateMainFunction(context, module);
     // Verify the generated module
     llvm::verifyModule(module, &llvm::errs());
 
@@ -215,29 +215,7 @@ void DAG::generateBackend(llvm::LLVMContext &Context) {
 }
 
 
-void generateMainFunction(llvm::LLVMContext &Context, llvm::Module &module) {
-    llvm::IRBuilder<> builder(Context);
 
-    // Create a function type (int main())
-    llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getInt32Ty(), false);
-
-    // Create the main function with external linkage
-    llvm::Function *mainFunction = llvm::Function::Create(
-        funcType, llvm::Function::ExternalLinkage, "main", module);
-
-    // Create a basic block and set the insertion point
-    llvm::BasicBlock *entry = llvm::BasicBlock::Create(Context, "entry", mainFunction);
-    builder.SetInsertPoint(entry);
-
-    // Create a return instruction (return 0)
-    builder.CreateRet(builder.getInt32(0));
-
-    // Verify the function to check for errors
-    if (llvm::verifyFunction(*mainFunction)) {
-        llvm::errs() << "Function verification failed!\n";
-        return;
-    }
-}
 
 void generateIR(const DAG& dag){
     std::ofstream IR("../src/ir.cpp");

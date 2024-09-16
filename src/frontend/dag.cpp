@@ -6,9 +6,9 @@
 #include <fstream>
 
 
-DAGNode::DAGNode(llvm::Instruction *i, const std::string &res, const std::string &op, 
+DAGNode::DAGNode(mlir::Operation *inst, const std::string &res, const std::string &op, 
             const std::vector<std::string> &ops, const std::string &type)
-        : inst(i), result(res), operation(op), operands(ops), operandType(type) {}
+        : inst(inst), result(res), operation(op), operands(ops), operandType(type) {}
 
 void DAGNode::addDependency(DAGNode *node) {
     dependencies.push_back(node);
@@ -33,7 +33,7 @@ void DAGNode::print() const {
 
 
 
-DAGNode* DAG::addNode(llvm::Instruction *inst, const std::string &res, const std::string &op,
+DAGNode* DAG::addNode(mlir::Operation *inst, const std::string &res, const std::string &op,
                      const std::vector<std::string> &ops, const std::string &type) {
         if (nodeMap.find(inst) == nodeMap.end()) {
             DAGNode *node = new DAGNode(inst, res, op, ops, type);

@@ -28,6 +28,11 @@ include(HandleLLVMOptions)
 
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${MLIR_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/backend)
+include_directories(${CMAKE_SOURCE_DIR}/frontend)
+include_directories(${CMAKE_SOURCE_DIR}/middleend)
+message(STATUS "CMAKE_SOURCE_DIR is: ${CMAKE_SOURCE_DIR}")
+
 # include_directories(${PROJECT_SOURCE_DIR}/include)
 # include_directories(${PROJECT_BINARY_DIR}/include)
 link_directories(${LLVM_BUILD_LIBRARY_DIR})
@@ -62,7 +67,11 @@ set(LIBS
         MLIRTargetLLVMIRExport
         MLIRTransforms  
         )
-add_llvm_executable(compiler compiler.cpp)
+add_llvm_executable(compiler 
+  compiler.cpp
+  frontend/frontend.cpp
+  frontend/dag.cpp
+)
 
 llvm_update_compile_flags(compiler)
 target_link_libraries(compiler PRIVATE ${LIBS})
