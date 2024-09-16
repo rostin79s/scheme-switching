@@ -61,6 +61,7 @@ target_link_libraries(my_custom_lib ${OpenFHE_LIBRARIES})
 ### ADD YOUR EXECUTABLE(s) HERE
 add_executable( ir ir.cpp )
 add_executable( main main.cpp )
+add_executable( example example.cpp )
 ###
 ### EXAMPLE:
 ### add_executable( test demo-simple-example.cpp )

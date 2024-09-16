@@ -1,5 +1,6 @@
 /home/rostin/scheme-switching/build/CMakeFiles/my_custom_lib.dir
 /home/rostin/scheme-switching/build/CMakeFiles/ir.dir
 /home/rostin/scheme-switching/build/CMakeFiles/main.dir
+/home/rostin/scheme-switching/build/CMakeFiles/example.dir
 /home/rostin/scheme-switching/build/CMakeFiles/edit_cache.dir
 /home/rostin/scheme-switching/build/CMakeFiles/rebuild_cache.dir

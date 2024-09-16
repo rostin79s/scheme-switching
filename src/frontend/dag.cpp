@@ -11,10 +11,11 @@ DAGNode::DAGNode(mlir::Operation *inst, const std::string &res, const std::strin
         : inst(inst), result(res), operation(op), operands(ops), operandType(type) {}
 
 void DAGNode::addDependency(DAGNode *node) {
-    dependencies.push_back(node);
+    dependencies.insert(node);
 }
 
 void DAGNode::print() const {
+    std::cout << "ID: " << id << "\n";
     std::cout << "Node: " << operation << "\n";
     std::cout << "Result: " << result << "\n";
     std::cout << "Operands: ";
@@ -26,7 +27,7 @@ void DAGNode::print() const {
     std::cout << "\n";
     std::cout << "Dependencies: ";
     for (const auto &dep : dependencies) {
-        std::cout << dep->operation << " ";
+        std::cout << dep->id << " ";
     }
     std::cout << "\n";
 }
@@ -34,11 +35,12 @@ void DAGNode::print() const {
 
 
 DAGNode* DAG::addNode(mlir::Operation *inst, const std::string &res, const std::string &op,
-                     const std::vector<std::string> &ops, const std::string &type) {
+                     const std::vector<std::string> &ops, const std::string &type, int id) {
         if (nodeMap.find(inst) == nodeMap.end()) {
             DAGNode *node = new DAGNode(inst, res, op, ops, type);
             nodeMap[inst] = node;
             nodes.push_back(node);
+            node->id = id;
             return node;
         }
         return nodeMap[inst];

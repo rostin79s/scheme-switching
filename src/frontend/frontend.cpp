@@ -113,23 +113,6 @@ std::string demangle(const std::string &mangledName) {
     return result;
 }
 
-void printOperation(mlir::Operation *op) {
-    // Print the operation itself and some of its properties
-    llvm::errs() << "visiting op: '" << op->getName() << "' with "
-                  << op->getNumOperands() << " operands and "
-                  << op->getNumResults() << " results\n";
-    // Print the operation attributes
-    if (!op->getAttrs().empty()) {
-      llvm::errs() << op->getAttrs().size() << " attributes:\n";
-      for (auto attr : op->getAttrs())
-        llvm::errs() << " - '" << attr.getName() << "' : '"
-                      << attr.getValue() << "'\n";
-    }
-
-    // Recurse into each of the regions attached to the operation.
-    llvm::errs() << " " << op->getNumRegions() << " nested regions:\n";
-}
-
 // Function to process each MLIR operation and build the DAG
 DAG* buildDAGFromInstructions(mlir::func::FuncOp func) {
     DAG *dag = new DAG();
@@ -150,6 +133,7 @@ DAG* buildDAGFromInstructions(mlir::func::FuncOp func) {
     // Create a MLIR builder for traversing operations
 
     // Iterate over blocks and operations in the function
+    int id = 1;
     func->walk([&](mlir::Operation *op) {
             
         std::string fullName = op->getName().getStringRef().str();
@@ -187,7 +171,7 @@ DAG* buildDAGFromInstructions(mlir::func::FuncOp func) {
             operand.printAsOperand(rso, flags);
             if (auto blockArg = operand.dyn_cast<mlir::BlockArgument>()) {
                 operandStrs.push_back(temp);
-            } else if (auto defOp = operand.getDefiningOp()) {
+            } else if (operand.getDefiningOp()) {
                 operandStrs.push_back(temp);
             } else {
                 operandStrs.push_back("unknown");
@@ -195,7 +179,7 @@ DAG* buildDAGFromInstructions(mlir::func::FuncOp func) {
         }
 
         // Create a node for the operation
-        DAGNode *node = dag->addNode(op, resultStr, operationStr, operandStrs, operandType);
+        DAGNode *node = dag->addNode(op, resultStr, operationStr, operandStrs, operandType, id);
 
         // Create edges based on operand dependencies
         for (auto operand : op->getOperands()) {
@@ -207,6 +191,8 @@ DAG* buildDAGFromInstructions(mlir::func::FuncOp func) {
             }
     
         }
+
+        id++;
 
         return mlir::WalkResult::advance();
     });

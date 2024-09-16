@@ -25,15 +25,17 @@
 #include <unordered_map>
 #include <vector>
 #include <iostream>
+#include <set>
 
 class DAGNode {
 public:
+    int id;
     mlir::Operation *inst;
     std::string result;
     std::string operation;
     std::vector<std::string> operands;
     std::string operandType;
-    std::vector<DAGNode*> dependencies; // List of nodes that this node depends on
+    std::set<DAGNode*> dependencies; // List of nodes that this node depends on
 
     DAGNode(mlir::Operation *inst, const std::string &res, const std::string &op, 
             const std::vector<std::string> &ops, const std::string &type);
@@ -53,7 +55,7 @@ public:
     std::string returnType;
 
     DAGNode* addNode(mlir::Operation *inst, const std::string &res, const std::string &op,
-                     const std::vector<std::string> &ops, const std::string &type);
+                     const std::vector<std::string> &ops, const std::string &type, int id);
 
     void addEdge(DAGNode *from, DAGNode *to);
     void print() const;

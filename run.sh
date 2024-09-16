@@ -7,4 +7,5 @@ cd build && cmake ..
 make
 ./ir
 ./main
+./example
 cd "$original_dir"
