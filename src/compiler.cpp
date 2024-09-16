@@ -20,6 +20,7 @@
 
 #include "frontend/dag.hpp"
 #include "frontend/frontend.hpp"
+#include "backend/backend.hpp"
 
 int main(int argc, char** argv) {
     // Create an MLIR context
@@ -53,14 +54,10 @@ int main(int argc, char** argv) {
         // Build the DAG for the function
         DAG* dag = buildDAGFromInstructions(func);
 
-        // Convert DAG
+        
         dag->convert();
-
-        // Print the DAG
         dag->print();
-
-
-        // dag->generateBackend(context);
+        generateCPP(*dag);
 
         // Clean up
         delete dag;

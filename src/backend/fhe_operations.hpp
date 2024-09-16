@@ -32,18 +32,18 @@ namespace CKKS {
     public:
         CKKS_scheme(int multDepth = 1, int scaleModSize = 50, int batchSize = 1);
 
-        FHEdouble* FHEadd(const FHEdouble* a, const FHEdouble* b);
-        FHEdouble* FHEsub(const FHEdouble* a, const FHEdouble* b);
-        FHEdouble* FHEmul(const FHEdouble* a, const FHEdouble* b);
-        FHEdouble* FHEdiv(const FHEdouble* a, const FHEdouble* b);
+        FHEdouble* FHEaddf(const FHEdouble* a, const FHEdouble* b);
+        FHEdouble* FHEsubf(const FHEdouble* a, const FHEdouble* b);
+        FHEdouble* FHEmulf(const FHEdouble* a, const FHEdouble* b);
+        FHEdouble* FHEdivf(const FHEdouble* a, const FHEdouble* b);
 
         // Arithmetic Operations with Plaintext
-        FHEdouble* FHEaddP(const FHEdouble* a, double b);
-        FHEdouble* FHEsubP(const FHEdouble* a, double b);
-        FHEdouble* FHEsubP(double b, const FHEdouble* a);
-        FHEdouble* FHEmulP(const FHEdouble* a, double b);
-        FHEdouble* FHEdivP(const FHEdouble* a, double b);
-        FHEdouble* FHEdivP(double b, const FHEdouble* a);
+        FHEdouble* FHEaddfP(const FHEdouble* a, double b);
+        FHEdouble* FHEsubfP(const FHEdouble* a, double b);
+        FHEdouble* FHEsubfP(double b, const FHEdouble* a);
+        FHEdouble* FHEmulfP(const FHEdouble* a, double b);
+        FHEdouble* FHEdivfP(const FHEdouble* a, double b);
+        FHEdouble* FHEdivfP(double b, const FHEdouble* a);
 
         // Use the Plaintext class from fhe_types.hpp
         FHEplain* FHEencode(const std::vector<double>& a);

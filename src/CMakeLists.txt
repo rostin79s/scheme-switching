@@ -71,6 +71,7 @@ add_llvm_executable(compiler
   compiler.cpp
   frontend/frontend.cpp
   frontend/dag.cpp
+  backend/backend.cpp
 )
 
 llvm_update_compile_flags(compiler)

@@ -1,10 +1,15 @@
+// #include <cstdio>
+
 double rostin(double a, double b){
     double temp = a+b;
     double temp2 = temp + a;
-    return temp2;
+    double temp3 = temp2 - b;
+    double temp4 = temp3 * temp3;
+    return temp4;
 }
 
 int main(){
-    rostin(2,3);
+    int res = rostin(2,3);
+    // printf("%d",res);
     return 0;
 }

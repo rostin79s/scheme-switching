@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/rostin/scheme-switching/src/ir.cpp" "CMakeFiles/ir.dir/src/ir.cpp.o" "gcc" "CMakeFiles/ir.dir/src/ir.cpp.o.d"
+  "/home/rostin/scheme-switching/ir.cpp" "CMakeFiles/ir.dir/ir.cpp.o" "gcc" "CMakeFiles/ir.dir/ir.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

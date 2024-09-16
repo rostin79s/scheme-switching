@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/ir.dir/src/ir.cpp.o"
-  "CMakeFiles/ir.dir/src/ir.cpp.o.d"
+  "CMakeFiles/ir.dir/ir.cpp.o"
+  "CMakeFiles/ir.dir/ir.cpp.o.d"
   "ir"
   "ir.pdb"
 )

@@ -47,54 +47,54 @@ FHEplain* CKKS_scheme::FHEdecrypt(const FHEdouble* a){
 }
 
 // Arithmetic Operations for FHEdouble
-FHEdouble* CKKS_scheme::FHEadd(const FHEdouble* a, const FHEdouble* b) {
+FHEdouble* CKKS_scheme::FHEaddf(const FHEdouble* a, const FHEdouble* b) {
     auto result = context->cc->EvalAdd(a->getCiphertext(), b->getCiphertext());
     return new FHEdouble(result);
 }
 
-FHEdouble* CKKS_scheme::FHEsub(const FHEdouble* a, const FHEdouble* b) {
+FHEdouble* CKKS_scheme::FHEsubf(const FHEdouble* a, const FHEdouble* b) {
     auto result = context->cc->EvalSub(a->getCiphertext(), b->getCiphertext());
     return new FHEdouble(result);
 }
 
-FHEdouble* CKKS_scheme::FHEmul(const FHEdouble* a, const FHEdouble* b) {
+FHEdouble* CKKS_scheme::FHEmulf(const FHEdouble* a, const FHEdouble* b) {
     auto result = context->cc->EvalMult(a->getCiphertext(), b->getCiphertext());
     return new FHEdouble(result);
 }
 
-FHEdouble* CKKS_scheme::FHEdiv(const FHEdouble* a, const FHEdouble* b) {
+FHEdouble* CKKS_scheme::FHEdivf(const FHEdouble* a, const FHEdouble* b) {
     auto temp = context->cc->EvalDivide(b->getCiphertext(), 1.0, 4294967295.0, 10);
     auto result = context->cc->EvalMult((new FHEdouble(temp))->getCiphertext(),a->getCiphertext());
     return new FHEdouble(result);
 }
 
 // Arithmetic Operations with Plaintext
-FHEdouble* CKKS_scheme::FHEaddP(const FHEdouble* a, double b) {
+FHEdouble* CKKS_scheme::FHEaddfP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalAdd(a->getCiphertext(), b);
     return new FHEdouble(result);
 }
 
-FHEdouble* CKKS_scheme::FHEsubP(const FHEdouble* a, double b) {
+FHEdouble* CKKS_scheme::FHEsubfP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalSub(a->getCiphertext(), b);
     return new FHEdouble(result);
 }
 
-FHEdouble* CKKS_scheme::FHEsubP(double b, const FHEdouble* a) {
+FHEdouble* CKKS_scheme::FHEsubfP(double b, const FHEdouble* a) {
     auto result = context->cc->EvalSub(b, a->getCiphertext());
     return new FHEdouble(result);
 }
 
-FHEdouble* CKKS_scheme::FHEmulP(const FHEdouble* a, double b) {
+FHEdouble* CKKS_scheme::FHEmulfP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalMult(a->getCiphertext(), b);
     return new FHEdouble(result);
 }
 
-FHEdouble* CKKS_scheme::FHEdivP(const FHEdouble* a, double b) {
+FHEdouble* CKKS_scheme::FHEdivfP(const FHEdouble* a, double b) {
     auto result = context->cc->EvalDivide(a->getCiphertext(), 1.0, 4294967295.0, 10);
     return new FHEdouble(result);
 }
 
-FHEdouble* CKKS_scheme::FHEdivP(double b, const FHEdouble* a) {
+FHEdouble* CKKS_scheme::FHEdivfP(double b, const FHEdouble* a) {
     auto temp = context->cc->EvalDivide(a->getCiphertext(), 1.0, 4294967295.0, 10);
     auto result = context->cc->EvalMult((new FHEdouble(temp))->getCiphertext(),b);
     return new FHEdouble(result);
