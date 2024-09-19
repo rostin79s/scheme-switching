@@ -3,6 +3,9 @@
 
 #include "dag.hpp"
 
+using namespace mlir;
+using namespace llvm;
+
 std::unordered_map<std::string, std::string> getCiphertextArguments(mlir::func::FuncOp func);
 
 void naming(DAG* dag);

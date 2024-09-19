@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/home/rostin/scheme-switching/build",
+  "command": "/usr/bin/g++-12 -I/usr/local/include/openfhe -I/usr/local/include/openfhe/third-party/include -I/usr/local/include/openfhe/core -I/usr/local/include/openfhe/pke -I/usr/local/include/openfhe/binfhe  -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -g -std=gnu++17 -o CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o -c /home/rostin/scheme-switching/src/backend/ckks_operations.cpp",
+  "file": "/home/rostin/scheme-switching/src/backend/ckks_operations.cpp",
+  "output": "CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o"
+},
+{
+  "directory": "/home/rostin/scheme-switching/build",
+  "command": "/usr/bin/g++-12 -I/usr/local/include/openfhe -I/usr/local/include/openfhe/third-party/include -I/usr/local/include/openfhe/core -I/usr/local/include/openfhe/pke -I/usr/local/include/openfhe/binfhe  -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -g -std=gnu++17 -o CMakeFiles/ir.dir/ir.cpp.o -c /home/rostin/scheme-switching/ir.cpp",
+  "file": "/home/rostin/scheme-switching/ir.cpp",
+  "output": "CMakeFiles/ir.dir/ir.cpp.o"
+},
+{
+  "directory": "/home/rostin/scheme-switching/build",
+  "command": "/usr/bin/g++-12 -I/usr/local/include/openfhe -I/usr/local/include/openfhe/third-party/include -I/usr/local/include/openfhe/core -I/usr/local/include/openfhe/pke -I/usr/local/include/openfhe/binfhe  -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -g -std=gnu++17 -o CMakeFiles/main.dir/main.cpp.o -c /home/rostin/scheme-switching/main.cpp",
+  "file": "/home/rostin/scheme-switching/main.cpp",
+  "output": "CMakeFiles/main.dir/main.cpp.o"
+},
+{
+  "directory": "/home/rostin/scheme-switching/build",
+  "command": "/usr/bin/g++-12 -I/usr/local/include/openfhe -I/usr/local/include/openfhe/third-party/include -I/usr/local/include/openfhe/core -I/usr/local/include/openfhe/pke -I/usr/local/include/openfhe/binfhe  -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -g -std=gnu++17 -o CMakeFiles/example.dir/example.cpp.o -c /home/rostin/scheme-switching/example.cpp",
+  "file": "/home/rostin/scheme-switching/example.cpp",
+  "output": "CMakeFiles/example.dir/example.cpp.o"
+}
+]

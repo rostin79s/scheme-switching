@@ -8,9 +8,3 @@ double rostin(double a, double b){
     double temp5 = b * temp4;
     return temp5;
 }
-
-int main(){
-    int res = rostin(2,3);
-    // printf("%d",res);
-    return 0;
-}
