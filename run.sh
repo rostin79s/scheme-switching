@@ -6,6 +6,6 @@ g++ test.cpp -o test
 cd build && cmake ..
 make
 ./ir
-./main
+# ./main
 ./example
 cd "$original_dir"

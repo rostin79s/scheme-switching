@@ -193,18 +193,19 @@ void test(){
     // By default, freshly encrypted ciphertexts are bootstrapped.
     // If you wish to get a fresh encryption without bootstrapping, write
     // auto   ct1 = cc.Encrypt(sk, 1, FRESH);
-    int p = 1 << 20;
+    int p = 1 << 27;
     int q = 1 << 30;
-    auto ct1 = cc.Encrypt(sk, 345740,FRESH,p,q);
+    auto ct1 = cc.Encrypt(sk, 1000000,FRESH,p,q);
     auto ct2 = cc.Encrypt(sk, 58623,FRESH,p,q);
     
 
     // cc.GetLWEScheme()->EvalMultConstEq(ct1,23);
 
     LWEPlaintext result;
-    cc.GetLWEScheme()->EvalAddEq(ct1,ct2);
+    // cc.GetLWEScheme()->EvalAddEq(ct1,ct2);
+    cc.GetLWEScheme()->EvalMultConstEq(ct1,16);
     cc.Decrypt(sk,ct1,&result,p);
-    std::cout<<"addition: "<<result<<"\n";
+    std::cout<<"result: "<<result<<"\n";
 
 }
 

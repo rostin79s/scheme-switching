@@ -37,7 +37,7 @@ void printHeaders(std::ofstream& IR) {
     IR << "#include <vector>\n";
     IR << "#include <iostream>\n\n";
     IR << "using namespace CKKS;\n";
-    IR << "using namespace TFHE;\n\n";
+    IR << "using namespace CGGI;\n\n";
 }
 
 // Function to print the user-defined function

@@ -1,153 +1,128 @@
-//==================================================================================
-// BSD 2-Clause License
-//
-// Copyright (c) 2014-2022, NJIT, Duality Technologies Inc. and other contributors
-//
-// All rights reserved.
-//
-// Author TPOC: contact@openfhe.org
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice,
-//    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//==================================================================================
-
-/*
-
-Example for CKKS bootstrapping with full packing
-
-*/
-
-#define PROFILE
-
 #include "openfhe.h"
+#include "scheme/ckksrns/ckksrns-schemeswitching.h"
 
 using namespace lbcrypto;
 
-void SimpleBootstrapExample();
+void rostin();
+
+void ComparisonViaSchemeSwitching();
 
 int main(int argc, char* argv[]) {
-    SimpleBootstrapExample();
+    // rostin();
+    ComparisonViaSchemeSwitching();
 }
 
-void SimpleBootstrapExample() {
+void ComparisonViaSchemeSwitching() {
+    std::cout << "\n-----ComparisonViaSchemeSwitching-----\n" << std::endl;
+    std::cout << "Output precision is only wrt the operations in CKKS after switching back.\n" << std::endl;
+
+    // Step 1: Setup CryptoContext for CKKS
+    ScalingTechnique scTech = FLEXIBLEAUTO;
+    uint32_t multDepth      = 17;
+    if (scTech == FLEXIBLEAUTOEXT)
+        multDepth += 1;
+
+    uint32_t scaleModSize = 50;
+    uint32_t firstModSize = 60;
+    uint32_t ringDim      = 8192;
+    SecurityLevel sl      = HEStd_NotSet;
+    BINFHE_PARAMSET slBin = TOY;
+    uint32_t logQ_ccLWE   = 25;
+    uint32_t slots        = 16;  // sparsely-packed
+    uint32_t batchSize    = slots;
+
     CCParams<CryptoContextCKKSRNS> parameters;
-    // A. Specify main parameters
-    /*  A1) Secret key distribution
-    * The secret key distribution for CKKS should either be SPARSE_TERNARY or UNIFORM_TERNARY.
-    * The SPARSE_TERNARY distribution was used in the original CKKS paper,
-    * but in this example, we use UNIFORM_TERNARY because this is included in the homomorphic
-    * encryption standard.
-    */
-    SecretKeyDist secretKeyDist = UNIFORM_TERNARY;
-    parameters.SetSecretKeyDist(secretKeyDist);
+    parameters.SetMultiplicativeDepth(multDepth);
+    parameters.SetScalingModSize(scaleModSize);
+    parameters.SetFirstModSize(firstModSize);
+    parameters.SetScalingTechnique(scTech);
+    parameters.SetSecurityLevel(sl);
+    parameters.SetRingDim(ringDim);
+    parameters.SetBatchSize(batchSize);
+    parameters.SetSecretKeyDist(UNIFORM_TERNARY);
+    parameters.SetKeySwitchTechnique(HYBRID);
+    parameters.SetNumLargeDigits(3);
 
-    /*  A2) Desired security level based on FHE standards.
-    * In this example, we use the "NotSet" option, so the example can run more quickly with
-    * a smaller ring dimension. Note that this should be used only in
-    * non-production environments, or by experts who understand the security
-    * implications of their choices. In production-like environments, we recommend using
-    * HEStd_128_classic, HEStd_192_classic, or HEStd_256_classic for 128-bit, 192-bit,
-    * or 256-bit security, respectively. If you choose one of these as your security level,
-    * you do not need to set the ring dimension.
-    */
-    parameters.SetSecurityLevel(HEStd_NotSet);
-    parameters.SetRingDim(1 << 12);
+    CryptoContext<DCRTPoly> cc = GenCryptoContext(parameters);
 
-    /*  A3) Scaling parameters.
-    * By default, we set the modulus sizes and rescaling technique to the following values
-    * to obtain a good precision and performance tradeoff. We recommend keeping the parameters
-    * below unless you are an FHE expert.
-    */
-#if NATIVEINT == 128 && !defined(__EMSCRIPTEN__)
-    ScalingTechnique rescaleTech = FIXEDAUTO;
-    usint dcrtBits               = 78;
-    usint firstMod               = 89;
-#else
-    ScalingTechnique rescaleTech = FLEXIBLEAUTO;
-    usint dcrtBits               = 59;
-    usint firstMod               = 60;
-#endif
+    // Enable the features that you wish to use
+    cc->Enable(PKE);
+    cc->Enable(KEYSWITCH);
+    cc->Enable(LEVELEDSHE);
+    cc->Enable(ADVANCEDSHE);
+    cc->Enable(SCHEMESWITCH);
 
-    parameters.SetScalingModSize(dcrtBits);
-    parameters.SetScalingTechnique(rescaleTech);
-    parameters.SetFirstModSize(firstMod);
-
-    /*  A4) Multiplicative depth.
-    * The goal of bootstrapping is to increase the number of available levels we have, or in other words,
-    * to dynamically increase the multiplicative depth. However, the bootstrapping procedure itself
-    * needs to consume a few levels to run. We compute the number of bootstrapping levels required
-    * using GetBootstrapDepth, and add it to levelsAvailableAfterBootstrap to set our initial multiplicative
-    * depth. We recommend using the input parameters below to get started.
-    */
-    std::vector<uint32_t> levelBudget = {4, 4};
-
-    // Note that the actual number of levels avalailable after bootstrapping before next bootstrapping 
-    // will be levelsAvailableAfterBootstrap - 1 because an additional level
-    // is used for scaling the ciphertext before next bootstrapping (in 64-bit CKKS bootstrapping)
-    uint32_t levelsAvailableAfterBootstrap = 10;
-    usint depth = levelsAvailableAfterBootstrap + FHECKKSRNS::GetBootstrapDepth(levelBudget, secretKeyDist);
-    parameters.SetMultiplicativeDepth(depth);
-
-    CryptoContext<DCRTPoly> cryptoContext = GenCryptoContext(parameters);
-
-    cryptoContext->Enable(PKE);
-    cryptoContext->Enable(KEYSWITCH);
-    cryptoContext->Enable(LEVELEDSHE);
-    cryptoContext->Enable(ADVANCEDSHE);
-    cryptoContext->Enable(FHE);
-
-    usint ringDim = cryptoContext->GetRingDimension();
-    // This is the maximum number of slots that can be used for full packing.
-    usint numSlots = ringDim / 2;
-    std::cout << "CKKS scheme is using ring dimension " << ringDim << std::endl << std::endl;
-
-    cryptoContext->EvalBootstrapSetup(levelBudget);
-
-    auto keyPair = cryptoContext->KeyGen();
-    cryptoContext->EvalMultKeyGen(keyPair.secretKey);
-    cryptoContext->EvalBootstrapKeyGen(keyPair.secretKey, numSlots);
-
-    std::vector<double> x = {0.25, 0.5, 0.75, 1.0, 2.0, 3.0, 4.0, 5.0};
-    size_t encodedLength  = x.size();
-
-    // We start with a depleted ciphertext that has used up all of its levels.
-    Plaintext ptxt = cryptoContext->MakeCKKSPackedPlaintext(x, 1, depth - 1);
-
-    ptxt->SetLength(encodedLength);
-    std::cout << "Input: " << ptxt << std::endl;
-
-    Ciphertext<DCRTPoly> ciph = cryptoContext->Encrypt(keyPair.publicKey, ptxt);
-
-    std::cout << "Initial number of levels remaining: " << depth - ciph->GetLevel() << std::endl;
-
-    // Perform the bootstrapping operation. The goal is to increase the number of levels remaining
-    // for HE computation.
-    auto ciphertextAfter = cryptoContext->EvalBootstrap(ciph);
-
-    std::cout << "Number of levels remaining after bootstrapping: "
-              << depth - ciphertextAfter->GetLevel() - (ciphertextAfter->GetNoiseScaleDeg() - 1) << std::endl
+    std::cout << "CKKS scheme is using ring dimension " << cc->GetRingDimension();
+    std::cout << ", number of slots " << slots << ", and supports a multiplicative depth of " << multDepth << std::endl
               << std::endl;
 
+    // Generate encryption keys
+    auto keys = cc->KeyGen();
+
+    // Step 2: Prepare the FHEW cryptocontext and keys for FHEW and scheme switching
+    SchSwchParams params;
+    params.SetSecurityLevelCKKS(sl);
+    params.SetSecurityLevelFHEW(slBin);
+    params.SetCtxtModSizeFHEWLargePrec(logQ_ccLWE);
+    params.SetNumSlotsCKKS(slots);
+    params.SetNumValues(slots);
+    auto privateKeyFHEW = cc->EvalSchemeSwitchingSetup(params);
+    auto ccLWE          = cc->GetBinCCForSchemeSwitch();
+
+    ccLWE->BTKeyGen(privateKeyFHEW);
+    cc->EvalSchemeSwitchingKeyGen(keys, privateKeyFHEW);
+
+    std::cout << "FHEW scheme is using lattice parameter " << ccLWE->GetParams()->GetLWEParams()->Getn();
+    std::cout << ", logQ " << logQ_ccLWE;
+    std::cout << ", and modulus q " << ccLWE->GetParams()->GetLWEParams()->Getq() << std::endl << std::endl;
+
+    // Set the scaling factor to be able to decrypt; the LWE mod switch is performed on the ciphertext at the last level
+    // auto pLWE1           = ccLWE->GetMaxPlaintextSpace().ConvertToInt();  // Small precision
+    auto modulus_LWE     = 1 << logQ_ccLWE;
+    auto beta            = ccLWE->GetBeta().ConvertToInt();
+    auto pLWE2           = modulus_LWE / (2 * beta);  // Large precision
+    double scaleSignFHEW = 1.0;
+    cc->EvalCompareSwitchPrecompute(pLWE2, scaleSignFHEW);
+
+    std::cout << "plwe1: " << ccLWE->GetMaxPlaintextSpace().ConvertToInt() << std::endl;
+
+    // Step 3: Encoding and encryption of inputs
+    // Inputs
+    std::vector<double> x1 = {0.0, 6, 2.0, 3.0, 4.0, 5.5, 6.0, 7, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0};
+    std::vector<double> x2(slots, 6);
+
+    // Encoding as plaintexts
+    Plaintext ptxt1 = cc->MakeCKKSPackedPlaintext(x1, 1, 0, nullptr, slots);
+    Plaintext ptxt2 = cc->MakeCKKSPackedPlaintext(x2, 1, 0, nullptr, slots);
+
+    // Encrypt the encoded vectors
+    auto c1 = cc->Encrypt(keys.publicKey, ptxt1);
+    auto c2 = cc->Encrypt(keys.publicKey, ptxt2);
+
+    // Compute the difference to compare to zero
+    auto cDiff = cc->EvalSub(c1, c2);
+
+    auto LWECiphertexts = cc->EvalCKKStoFHEW(cDiff, slots);
+
+    auto ckksctxts = cc->EvalFHEWtoCKKS(LWECiphertexts, batchSize, batchSize);
+
+    // Decrypt the result
     Plaintext result;
-    cryptoContext->Decrypt(keyPair.secretKey, ciphertextAfter, &result);
-    result->SetLength(encodedLength);
-    std::cout << "Output after bootstrapping \n\t" << result << std::endl;
+    cc->Decrypt(keys.secretKey, ckksctxts, &result);
+    std::cout << "Result: " << result << std::endl;
+
+    size_t sag = cc->GetRingDimension() / 2;
+    std::cout << "Batch size: " << sag << std::endl;
+
+    LWEPlaintext plainLWE;
+    
+    std::vector<LWECiphertext> LWESign(LWECiphertexts.size());
+    for (uint32_t i = 0; i < LWECiphertexts.size(); ++i) {
+        LWESign[i] = ccLWE->EvalSign(LWECiphertexts[i]);
+        ccLWE->Decrypt(privateKeyFHEW, LWESign[i], &plainLWE, 2);
+        std::cout << plainLWE << " ";
+    }
+    std::cout << "\n";
+
 }
+   

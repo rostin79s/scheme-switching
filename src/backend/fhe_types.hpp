@@ -27,26 +27,38 @@ private:
 class FHEContext {
 public:
     lbcrypto::CryptoContext<lbcrypto::DCRTPoly> cc;
+    std::shared_ptr<lbcrypto::BinFHEContext> ccLWE;
 };
 
 class FHEKeyPair {
 public:
-    lbcrypto::KeyPair<lbcrypto::DCRTPoly> keyPair;
+    lbcrypto::KeyPair<lbcrypto::DCRTPoly> keys;
+    lbcrypto::LWEPrivateKey privateKeyFHEW;
 };
 
 } 
 
-namespace TFHE {
+namespace CGGI {
 
 class FHEi32 {
 public:
-    FHEi32(const lbcrypto::LWECiphertext& cipher) : ciphertext(cipher) {}
-    lbcrypto::LWECiphertext getCiphertext() const { return ciphertext; }
+    FHEi32(lbcrypto::LWECiphertext& cipher) : ciphertext(cipher) {}
+    lbcrypto::LWECiphertext& getCiphertext() { return ciphertext; }
 
 private:
     lbcrypto::LWECiphertext ciphertext;
 };
 
-} // namespace TFHE
+class FHEContext {
+public:
+    std::shared_ptr<lbcrypto::BinFHEContext> ccLWE;
+};
+
+class FHEKeyPair {
+public:
+    lbcrypto::LWEPrivateKey privateKeyFHEW;
+};
+
+} // namespace CGGI
 
 #endif // FHE_TYPES_HPP

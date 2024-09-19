@@ -4,7 +4,7 @@
 #include <iostream>
 
 using namespace CKKS;
-using namespace TFHE;
+using namespace CGGI;
 
 FHEdouble* rostin(CKKS_scheme& ck, FHEdouble* arg0, FHEdouble* arg1) {
     FHEdouble* var0 = ck.FHEaddf(arg0, arg1);
@@ -17,9 +17,9 @@ FHEdouble* rostin(CKKS_scheme& ck, FHEdouble* arg0, FHEdouble* arg1) {
 
 int main() {
 	CKKS_scheme ck(2,50,1);
-	std::vector<double> input1 = {0};
+	std::vector<double> input1 = {2};
 	FHEdouble* arg0 = ck.FHEencrypt(ck.FHEencode(input1));
-	std::vector<double> input2 = {0};
+	std::vector<double> input2 = {3};
 	FHEdouble* arg1 = ck.FHEencrypt(ck.FHEencode(input2));
     FHEdouble* result = rostin(ck, arg0, arg1);
     FHEplain* res = ck.FHEdecrypt(result);
