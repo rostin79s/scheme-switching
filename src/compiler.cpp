@@ -30,53 +30,70 @@
 
 using namespace mlir;
 
+mlir::Type convertType(mlir::Type originalType, MLIRContext *context) {
+    if (originalType.isF64()) {
+        return emitc::OpaqueType::get(context, "FHEdouble*");
+    } else if (originalType.isInteger(32)) {
+        return emitc::OpaqueType::get(context, "FHEi32*");
+    }
+    // Return the original type if no conversion is needed
+    return originalType;
+}
+
 namespace {
 
   // General pattern for replacing any arithmetic operation with `emitc.call`
-  template <typename ArithOp>
-  struct ReplaceArithWithEmitCCallPattern : public OpRewritePattern<ArithOp> {
+template <typename ArithOp>
+struct ReplaceArithWithEmitCCallPattern : public OpRewritePattern<ArithOp> {
     using OpRewritePattern<ArithOp>::OpRewritePattern;
 
     LogicalResult matchAndRewrite(ArithOp op, PatternRewriter &rewriter) const override {
-      // Map the arithmetic operation type to the corresponding `emitc.call` callee name
-      StringRef calleeName;
-      if (std::is_same<ArithOp, arith::AddFOp>::value) {
-        calleeName = "FHEaddf";
-      } else if (std::is_same<ArithOp, arith::MulFOp>::value) {
-        calleeName = "FHEmulf";
-      } else if (std::is_same<ArithOp, arith::SubFOp>::value) {
-        calleeName = "FHEsubf";
-      } else if (std::is_same<ArithOp, arith::DivFOp>::value) {
-        calleeName = "FHEdivf";
-      } else {
-        return failure();  // Unsupported operation type
-      }
+        // Map the arithmetic operation type to the corresponding `emitc.call` callee name
+        StringRef calleeName;
+        if (std::is_same<ArithOp, arith::AddFOp>::value) {
+            calleeName = "FHEaddf";
+        } else if (std::is_same<ArithOp, arith::MulFOp>::value) {
+            calleeName = "FHEmulf";
+        } else if (std::is_same<ArithOp, arith::SubFOp>::value) {
+            calleeName = "FHEsubf";
+        } else if (std::is_same<ArithOp, arith::DivFOp>::value) {
+            calleeName = "FHEdivf";
+        } else {
+            return failure();  // Unsupported operation type
+        }
 
-      // Get the operands
-      mlir::Value lhs = op.getOperand(0);
-      mlir::Value rhs = op.getOperand(1);
-      ValueRange operands = {lhs, rhs};
+        // Get the operands
+        mlir::Value lhs = op.getOperand(0);
+        mlir::Value rhs = op.getOperand(1);
 
-      // Create empty ArrayAttr for args and template_args if not needed
-      ArrayAttr argsAttr = rewriter.getArrayAttr({});
-      ArrayAttr templateArgsAttr = rewriter.getArrayAttr({});
+        mlir::Type newType = convertType(op.getType(),op.getContext());
 
-      // Create the emitc.call operation
-      auto callOp = rewriter.create<emitc::CallOp>(
-          op.getLoc(),
-          op.getType(),
-          calleeName,          // Callee name as StringRef
-          argsAttr,            // args as ArrayAttr
-          templateArgsAttr,    // template_args as ArrayAttr
-          operands             // operands as ValueRange
-      );
+        ValueRange operands = {lhs, rhs};
 
-      // Replace the original operation with the `emitc.call`
-      rewriter.replaceOp(op, callOp.getResult(0));
+        // Create empty ArrayAttr for args and template_args if not needed
+        ArrayAttr argsAttr = rewriter.getArrayAttr({});
+        ArrayAttr templateArgsAttr = rewriter.getArrayAttr({});
 
-      return success();
+        // Create the emitc.call operation
+        auto callOp = rewriter.create<emitc::CallOp>(
+            op.getLoc(),
+            newType, // Adjust return type as needed
+            calleeName,          // Callee name as StringRef
+            argsAttr,            // args as ArrayAttr
+            templateArgsAttr,    // template_args as ArrayAttr
+            operands             // operands as ValueRange
+        );
+
+        outs()<<"callOp: "<<callOp<<"\n";
+
+        // Replace the original operation with the `emitc.call`
+        rewriter.replaceOp(op, callOp.getResult(0));
+
+        return success();
     }
-  };
+};
+
+  
 
   // Define a pass to apply the patterns for all arithmetic operations.
   struct ReplaceOpsWithEmitCCallPass : public PassWrapper<ReplaceOpsWithEmitCCallPass, OperationPass<ModuleOp>> {
@@ -90,19 +107,19 @@ namespace {
         module->removeAttr("polygeist.target-features");
         module->removeAttr("polygeist.tune-cpu");
 
-      // Set up a pattern rewriter.
-      RewritePatternSet patterns(&getContext());
+        // Set up a pattern rewriter.
+        RewritePatternSet patterns(&getContext());
 
-      // Add patterns for arithmetic operations
-      patterns.add<ReplaceArithWithEmitCCallPattern<arith::AddFOp>>(&getContext());
-      patterns.add<ReplaceArithWithEmitCCallPattern<arith::MulFOp>>(&getContext());
-      patterns.add<ReplaceArithWithEmitCCallPattern<arith::SubFOp>>(&getContext());
-      patterns.add<ReplaceArithWithEmitCCallPattern<arith::DivFOp>>(&getContext());
+        // Add patterns for arithmetic operations
+        patterns.add<ReplaceArithWithEmitCCallPattern<arith::AddFOp>>(&getContext());
+        patterns.add<ReplaceArithWithEmitCCallPattern<arith::MulFOp>>(&getContext());
+        patterns.add<ReplaceArithWithEmitCCallPattern<arith::SubFOp>>(&getContext());
+        patterns.add<ReplaceArithWithEmitCCallPattern<arith::DivFOp>>(&getContext());
 
-      // Apply the patterns greedily.
-      if (failed(applyPatternsAndFoldGreedily(module, std::move(patterns)))) {
-        signalPassFailure();
-      }
+        // Apply the patterns greedily.
+        if (failed(applyPatternsAndFoldGreedily(module, std::move(patterns)))) {
+            signalPassFailure();
+        }
     }
   };
 } // end anonymous namespace
