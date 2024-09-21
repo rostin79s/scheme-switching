@@ -185,9 +185,9 @@ namespace {
 
         type_converter.addConversion([&](mlir::Type t) {
             if (t.isF64())
-                return std::optional<mlir::Type>(emitc::OpaqueType::get(&getContext(), "FHEdouble*"));
+                return std::optional<mlir::Type>(emitc::OpaqueType::get(&getContext(), "FHEdouble"));
             else if (t.isInteger(32))
-                return std::optional<mlir::Type>(emitc::OpaqueType::get(&getContext(), "FHEint*"));
+                return std::optional<mlir::Type>(emitc::OpaqueType::get(&getContext(), "FHEint"));
             else
                 return std::optional<mlir::Type>(t);
         });
@@ -198,18 +198,18 @@ namespace {
                 auto old_type = vs.front().getType();
                 if (old_type.isF64())
                 {
-                    if (ot.getValue().str() == "FHEdouble*")
+                    if (ot.getValue().str() == "FHEdouble")
                         // return std::optional<mlir::Value>(builder.create<mlir::Value>(loc, ot, vs));
                         return std::optional<mlir::Value>(vs.front());
                 }
                 else if (old_type.isInteger(32))
                 {
-                    if (ot.getValue().str() == "FHEint*")
+                    if (ot.getValue().str() == "FHEint")
                         // return std::optional<mlir::Value>(builder.create<mlir::Value>(loc, ot, vs));
                         return std::optional<mlir::Value>(vs.front());
                 }
             }
-            return std::optional<mlir::Value>(std::nullopt); /* would instead like to signal NO other conversions can be tried */
+            return std::optional<mlir::Value>(std::nullopt);
         });
         type_converter.addArgumentMaterialization([&](OpBuilder &builder, mlir::Type t, ValueRange vs, Location loc) {
             if (auto ot = t.dyn_cast_or_null<emitc::OpaqueType>()){
@@ -217,19 +217,19 @@ namespace {
                 auto old_type = vs.front().getType();
 
                 if (old_type.isF64()) {
-                    if (ot.getValue().str() == "FHEdouble*") {
+                    if (ot.getValue().str() == "FHEdouble") {
                         // return std::optional<mlir::Value>(builder.create<mlir::Value>(loc, ot, vs));
                         return std::optional<mlir::Value>(vs.front());
                     }
                 }
                 else if (old_type.isInteger(32)) {
-                    if (ot.getValue().str() == "FHEint*") {
+                    if (ot.getValue().str() == "FHEint") {
                         // return std::optional<mlir::Value>(builder.create<mlir::Value>(loc, ot, vs));
                         return std::optional<mlir::Value>(vs.front());
                     }
                 }
             }
-            return std::optional<mlir::Value>(std::nullopt); /* would instead like to signal NO other conversions can be tried */
+            return std::optional<mlir::Value>(std::nullopt);
         });
 
         type_converter.addSourceMaterialization([&](OpBuilder &builder, mlir::Type t, ValueRange vs, Location loc) {
@@ -237,7 +237,7 @@ namespace {
                 assert(!vs.empty() && ++vs.begin() == vs.end() && "currently can only materialize single values");
                 auto old_type = vs.front().getType();
                 if (auto ot = old_type.dyn_cast_or_null<emitc::OpaqueType>())
-                    if (ot.getValue().str() == "FHEdouble*")
+                    if (ot.getValue().str() == "FHEdouble")
 
                         // return std::optional<mlir::Value>(builder.create<>(loc, ot, vs));
                         return std::optional<mlir::Value>(vs.front());
@@ -246,7 +246,7 @@ namespace {
                 assert(!vs.empty() && ++vs.begin() == vs.end() && "currently can only materialize single values");
                 auto old_type = vs.front().getType();
                 if (auto ot = old_type.dyn_cast_or_null<emitc::OpaqueType>())
-                    if (ot.getValue().str() == "FHEint*")
+                    if (ot.getValue().str() == "FHEint")
                         // return std::optional<mlir::Value>(builder.create<mlir::Value>(loc, ot, vs));
                         return std::optional<mlir::Value>(vs.front());
             }

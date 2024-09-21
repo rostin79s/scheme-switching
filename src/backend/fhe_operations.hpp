@@ -9,20 +9,20 @@ namespace CGGI {
 
     class CGGI_scheme {
     public:
-        FHEi32* FHEaddi( FHEi32* a, FHEi32* b);
-        FHEi32* FHEsubi(FHEi32* a, FHEi32* b);
+        FHEi32 FHEaddi( FHEi32 a, FHEi32 b);
+        FHEi32 FHEsubi(FHEi32 a, FHEi32 b);
 
         // Arithmetic Operations with Plaintext
-        FHEi32* FHEaddiP(FHEi32* a, int b);
-        FHEi32* FHEsubiP(FHEi32* a, int b);
-        FHEi32* FHEsubiP(int b, FHEi32* a);
-        FHEi32* FHEmuliP(FHEi32* a, int b);
+        FHEi32 FHEaddiP(FHEi32 a, int b);
+        FHEi32 FHEsubiP(FHEi32 a, int b);
+        FHEi32 FHEsubiP(int b, FHEi32 a);
+        FHEi32 FHEmuliP(FHEi32 a, int b);
 
         // Boolean Operations for FHEi32
-        FHEi32* FHEand(FHEi32* a, FHEi32* b);
-        FHEi32* FHEor(FHEi32* a, FHEi32* b);
-        FHEi32* FHEXor(FHEi32* a, FHEi32* b);
-        FHEi32* FHEnot(FHEi32* a);
+        FHEi32 FHEand(FHEi32 a, FHEi32 b);
+        FHEi32 FHEor(FHEi32 a, FHEi32 b);
+        FHEi32 FHEXor(FHEi32 a, FHEi32 b);
+        FHEi32 FHEnot(FHEi32 a);
 
     private:
         std::unique_ptr<FHEContext> context;   // Use unique_ptr for opaque pointer to the implementation
@@ -38,26 +38,26 @@ namespace CKKS {
     public:
         CKKS_scheme(int multDepth = 17, int scaleModSize = 50, int batchSize = 1);
 
-        std::vector<CGGI::FHEi32*> CKKStoCGGI(FHEdouble* a);
-        FHEdouble* CGGItoCKKS(std::vector<CGGI::FHEi32*> a);
+        std::vector<CGGI::FHEi32> CKKStoCGGI(FHEdouble a);
+        FHEdouble CGGItoCKKS(std::vector<CGGI::FHEi32> a);
 
-        FHEdouble* FHEaddf(const FHEdouble* a, const FHEdouble* b);
-        FHEdouble* FHEsubf(const FHEdouble* a, const FHEdouble* b);
-        FHEdouble* FHEmulf(const FHEdouble* a, const FHEdouble* b);
-        FHEdouble* FHEdivf(const FHEdouble* a, const FHEdouble* b);
+        FHEdouble FHEaddf(const FHEdouble a, const FHEdouble b);
+        FHEdouble FHEsubf(const FHEdouble a, const FHEdouble b);
+        FHEdouble FHEmulf(const FHEdouble a, const FHEdouble b);
+        FHEdouble FHEdivf(const FHEdouble a, const FHEdouble b);
 
         // Arithmetic Operations with Plaintext
-        FHEdouble* FHEaddfP(const FHEdouble* a, double b);
-        FHEdouble* FHEsubfP(const FHEdouble* a, double b);
-        FHEdouble* FHEsubfP(double b, const FHEdouble* a);
-        FHEdouble* FHEmulfP(const FHEdouble* a, double b);
-        FHEdouble* FHEdivfP(const FHEdouble* a, double b);
-        FHEdouble* FHEdivfP(double b, const FHEdouble* a);
+        FHEdouble FHEaddfP(const FHEdouble a, double b);
+        FHEdouble FHEsubfP(const FHEdouble a, double b);
+        FHEdouble FHEsubfP(double b, const FHEdouble a);
+        FHEdouble FHEmulfP(const FHEdouble a, double b);
+        FHEdouble FHEdivfP(const FHEdouble a, double b);
+        FHEdouble FHEdivfP(double b, const FHEdouble a);
 
         // Use the Plaintext class from fhe_types.hpp
-        FHEplain* FHEencode(const std::vector<double>& a);
-        FHEdouble* FHEencrypt(const CKKS::FHEplain* p);
-        FHEplain* FHEdecrypt(const FHEdouble* a);
+        FHEplain FHEencode(const std::vector<double>& a);
+        FHEdouble FHEencrypt(const CKKS::FHEplain p);
+        FHEplain FHEdecrypt(const FHEdouble a);
 
     private:
         int multDepth;
