@@ -144,6 +144,7 @@ namespace {
             }
             rewriter.finalizeRootUpdate(op);
 
+            op.setName(demangle(op.getName().str()));
             outs() << op << "\n";
             return success();
         }
@@ -178,8 +179,6 @@ namespace {
 
     struct ReplaceOpsWithEmitCCallPass : public PassWrapper<ReplaceOpsWithEmitCCallPass, OperationPass<ModuleOp>> {
         void runOnOperation() override {
-        // TODO: We still need to emit a pre-amble with an include statement
-        //  this should refer to some "magic file" that also sets up keys/etc and our custom evaluator wrapper for now
 
         auto type_converter = TypeConverter();
 
@@ -300,7 +299,7 @@ namespace {
         //     type_converter, patterns.getContext());
 
         patterns.add<
-            FunctionConversionPattern, EmitCReturnPattern>(
+            EmitCBasicPattern<arith::AddFOp>,FunctionConversionPattern, EmitCReturnPattern>(
             type_converter, patterns.getContext());
         if (mlir::failed(mlir::applyPartialConversion(getOperation(), target, std::move(patterns))))
             // outs() << getOperation() << "\n";
