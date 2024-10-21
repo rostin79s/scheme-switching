@@ -1,5 +1,9 @@
 // #include <cstdio>
 
 double rostin(double a, double b){
-    return a;
+    double c = a + b;
+    double d = c * b;
+    double x = d - a;
+    double y = x / 2;
+    return y;
 }
