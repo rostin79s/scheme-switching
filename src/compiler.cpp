@@ -79,7 +79,24 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
         // Iterate through the body of the function and replace operations.
         func.walk([&](Operation *op) {
-            // Example: Replace `arith.addf` with `emitc.call`.
+            outs() << "operation: " << *op << "\n";
+
+            if (auto arithOp = dyn_cast<arith::ConstantFloatOp>(op)){
+                auto value = arithOp.value();
+
+                // Create the new type (FHEdouble) in the appropriate context
+                auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+
+                // Create a new constant operation with the new type and the same value
+                auto newConstantOp = builder.create<arith::ConstantFloatOp>(arithOp.getLoc(),value,resultType);
+
+                // Replace all uses of the old operation with the new operation
+                arithOp.replaceAllUsesWith(newConstantOp->getResult(0));
+
+                // Erase the old operation
+                arithOp.erase();          
+            }
+
             if (auto arithOp = dyn_cast<arith::AddFOp>(op)) {
             builder.setInsertionPoint(arithOp);
 
@@ -177,6 +194,7 @@ int main(int argc, char **argv) {
     context.getOrLoadDialect<mlir::emitc::EmitCDialect>();
     context.getOrLoadDialect<mlir::arith::ArithDialect>();
     context.getOrLoadDialect<mlir::func::FuncDialect>();
+    context.getOrLoadDialect<mlir::scf::SCFDialect>();
 
     mlir::DialectRegistry registry;
     registry.insert<mlir::DLTIDialect>();  // Assuming DLTI dialect is available
@@ -184,6 +202,7 @@ int main(int argc, char **argv) {
     registry.insert<mlir::LLVM::LLVMDialect>();
     registry.insert<mlir::func::FuncDialect>();
     registry.insert<emitc::EmitCDialect>();
+    registry.insert<mlir::scf::SCFDialect>();
 
     // Attach the registry to the context
     context.appendDialectRegistry(registry);
