@@ -21,8 +21,10 @@
 
 
 
+#include <llvm/Support/raw_ostream.h>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include "frontend/dag.hpp"
 #include "frontend/frontend.hpp"
@@ -79,17 +81,27 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
         // Iterate through the body of the function and replace operations.
         func.walk([&](Operation *op) {
-            outs() << "operation: " << *op << "\n";
+            outs() << "\noperation: " << *op << "\n\n\n";
 
             if (auto arithOp = dyn_cast<arith::ConstantFloatOp>(op)){
+                builder.setInsertionPoint(arithOp);
                 auto value = arithOp.value();
-
-                // Create the new type (FHEdouble) in the appropriate context
+                double value2 = value.convertToDouble();
                 auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+                // auto floatAttr = builder.getF64FloatAttr(value2);
+                // auto arrayAttr = ArrayAttr::get(&getContext(), {floatAttr});
+
+                std::stringstream ss;
+                ss << value2;
+                auto opaqueAttr = emitc::OpaqueAttr::get(builder.getContext(),ss.str());
 
                 // Create a new constant operation with the new type and the same value
-                auto newConstantOp = builder.create<arith::ConstantFloatOp>(arithOp.getLoc(),value,resultType);
-
+                auto newConstantOp = builder.create<emitc::ConstantOp>(
+                    arithOp.getLoc(),resultType,opaqueAttr);
+                
+                // auto constOp = dyn_cast<arith::ConstantOp>(op);
+                outs() << "constant emitc: " << newConstantOp << "\n";
+                outs() << "arithop: " << arithOp << "\n";
                 // Replace all uses of the old operation with the new operation
                 arithOp.replaceAllUsesWith(newConstantOp->getResult(0));
 
@@ -103,6 +115,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
             // Create a new `emitc.call` operation.
             auto arg0 = arithOp.getOperand(0);
             auto arg1 = arithOp.getOperand(1);
+            outs() << "arg1: " << arg1 << '\n';
             auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
 
             auto newOp = builder.create<emitc::CallOp>(
