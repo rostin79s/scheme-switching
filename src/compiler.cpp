@@ -21,7 +21,9 @@
 
 
 
+#include <llvm/Support/Casting.h>
 #include <llvm/Support/raw_ostream.h>
+#include <mlir/Dialect/SCF/IR/SCF.h>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -83,29 +85,37 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
         func.walk([&](Operation *op) {
             outs() << "\noperation: " << *op << "\n\n\n";
 
+            auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+
+            if (auto forOp = dyn_cast<scf::ForOp>(op)){
+                builder.setInsertionPoint(forOp);
+                auto *newblock = forOp.getBody();
+                auto res = forOp->getResult(0);
+                res.setType(resultType);
+                for (auto it : llvm::enumerate(newblock->getArguments())) {
+                    outs() <<"for loop arg: " << it.value() << "  type: " << it.value().getType() << "\n";
+                    if (it.value().getType().isF64()) {
+                        
+                        it.value().setType(resultType);
+                    }
+                }
+            }
+
             if (auto arithOp = dyn_cast<arith::ConstantFloatOp>(op)){
+                outs()<<"float constant"<<"\n";
                 builder.setInsertionPoint(arithOp);
                 auto value = arithOp.value();
                 double value2 = value.convertToDouble();
-                auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
-                // auto floatAttr = builder.getF64FloatAttr(value2);
-                // auto arrayAttr = ArrayAttr::get(&getContext(), {floatAttr});
+                
 
                 std::stringstream ss;
                 ss << value2;
                 auto opaqueAttr = emitc::OpaqueAttr::get(builder.getContext(),ss.str());
 
-                // Create a new constant operation with the new type and the same value
                 auto newConstantOp = builder.create<emitc::ConstantOp>(
                     arithOp.getLoc(),resultType,opaqueAttr);
                 
-                // auto constOp = dyn_cast<arith::ConstantOp>(op);
-                outs() << "constant emitc: " << newConstantOp << "\n";
-                outs() << "arithop: " << arithOp << "\n";
-                // Replace all uses of the old operation with the new operation
                 arithOp.replaceAllUsesWith(newConstantOp->getResult(0));
-
-                // Erase the old operation
                 arithOp.erase();          
             }
 
@@ -116,7 +126,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
             auto arg0 = arithOp.getOperand(0);
             auto arg1 = arithOp.getOperand(1);
             outs() << "arg1: " << arg1 << '\n';
-            auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+            
 
             auto newOp = builder.create<emitc::CallOp>(
                 arithOp.getLoc(),
@@ -136,7 +146,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 // Create a new `emitc.call` operation.
                 auto arg0 = arithOp.getOperand(0);
                 auto arg1 = arithOp.getOperand(1);
-                auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+                
 
                 auto newOp = builder.create<emitc::CallOp>(
                     arithOp.getLoc(),
@@ -157,7 +167,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 // Create a new `emitc.call` operation.
                 auto arg0 = arithOp.getOperand(0);
                 auto arg1 = arithOp.getOperand(1);
-                auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+                
 
                 auto newOp = builder.create<emitc::CallOp>(
                     arithOp.getLoc(),
@@ -177,7 +187,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 // Create a new `emitc.call` operation.
                 auto arg0 = arithOp.getOperand(0);
                 auto arg1 = arithOp.getOperand(1);
-                auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+                
 
                 auto newOp = builder.create<emitc::CallOp>(
                     arithOp.getLoc(),

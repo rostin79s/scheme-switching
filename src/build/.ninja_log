@@ -1,10 +1,10 @@
 # ninja log v5
 1	11600	1729539048975880194	CMakeFiles/compiler.dir/frontend/dag.cpp.o	d78248c4691406f
 1	11471	1729539048846884981	CMakeFiles/compiler.dir/frontend/frontend.cpp.o	a9d809f584eb766d
-10037	10929	1729796784586162370	/home/rostin/scheme-switching/src/compiler	23994f7f086cea04
-3	10037	1729796783699158990	CMakeFiles/compiler.dir/compiler.cpp.o	d51d67cc570dedd1
-0	59	1729796811112263950	build.ninja	952d40cd108c56ee
+9960	10853	1729867193966214716	/home/rostin/scheme-switching/src/compiler	23994f7f086cea04
+2	9960	1729867193078210386	CMakeFiles/compiler.dir/compiler.cpp.o	d51d67cc570dedd1
+0	59	1729867288848677355	build.ninja	952d40cd108c56ee
 1	11801	1729539049176872748	CMakeFiles/compiler.dir/backend/backend.cpp.o	398842285438a70a
 1	8556	1726771586816778056	CMakeFiles/emitc-translate.dir/emitc-translate.cpp.o	8ad99d6a0d8969e9
-3	9984	1729796821120302517	CMakeFiles/compiler.dir/compiler.cpp.o	d51d67cc570dedd1
-9984	10878	1729796822008305945	/home/rostin/scheme-switching/src/compiler	23994f7f086cea04
+2	10020	1729867298878726255	CMakeFiles/compiler.dir/compiler.cpp.o	d51d67cc570dedd1
+10020	10904	1729867299759730550	/home/rostin/scheme-switching/src/compiler	23994f7f086cea04
