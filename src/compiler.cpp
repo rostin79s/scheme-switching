@@ -86,12 +86,60 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
             outs() << "\noperation: " << *op << "\n\n\n";
 
             auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+            
+            
+            if (auto cmpOp = dyn_cast<arith::CmpFOp>(op)){
+                builder.setInsertionPoint(cmpOp);
+                auto arg0 = cmpOp.getOperand(0);
+                auto arg1 = cmpOp.getOperand(1);
+                auto predicate = cmpOp.getPredicate();
+                auto s = stringifyCmpFPredicate(predicate);
 
-            if (auto forOp = dyn_cast<scf::ForOp>(op)){
+                outs() << "operation: " << *op << "\n\n\n";
+
+                outs() << "arg0: " << arg0 << '\n';
+                outs() << "arg1: " << arg1 << '\n';
+                outs() << "predicate: " << predicate << '\n';
+                auto newOp = builder.create<emitc::CallOp>(
+                    cmpOp.getLoc(),
+                    TypeRange(resultType),
+                    llvm::StringRef("FHE" + s.str() + "f"),
+                    ArrayAttr(),
+                    ArrayAttr(),
+                    mlir::ArrayRef<mlir::Value>{arg0, arg1});
+
+                cmpOp.replaceAllUsesWith(newOp.getResult(0));
+                cmpOp.erase();
+            }
+            
+            else if (auto selectOp = dyn_cast<arith::SelectOp>(op)){
+                builder.setInsertionPoint(selectOp);
+                auto arg0 = selectOp.getOperand(0);
+                auto arg1 = selectOp.getOperand(1);
+                auto arg2 = selectOp.getOperand(2);
+                auto newOp = builder.create<emitc::CallOp>(
+                    selectOp.getLoc(),
+                    TypeRange(resultType),
+                    llvm::StringRef("FHEselectf"),
+                    ArrayAttr(),
+                    ArrayAttr(),
+                    mlir::ArrayRef<mlir::Value>{arg0, arg1, arg2});
+
+                selectOp.replaceAllUsesWith(newOp.getResult(0));
+                selectOp.erase();
+                
+            }
+
+            else if (auto forOp = dyn_cast<scf::ForOp>(op)){
                 builder.setInsertionPoint(forOp);
                 auto *newblock = forOp.getBody();
-                auto res = forOp->getResult(0);
-                res.setType(resultType);
+                auto res = forOp.getResults();
+                for (auto it : llvm::enumerate(res)) {
+                    outs() <<"for loop res: " << it.value() << "  type: " << it.value().getType() << "\n";
+                    if (it.value().getType().isF64()) {
+                        it.value().setType(resultType);
+                    }
+                }
                 for (auto it : llvm::enumerate(newblock->getArguments())) {
                     outs() <<"for loop arg: " << it.value() << "  type: " << it.value().getType() << "\n";
                     if (it.value().getType().isF64()) {
@@ -101,7 +149,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 }
             }
 
-            if (auto arithOp = dyn_cast<arith::ConstantFloatOp>(op)){
+            else if (auto arithOp = dyn_cast<arith::ConstantFloatOp>(op)){
                 outs()<<"float constant"<<"\n";
                 builder.setInsertionPoint(arithOp);
                 auto value = arithOp.value();
@@ -119,7 +167,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 arithOp.erase();          
             }
 
-            if (auto arithOp = dyn_cast<arith::AddFOp>(op)) {
+            else if (auto arithOp = dyn_cast<arith::AddFOp>(op)) {
             builder.setInsertionPoint(arithOp);
 
             // Create a new `emitc.call` operation.

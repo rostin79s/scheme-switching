@@ -1,9 +1,13 @@
 // #include <cstdio>
 
 double rostin(double a, double b){
-    double x = a + 2;
-    for (int i = 0 ; i < 10; i++){
-        x += b;
+    for (int i = 0; i < 10; i++){
+        a = a + b;
+        double temp = 0;
+        if (a == b){
+            temp = 1;
+        }
+        b += temp;
     }
-    return x;
+    return b;
 }
