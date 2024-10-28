@@ -7,7 +7,7 @@ using namespace CKKS;
 using namespace CGGI;
 
 FHEdouble rostin(CKKS_scheme& ck, FHEdouble arg0, FHEdouble arg1) {
-    FHEdouble var0 = ck.FHEaddf(arg0, arg1);
+    FHEdouble var0 = FHEaddf(ck,arg0, arg1);
     FHEdouble var1 = ck.FHEaddf(var0, arg0);
     FHEdouble var2 = ck.FHEsubf(var1, arg1);
     FHEdouble var3 = ck.FHEmulf(var2, var2);

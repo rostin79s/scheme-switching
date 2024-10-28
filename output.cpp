@@ -1,24 +1,35 @@
-FHEdouble rostin(FHEdouble v1, FHEdouble v2) {
-  size_t v3 = 10;
-  size_t v4 = 0;
-  size_t v5 = 1;
-  FHEdouble v6 = 1;
-  FHEdouble v7 = 0;
-  FHEdouble v8;
+#include "src/backend/fhe_operations.hpp"
+#include "src/backend/fhe_types.hpp"
+#include <vector>
+#include <iostream>
+using namespace CKKS;
+using namespace CGGI;
+
+FHEdouble rostin(CKKS_scheme& v1, FHEdouble v2, FHEdouble v3) {
+  size_t v4 = 10;
+  size_t v5 = 0;
+  size_t v6 = 1;
+  FHEdouble v7 = 1;
+  FHEdouble v8 = 0;
   FHEdouble v9;
-  FHEdouble v10 = v2;
-  FHEdouble v11 = v1;
-  for (size_t v12 = v4; v12 < v3; v12 += v5) {
-    FHEdouble v13 = FHEaddf(v11, v10);
-    FHEdouble v14 = FHEoeqf(v13, v10);
-    FHEdouble v15 = FHEselectf(v14, v6, v7);
-    FHEdouble v16 = FHEaddf(v10, v15);
-    v10 = v16;
-    v11 = v13;
+  FHEdouble v10;
+  FHEdouble v11;
+  FHEdouble v12 = v8;
+  FHEdouble v13 = v3;
+  FHEdouble v14 = v2;
+  for (size_t v15 = v5; v15 < v4; v15 += v6) {
+    FHEdouble v16 = FHEaddf(v1, v14, v13);
+    FHEdouble v17 = FHEoeqf(v16, v13);
+    FHEdouble v18 = FHEselectf(v17, v7, v12);
+    FHEdouble v19 = FHEaddf(v1, v13, v18);
+    v12 = v18;
+    v13 = v19;
+    v14 = v16;
   }
-  v8 = v10;
-  v9 = v11;
-  return v8;
+  v9 = v12;
+  v10 = v13;
+  v11 = v14;
+  return v10;
 }
 
 

@@ -8,3 +8,7 @@ cmake --build .
 
 cd .. && ./compiler
 /home/rostin/Polygeist/build/bin/mlir-translate -allow-unregistered-dialect --mlir-to-cpp ir.mlir -o ../output.cpp
+cd "$original_dir"
+g++ add_headers.cpp -o add_headers
+./add_headers
+rm add_headers

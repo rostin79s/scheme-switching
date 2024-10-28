@@ -16,6 +16,11 @@
 #include "mlir/Dialect/DLTI/DLTI.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+
+#include "mlir/IR/OwningOpRef.h"
+#include "mlir/Target/Cpp/CppEmitter.h"
+#include "llvm/Support/raw_ostream.h"
+
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "mlir/Tools/mlir-translate/MlirTranslateMain.h"
 
@@ -27,6 +32,9 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <fstream>
+#include <vector>
+#include <cstdlib>
 
 #include "frontend/dag.hpp"
 #include "frontend/frontend.hpp"
@@ -46,8 +54,12 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
         ModuleOp module = getOperation();
         OpBuilder builder(module.getContext());
 
+        auto fhecontext = emitc::OpaqueType::get(builder.getContext(), "CKKS_scheme&");
+        auto fhedouble = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+
         // Iterate over functions in the module.
         module.walk([&](func::FuncOp func) {
+
         builder.setInsertionPoint(func);
 
         std::string originalName = func.getName().str();
@@ -58,10 +70,12 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
         // Update function argument types and return type.
         auto funcType = func.getFunctionType();
         SmallVector<mlir::Type, 4> newInputTypes;
+
+        newInputTypes.push_back(fhecontext);
         for (auto inputType : funcType.getInputs()) {
             // Convert types like `f64` to `emitc.opaque<"FHEdouble">`.
             if (inputType.isF64()) {
-            newInputTypes.push_back(emitc::OpaqueType::get(builder.getContext(), "FHEdouble"));
+            newInputTypes.push_back(fhedouble);
             } else {
             newInputTypes.push_back(inputType);
             }
@@ -69,23 +83,33 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
         // Convert the return type similarly.
         mlir::Type newReturnType = funcType.getResult(0).isF64()
-                                ? emitc::OpaqueType::get(builder.getContext(), "FHEdouble")
+                                ? fhedouble
                                 : funcType.getResult(0);
 
         func.setType(mlir::FunctionType::get(builder.getContext(), newInputTypes, newReturnType));
 
         Block &entryBlock = func.getBody().front();
-        for (auto it : llvm::enumerate(entryBlock.getArguments())) {
-            if (newInputTypes[it.index()] != it.value().getType()) {
-            it.value().setType(newInputTypes[it.index()]);
+
+        SmallVector<BlockArgument, 4> newArgs;
+        // Add new CKKS_scheme& argument at the beginning
+        newArgs.push_back(entryBlock.insertArgument(
+            entryBlock.args_begin(), 
+            newInputTypes[0], 
+            builder.getUnknownLoc()
+        ));
+
+        for (size_t i = 1; i < newInputTypes.size(); ++i) {
+            auto oldArg = entryBlock.getArgument(i);
+            if (newInputTypes[i] != oldArg.getType()) {
+                oldArg.setType(newInputTypes[i]);
             }
         }
 
-        // Iterate through the body of the function and replace operations.
+
+        auto ckarg = func.getArgument(0);
+
         func.walk([&](Operation *op) {
             outs() << "\noperation: " << *op << "\n\n\n";
-
-            auto resultType = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
             
             
             if (auto cmpOp = dyn_cast<arith::CmpFOp>(op)){
@@ -102,7 +126,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 outs() << "predicate: " << predicate << '\n';
                 auto newOp = builder.create<emitc::CallOp>(
                     cmpOp.getLoc(),
-                    TypeRange(resultType),
+                    TypeRange(fhedouble),
                     llvm::StringRef("FHE" + s.str() + "f"),
                     ArrayAttr(),
                     ArrayAttr(),
@@ -119,7 +143,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 auto arg2 = selectOp.getOperand(2);
                 auto newOp = builder.create<emitc::CallOp>(
                     selectOp.getLoc(),
-                    TypeRange(resultType),
+                    TypeRange(fhedouble),
                     llvm::StringRef("FHEselectf"),
                     ArrayAttr(),
                     ArrayAttr(),
@@ -137,14 +161,14 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 for (auto it : llvm::enumerate(res)) {
                     outs() <<"for loop res: " << it.value() << "  type: " << it.value().getType() << "\n";
                     if (it.value().getType().isF64()) {
-                        it.value().setType(resultType);
+                        it.value().setType(fhedouble);
                     }
                 }
                 for (auto it : llvm::enumerate(newblock->getArguments())) {
                     outs() <<"for loop arg: " << it.value() << "  type: " << it.value().getType() << "\n";
                     if (it.value().getType().isF64()) {
                         
-                        it.value().setType(resultType);
+                        it.value().setType(fhedouble);
                     }
                 }
             }
@@ -161,32 +185,32 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 auto opaqueAttr = emitc::OpaqueAttr::get(builder.getContext(),ss.str());
 
                 auto newConstantOp = builder.create<emitc::ConstantOp>(
-                    arithOp.getLoc(),resultType,opaqueAttr);
+                    arithOp.getLoc(),fhedouble,opaqueAttr);
                 
                 arithOp.replaceAllUsesWith(newConstantOp->getResult(0));
                 arithOp.erase();          
             }
 
             else if (auto arithOp = dyn_cast<arith::AddFOp>(op)) {
-            builder.setInsertionPoint(arithOp);
+                builder.setInsertionPoint(arithOp);
 
-            // Create a new `emitc.call` operation.
-            auto arg0 = arithOp.getOperand(0);
-            auto arg1 = arithOp.getOperand(1);
-            outs() << "arg1: " << arg1 << '\n';
-            
+                // Create a new `emitc.call` operation.
+                auto arg0 = arithOp.getOperand(0);
+                auto arg1 = arithOp.getOperand(1);
+                outs() << "arg1: " << arg1 << '\n';
+                
 
-            auto newOp = builder.create<emitc::CallOp>(
-                arithOp.getLoc(),
-                TypeRange(resultType),
-                llvm::StringRef("FHEaddf"),
-                ArrayAttr(),
-                ArrayAttr(),
-                mlir::ArrayRef<mlir::Value>{arg0, arg1});
+                auto newOp = builder.create<emitc::CallOp>(
+                    arithOp.getLoc(),
+                    TypeRange(fhedouble),
+                    llvm::StringRef("FHEaddf"),
+                    ArrayAttr(),
+                    ArrayAttr(),
+                    mlir::ArrayRef<mlir::Value>{ckarg, arg0, arg1});
 
-            // Replace the original addf operation with the new one.
-            arithOp.replaceAllUsesWith(newOp.getResult(0));
-            arithOp.erase();
+                // Replace the original addf operation with the new one.
+                arithOp.replaceAllUsesWith(newOp.getResult(0));
+                arithOp.erase();
             }
             else if (auto arithOp = dyn_cast<arith::SubFOp>(op)) {
                 builder.setInsertionPoint(arithOp);
@@ -198,7 +222,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
                 auto newOp = builder.create<emitc::CallOp>(
                     arithOp.getLoc(),
-                    TypeRange(resultType),
+                    TypeRange(fhedouble),
                     llvm::StringRef("FHEsubf"),
                     ArrayAttr(),
                     ArrayAttr(),
@@ -219,7 +243,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
                 auto newOp = builder.create<emitc::CallOp>(
                     arithOp.getLoc(),
-                    TypeRange(resultType),
+                    TypeRange(fhedouble),
                     llvm::StringRef("FHEmulf"),
                     ArrayAttr(),
                     ArrayAttr(),
@@ -239,7 +263,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
                 auto newOp = builder.create<emitc::CallOp>(
                     arithOp.getLoc(),
-                    TypeRange(resultType),
+                    TypeRange(fhedouble),
                     llvm::StringRef("FHEdivf"),
                     ArrayAttr(),
                     ArrayAttr(),
@@ -308,8 +332,6 @@ int main(int argc, char **argv) {
 
     module->print(outputFile->os());
     outputFile->keep();
-
-    // mlir::mlirTranslateMain(argc, argv, "EmitC Translation Tool");
 
     return 0;
 }
