@@ -128,7 +128,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 auto newOp = builder.create<emitc::CallOp>(
                     cmpOp.getLoc(),
                     TypeRange(fhedouble),
-                    llvm::StringRef("FHE" + s.str() + "f"),
+                    llvm::StringRef("FHE" + s.str().substr(1,2)),
                     ArrayAttr(),
                     ArrayAttr(),
                     mlir::ArrayRef<mlir::Value>{ckarg, arg0, arg1});
@@ -145,7 +145,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 auto newOp = builder.create<emitc::CallOp>(
                     selectOp.getLoc(),
                     TypeRange(fhedouble),
-                    llvm::StringRef("FHEselectf"),
+                    llvm::StringRef("FHEselect"),
                     ArrayAttr(),
                     ArrayAttr(),
                     mlir::ArrayRef<mlir::Value>{ckarg, arg0, arg1, arg2});

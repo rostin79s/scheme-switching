@@ -38,6 +38,7 @@ namespace CKKS {
     public:
         CKKS_scheme(int multDepth = 17, int scaleModSize = 50, int batchSize = 1);
 
+        std::vector<CGGI::FHEi32> FHEsign(std::vector<CGGI::FHEi32> lwes);
         std::vector<CGGI::FHEi32> CKKStoCGGI(FHEdouble a);
         FHEdouble CGGItoCKKS(std::vector<CGGI::FHEi32> a);
 
@@ -70,6 +71,7 @@ namespace CKKS {
     };
 }
 
+CKKS::FHEdouble FHEselect(CKKS::CKKS_scheme& ck, CKKS::FHEdouble sign, CKKS::FHEdouble value1, CKKS::FHEdouble value2);
 
 std::vector<CGGI::FHEi32> CKKStoCGGI(CKKS::CKKS_scheme& ck, CKKS::FHEdouble a);
 CKKS::FHEdouble CGGItoCKKS(CKKS::CKKS_scheme& ck, std::vector<CGGI::FHEi32> a);

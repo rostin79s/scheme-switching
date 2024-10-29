@@ -72,6 +72,15 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
 
 }
 
+std::vector<CGGI::FHEi32> CKKS_scheme::FHEsign(std::vector<CGGI::FHEi32> lwes){
+    std::vector<CGGI::FHEi32> result;
+    for (auto& lwe : lwes) {
+        auto temp = context->ccLWE->EvalSign(lwe.getCiphertext());
+        result.push_back(CGGI::FHEi32(temp));
+    }
+    return result;
+}
+
 std::vector<CGGI::FHEi32> CKKS_scheme::CKKStoCGGI(FHEdouble a) {
     auto LWECiphertexts = context->cc->EvalCKKStoFHEW(a.getCiphertext(), this->batchSize);
     std::vector<CGGI::FHEi32> result;
@@ -174,65 +183,25 @@ FHEdouble CKKS_scheme::FHEdivfP(double b, const FHEdouble a) {
 }
 
 
+CKKS::FHEdouble FHEeq(CKKS::CKKS_scheme& ck, CKKS::FHEdouble a, CKKS::FHEdouble b){
+    auto dif = ck.FHEsubf(a,b);
+    auto lwes = ck.CKKStoCGGI(dif);
+    auto sign = ck.FHEsign(lwes);
 
-namespace CGGI {   
+    auto dif_prime = ck.FHEsubfP(1.0,dif);
+    auto lwes_prime = ck.CKKStoCGGI(dif_prime);
+    auto sign_prime = ck.FHEsign(lwes_prime);
+
+    for (int i = 0; i < sign.size(); i++){
+        sign[i] = FHEor(sign[i],sign_prime[i]);
+    }
     
-    // Arithmetic Operations for FHEdouble
-FHEi32 CGGI_scheme::FHEaddi(FHEi32 a, FHEi32 b) {
-    context->ccLWE->GetLWEScheme()->EvalAddEq(a.getCiphertext(), b.getCiphertext());
-    return a;
+
 }
 
-FHEi32 CGGI_scheme::FHEsubi(FHEi32 a, FHEi32 b) {
-    context->ccLWE->GetLWEScheme()->EvalSubEq(a.getCiphertext(), b.getCiphertext());
-    return a;
-}
-
-// Arithmetic Operations with Plaintext
-FHEi32 CGGI_scheme::FHEaddiP(FHEi32 a, int b) {
-    context->ccLWE->GetLWEScheme()->EvalAddConstEq(a.getCiphertext(), b);
-    return a;
-}
-
-FHEi32 CGGI_scheme::FHEsubiP(FHEi32 a, int b) {
-    context->ccLWE->GetLWEScheme()->EvalSubConstEq(a.getCiphertext(), b);
-    return a;
-}
-
-FHEi32 CGGI_scheme::FHEsubiP(int b, FHEi32 a) {
-    auto temp = context->ccLWE->EvalNOT(a.getCiphertext());
-    context->ccLWE->GetLWEScheme()->EvalAddConstEq(temp, 1);
-    context->ccLWE->GetLWEScheme()->EvalAddConstEq(temp,b);
-    return FHEi32(temp);
-}
-
-FHEi32 CGGI_scheme::FHEmuliP(FHEi32 a, int b) {
-    context->ccLWE->GetLWEScheme()->EvalMultConstEq(a.getCiphertext(), b);
-    return a;
-}
-
-// FHEi32 CGGI_scheme::FHEmuli(FHEi32 a, FHEi32 b) {
-//     auto result = context->cc->EvalMult(a->getCiphertext(), b->getCiphertext());
-//     return FHEi32(result);
-// }
-
-// FHEi32 CGGI_scheme::FHEdivi(FHEi32 a, FHEi32 b) {
-//     auto temp = context->cc->EvalDivide(b->getCiphertext(), 1.0, 4294967295.0, 10);
-//     auto result = context->cc->EvalMult( FHEi32(temp))->getCiphertext(),a->getCiphertext());
-//     return FHEi32(result);
-// }
-
-// FHEi32 CGGI_scheme::FHEdiviP(FHEi32 a, int b) {
-//     auto result = context->cc->EvalDivide(a->getCiphertext(), 1.0, 4294967295.0, 10);
-//     return FHEi32(result);
-// }
-
-// FHEi32 CGGI_scheme::FHEdiviP(int b, FHEi32 a) {
-//     auto temp = context->cc->EvalDivide(a->getCiphertext(), 1.0, 4294967295.0, 10);
-//     auto result = context->cc->EvalMult( FHEi32(temp))->getCiphertext(),b);
-//     return FHEi32(result);
-// }
-
+CKKS::FHEdouble FHEselect(CKKS::CKKS_scheme& ck, CKKS::FHEdouble sign, CKKS::FHEdouble value1, CKKS::FHEdouble value2){
+    auto sign_prime = ck.FHEsubfP(1.0,sign);
+    return ck.FHEaddf(ck.FHEmulf(sign,value1),ck.FHEmulf(sign_prime,value2));
 }
 
 
