@@ -7,6 +7,8 @@ namespace CKKS {
 
 class FHEdouble {
 public:
+    FHEdouble() : ciphertext(nullptr) {
+    }
     FHEdouble(const lbcrypto::Ciphertext<lbcrypto::DCRTPoly>& cipher) : ciphertext(cipher) {}
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> getCiphertext() const { return ciphertext; }
 

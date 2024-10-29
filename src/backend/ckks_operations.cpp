@@ -286,3 +286,7 @@ CKKS::FHEdouble FHEencrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEplain p){
 CKKS::FHEplain FHEdecrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a){
     return ck.FHEdecrypt(a);
 }
+
+CKKS::FHEdouble FHEencrypt(CKKS::CKKS_scheme& ck, const double a){
+    return ck.FHEencrypt(ck.FHEencode({a}));
+}

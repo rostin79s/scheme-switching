@@ -179,16 +179,30 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 builder.setInsertionPoint(arithOp);
                 auto value = arithOp.value();
                 double value2 = value.convertToDouble();
-                
-
-                std::stringstream ss;
-                ss << value2;
-                auto opaqueAttr = emitc::OpaqueAttr::get(builder.getContext(),ss.str());
 
                 auto newConstantOp = builder.create<emitc::ConstantOp>(
-                    arithOp.getLoc(),fhedouble,opaqueAttr);
+                    arithOp.getLoc(),
+                    builder.getF64Type(), // Type for the constant
+                    builder.getF64FloatAttr(value2) // Create an F64 attribute for the double value
+                );
+
+                // std::stringstream ss;
+                // ss << value2;
+                // auto opaqueAttr = emitc::OpaqueAttr::get(builder.getContext(),ss.str());
+
+                // auto newConstantOp = builder.create<emitc::ConstantOp>(
+                //     arithOp.getLoc(),fhedouble,opaqueAttr);
+
+                auto newCallOp = builder.create<emitc::CallOp>(
+                    arithOp.getLoc(),
+                    TypeRange(fhedouble),
+                    llvm::StringRef("FHEencrypt"),
+                    ArrayAttr(),
+                    ArrayAttr(),
+                    mlir::ArrayRef<mlir::Value>{ckarg, newConstantOp.getResult()}
+                );
                 
-                arithOp.replaceAllUsesWith(newConstantOp->getResult(0));
+                arithOp.replaceAllUsesWith(newCallOp->getResult(0));
                 arithOp.erase();          
             }
 

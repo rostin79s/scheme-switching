@@ -92,4 +92,6 @@ CKKS::FHEplain FHEencode(CKKS::CKKS_scheme& ck, const std::vector<double>& a);
 CKKS::FHEdouble FHEencrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEplain p);
 CKKS::FHEplain FHEdecrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a);
 
+CKKS::FHEdouble FHEencrypt(CKKS::CKKS_scheme& ck, const double a);
+
 #endif // FHE_OPERATIONS_HPP
