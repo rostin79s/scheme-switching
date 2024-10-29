@@ -5,6 +5,23 @@
 
 namespace CKKS {
 
+class Context_CKKS {
+public:
+    Context_CKKS() : cc(nullptr), keys(nullptr) {
+    }
+    Context_CKKS(const lbcrypto::CryptoContext<lbcrypto::DCRTPoly>& cc, const lbcrypto::KeyPair<lbcrypto::DCRTPoly>& keys) : cc(cc), keys(keys) {}
+    lbcrypto::CryptoContext<lbcrypto::DCRTPoly> getCryptoContext() const { return cc; }
+    void setCryptoContext(const lbcrypto::CryptoContext<lbcrypto::DCRTPoly>& cc) { this->cc = cc; }
+    lbcrypto::KeyPair<lbcrypto::DCRTPoly> getKeys() const { return keys; }
+    void setKeys(const lbcrypto::KeyPair<lbcrypto::DCRTPoly>& keys) { this->keys = keys; }
+    int getBatchSize() const { return batchSize; }
+    void setBatchSize(int batchSize) { this->batchSize = batchSize; }
+private:
+    lbcrypto::CryptoContext<lbcrypto::DCRTPoly> cc;
+    lbcrypto::KeyPair<lbcrypto::DCRTPoly> keys;
+    int batchSize;
+};
+
 class FHEdouble {
 public:
     FHEdouble() : ciphertext(nullptr) {
@@ -26,21 +43,23 @@ private:
     lbcrypto::Plaintext plaintext;
 };
 
-class FHEContext {
-public:
-    lbcrypto::CryptoContext<lbcrypto::DCRTPoly> cc;
-    std::shared_ptr<lbcrypto::BinFHEContext> ccLWE;
-};
-
-class FHEKeyPair {
-public:
-    lbcrypto::KeyPair<lbcrypto::DCRTPoly> keys;
-    lbcrypto::LWEPrivateKey privateKeyFHEW;
-};
-
 } 
 
 namespace CGGI {
+
+class Context_CGGI {
+public:
+    Context_CGGI() : ccLWE(nullptr), keysLWE(nullptr) {
+    }
+    Context_CGGI(const std::shared_ptr<lbcrypto::BinFHEContext>& ccLWE, const lbcrypto::LWEPrivateKey& keys) : ccLWE(ccLWE), keysLWE(keys) {}
+    std::shared_ptr<lbcrypto::BinFHEContext> getCryptoContext() const { return ccLWE; }
+    void setCryptoContext(const std::shared_ptr<lbcrypto::BinFHEContext>& ccLWE) { this->ccLWE = ccLWE; }
+    lbcrypto::LWEPrivateKey getKeys() const { return keysLWE; }
+private:
+    std::shared_ptr<lbcrypto::BinFHEContext> ccLWE;
+    lbcrypto::LWEPrivateKey keysLWE;
+};
+
 
 class FHEi32 {
 public:
@@ -49,16 +68,6 @@ public:
 
 private:
     lbcrypto::LWECiphertext ciphertext;
-};
-
-class FHEContext {
-public:
-    std::shared_ptr<lbcrypto::BinFHEContext> ccLWE;
-};
-
-class FHEKeyPair {
-public:
-    lbcrypto::LWEPrivateKey privateKeyFHEW;
 };
 
 } // namespace CGGI

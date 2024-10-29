@@ -14,8 +14,8 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
     uint32_t firstModSize = 60;
     uint32_t ringDim      = 8192;
     SecurityLevel sl      = HEStd_NotSet;
-    BINFHE_PARAMSET slBin = TOY;
-    uint32_t logQ_ccLWE   = 25;
+    // BINFHE_PARAMSET slBin = TOY;
+    // uint32_t logQ_ccLWE   = 25;
     // uint32_t slots        = 1;  
     // uint32_t batchSize    = slots;
 
@@ -35,54 +35,108 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
     parameters.SetKeySwitchTechnique(HYBRID);
     parameters.SetNumLargeDigits(3);
 
-    context = std::make_unique<FHEContext>();
+    context->setCryptoContext(GenCryptoContext(parameters));
 
-    context->cc = GenCryptoContext(parameters);
+    context->setBatchSize(batchSize);
 
-    context->cc->Enable(PKE);
-    context->cc->Enable(KEYSWITCH);
-    context->cc->Enable(LEVELEDSHE);
-    context->cc->Enable(ADVANCEDSHE);
-    context->cc->Enable(SCHEMESWITCH);
+    context->getCryptoContext()->Enable(PKE);
+    context->getCryptoContext()->Enable(KEYSWITCH);
+    context->getCryptoContext()->Enable(LEVELEDSHE);
+    context->getCryptoContext()->Enable(ADVANCEDSHE);
+    context->getCryptoContext()->Enable(SCHEMESWITCH);
 
 
-    keys = std::make_unique<FHEKeyPair>();
-    keys->keys = context->cc->KeyGen();
+    context->setKeys(context->getCryptoContext()->KeyGen());
     // context->cc->EvalMultKeyGen(keys->keyPair.secretKey);
     // context->cc->EvalRotateKeyGen(keys->keyPair.secretKey, {1, -2});
 
-    SchSwchParams params;
-    params.SetSecurityLevelCKKS(sl);
-    params.SetSecurityLevelFHEW(slBin);
-    params.SetCtxtModSizeFHEWLargePrec(logQ_ccLWE);
-    params.SetNumSlotsCKKS(batchSize);
-    params.SetNumValues(batchSize);
-    auto privateKeyFHEW = context->cc->EvalSchemeSwitchingSetup(params);
-    context->ccLWE = context->cc->GetBinCCForSchemeSwitch();
-
-    context->ccLWE->BTKeyGen(privateKeyFHEW);
-    context->cc->EvalSchemeSwitchingKeyGen(keys->keys, privateKeyFHEW);
-
-    auto modulus_LWE     = 1 << logQ_ccLWE;
-    auto beta            = context->ccLWE->GetBeta().ConvertToInt();
-    auto pLWE2           = modulus_LWE / (2 * beta);  // Large precision
-    double scaleSignFHEW = 1.0;
-    context->cc->EvalCompareSwitchPrecompute(pLWE2, scaleSignFHEW);
-
 
 }
 
-std::vector<CGGI::FHEi32> CKKS_scheme::FHEsign(std::vector<CGGI::FHEi32> lwes){
-    std::vector<CGGI::FHEi32> result;
-    for (auto& lwe : lwes) {
-        auto temp = context->ccLWE->EvalSign(lwe.getCiphertext());
-        result.push_back(CGGI::FHEi32(temp));
-    }
-    return result;
+Context_CKKS* CKKS_scheme::getContext(){
+    return context;
 }
 
-std::vector<CGGI::FHEi32> CKKS_scheme::CKKStoCGGI(FHEdouble a) {
-    auto LWECiphertexts = context->cc->EvalCKKStoFHEW(a.getCiphertext(), this->batchSize);
+
+FHEplain FHEencode(FHEcontext* ctx, const std::vector<double>& a){
+    FHEplain ptxt = ctx->getCKKS()->getCryptoContext()->MakeCKKSPackedPlaintext(a);
+    return FHEplain(ptxt);
+}
+
+FHEdouble FHEencrypt(FHEcontext* ctx, const FHEplain a){
+    auto result = ctx->getCKKS()->getCryptoContext()->Encrypt(ctx->getCKKS()->getKeys().publicKey, a.getPlaintext());
+    return FHEdouble(result);
+}
+
+CKKS::FHEdouble FHEencrypt(FHEcontext* ctx, const double a){
+    return FHEencrypt(ctx, FHEencode(ctx, {a}));
+}
+
+FHEplain FHEdecrypt(FHEcontext* ctx, const FHEdouble a){
+    Plaintext result;
+    ctx->getCKKS()->getCryptoContext()->Decrypt(ctx->getCKKS()->getKeys().secretKey, a.getCiphertext(), &result);
+    FHEplain res = result;
+    return FHEplain(result);
+}
+
+// Arithmetic Operations for FHEdouble
+FHEdouble FHEaddf(FHEcontext* ctx, const FHEdouble a, const FHEdouble b) {
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalAdd(a.getCiphertext(), b.getCiphertext());
+    return FHEdouble(result);
+}
+
+FHEdouble FHEsubf(FHEcontext* ctx, const FHEdouble a, const FHEdouble b) {
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalSub(a.getCiphertext(), b.getCiphertext());
+    return FHEdouble(result);
+}
+
+FHEdouble FHEmulf(FHEcontext* ctx, const FHEdouble a, const FHEdouble b) {
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalMult(a.getCiphertext(), b.getCiphertext());
+    return FHEdouble(result);
+}
+
+FHEdouble FHEdivf(FHEcontext* ctx, const FHEdouble a, const FHEdouble b) {
+    auto temp = ctx->getCKKS()->getCryptoContext()->EvalDivide(b.getCiphertext(), 1.0, 4294967295.0, 10);
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalMult(temp,a.getCiphertext());
+    return FHEdouble(result);
+}
+
+// Arithmetic Operations with Plaintext
+FHEdouble FHEaddfP(FHEcontext* ctx, const FHEdouble a, double b) {
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalAdd(a.getCiphertext(), b);
+    return FHEdouble(result);
+}
+
+FHEdouble FHEsubfP(FHEcontext* ctx, const FHEdouble a, double b) {
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalSub(a.getCiphertext(), b);
+    return FHEdouble(result);
+}
+
+FHEdouble FHEsubfP(FHEcontext* ctx, double b, const FHEdouble a) {
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalSub(b, a.getCiphertext());
+    return FHEdouble(result);
+}
+
+FHEdouble FHEmulfP(FHEcontext* ctx, const FHEdouble a, double b) {
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalMult(a.getCiphertext(), b);
+    return FHEdouble(result);
+}
+
+FHEdouble FHEdivfP(FHEcontext* ctx, const FHEdouble a, double b) {
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalDivide(a.getCiphertext(), 1.0, 4294967295.0, 10);
+    return FHEdouble(result);
+}
+
+FHEdouble FHEdivfP(FHEcontext* ctx, double b, const FHEdouble a) {
+    auto temp = ctx->getCKKS()->getCryptoContext()->EvalDivide(a.getCiphertext(), 1.0, 4294967295.0, 10);
+    auto result = ctx->getCKKS()->getCryptoContext()->EvalMult(temp, b);
+    return FHEdouble(result);
+}
+
+}
+
+std::vector<CGGI::FHEi32> CKKStoCGGI(FHEcontext* ctx, CKKS::FHEdouble a) {
+    auto LWECiphertexts = ctx->getCKKS()->getCryptoContext()->EvalCKKStoFHEW(a.getCiphertext(), ctx->getCKKS()->getBatchSize());
     std::vector<CGGI::FHEi32> result;
 
     // Assuming LWECiphertexts is a vector of LWECiphertext
@@ -96,166 +150,48 @@ std::vector<CGGI::FHEi32> CKKS_scheme::CKKStoCGGI(FHEdouble a) {
 
 }
 
-FHEdouble CKKS_scheme::CGGItoCKKS(std::vector<CGGI::FHEi32> a) {
+CKKS::FHEdouble CGGItoCKKS(FHEcontext* ctx, std::vector<CGGI::FHEi32> a) {
     std::vector<lbcrypto::LWECiphertext> lweCiphertexts;
     // Unpack the vector of CGGI::FHEi32 to LWECiphertext
     for (auto& fhei32 : a) {
         lweCiphertexts.push_back(fhei32.getCiphertext());
     }
-    auto ctxt = context->cc->EvalFHEWtoCKKS(lweCiphertexts,this->batchSize,this->batchSize);
+    int batchSize = ctx->getCKKS()->getBatchSize();
+    auto ctxt = ctx->getCKKS()->getCryptoContext()->EvalFHEWtoCKKS(lweCiphertexts,batchSize,batchSize);
 
-    return FHEdouble(ctxt);
-
-}
-
-
-FHEplain CKKS_scheme::FHEencode(const std::vector<double>& a){
-    FHEplain ptxt = context->cc->MakeCKKSPackedPlaintext(a);
-    return FHEplain(ptxt);
-}
-
-FHEdouble CKKS_scheme::FHEencrypt(const FHEplain a){
-    auto result = context->cc->Encrypt(keys->keys.publicKey, a.getPlaintext());
-    return FHEdouble(result);
-}
-
-FHEplain CKKS_scheme::FHEdecrypt(const FHEdouble a){
-    Plaintext result;
-    context->cc->Decrypt(keys->keys.secretKey, a.getCiphertext(), &result);
-    FHEplain res = result;
-    return FHEplain(result);
-}
-
-// Arithmetic Operations for FHEdouble
-FHEdouble CKKS_scheme::FHEaddf(const FHEdouble a, const FHEdouble b) {
-    auto result = context->cc->EvalAdd(a.getCiphertext(), b.getCiphertext());
-    return FHEdouble(result);
-}
-
-FHEdouble CKKS_scheme::FHEsubf(const FHEdouble a, const FHEdouble b) {
-    auto result = context->cc->EvalSub(a.getCiphertext(), b.getCiphertext());
-    return FHEdouble(result);
-}
-
-FHEdouble CKKS_scheme::FHEmulf(const FHEdouble a, const FHEdouble b) {
-    auto result = context->cc->EvalMult(a.getCiphertext(), b.getCiphertext());
-    return FHEdouble(result);
-}
-
-FHEdouble CKKS_scheme::FHEdivf(const FHEdouble a, const FHEdouble b) {
-    auto temp = context->cc->EvalDivide(b.getCiphertext(), 1.0, 4294967295.0, 10);
-    auto result = context->cc->EvalMult(temp,a.getCiphertext());
-    return FHEdouble(result);
-}
-
-// Arithmetic Operations with Plaintext
-FHEdouble CKKS_scheme::FHEaddfP(const FHEdouble a, double b) {
-    auto result = context->cc->EvalAdd(a.getCiphertext(), b);
-    return FHEdouble(result);
-}
-
-FHEdouble CKKS_scheme::FHEsubfP(const FHEdouble a, double b) {
-    auto result = context->cc->EvalSub(a.getCiphertext(), b);
-    return FHEdouble(result);
-}
-
-FHEdouble CKKS_scheme::FHEsubfP(double b, const FHEdouble a) {
-    auto result = context->cc->EvalSub(b, a.getCiphertext());
-    return FHEdouble(result);
-}
-
-FHEdouble CKKS_scheme::FHEmulfP(const FHEdouble a, double b) {
-    auto result = context->cc->EvalMult(a.getCiphertext(), b);
-    return FHEdouble(result);
-}
-
-FHEdouble CKKS_scheme::FHEdivfP(const FHEdouble a, double b) {
-    auto result = context->cc->EvalDivide(a.getCiphertext(), 1.0, 4294967295.0, 10);
-    return FHEdouble(result);
-}
-
-FHEdouble CKKS_scheme::FHEdivfP(double b, const FHEdouble a) {
-    auto temp = context->cc->EvalDivide(a.getCiphertext(), 1.0, 4294967295.0, 10);
-    auto result = context->cc->EvalMult(temp, b);
-    return FHEdouble(result);
-}
+    return CKKS::FHEdouble(ctxt);
 
 }
 
-
-CKKS::FHEdouble FHEeq(CKKS::CKKS_scheme& ck, CKKS::FHEdouble a, CKKS::FHEdouble b){
-    auto dif = ck.FHEsubf(a,b);
-    auto lwes = ck.CKKStoCGGI(dif);
-    auto sign = ck.FHEsign(lwes);
-
-    auto dif_prime = ck.FHEsubfP(1.0,dif);
-    auto lwes_prime = ck.CKKStoCGGI(dif_prime);
-    auto sign_prime = ck.FHEsign(lwes_prime);
-
-    for (int i = 0; i < sign.size(); i++){
-        sign[i] = FHEor(sign[i],sign_prime[i]);
+std::vector<CGGI::FHEi32> FHEsign(FHEcontext* ctx, std::vector<CGGI::FHEi32> lwes){
+    std::vector<CGGI::FHEi32> result;
+    for (auto& lwe : lwes) {
+        auto temp = ctx->getCGGI()->getCryptoContext()->EvalSign(lwe.getCiphertext());
+        result.push_back(CGGI::FHEi32(temp));
     }
+    return result;
+}
+
+
+CKKS::FHEdouble FHEeq(FHEcontext* ctx, CKKS::FHEdouble a, CKKS::FHEdouble b){
+    auto dif = FHEsubf(ctx, a,b);
+    auto lwes = CKKStoCGGI(ctx, dif);
+    auto sign = FHEsign(ctx, lwes);
+
+    auto dif_prime = FHEsubfP(ctx, 1.0,dif);
+    auto lwes_prime = CKKStoCGGI(ctx, dif_prime);
+    auto sign_prime = FHEsign(ctx, lwes_prime);
+
+    std::vector<CGGI::FHEi32> ors;
+    for (int i = 0; i < sign.size(); i++){
+        sign[i] = FHEor(ctx, sign[i],sign_prime[i]);
+    }
+    return CGGItoCKKS(ctx, sign);
     
 
 }
 
-CKKS::FHEdouble FHEselect(CKKS::CKKS_scheme& ck, CKKS::FHEdouble sign, CKKS::FHEdouble value1, CKKS::FHEdouble value2){
-    auto sign_prime = ck.FHEsubfP(1.0,sign);
-    return ck.FHEaddf(ck.FHEmulf(sign,value1),ck.FHEmulf(sign_prime,value2));
-}
-
-
-std::vector<CGGI::FHEi32> CKKStoCGGI(CKKS::CKKS_scheme& ck, CKKS::FHEdouble a){
-    return ck.CKKStoCGGI(a);
-}
-CKKS::FHEdouble CGGItoCKKS(CKKS::CKKS_scheme& ck, std::vector<CGGI::FHEi32> a){
-    return ck.CGGItoCKKS(a);
-}
-
-CKKS::FHEdouble FHEaddf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b){
-    return ck.FHEaddf(a,b);
-}
-CKKS::FHEdouble FHEsubf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b){
-    return ck.FHEsubf(a,b);
-}
-CKKS::FHEdouble FHEmulf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b){
-    return ck.FHEmulf(a,b);
-}
-CKKS::FHEdouble FHEdivf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b){
-    return ck.FHEdivf(a,b);
-}
-
-// Arithmetic Operations with Plaintext
-CKKS::FHEdouble FHEaddfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b){
-    return ck.FHEaddfP(a,b);
-}
-CKKS::FHEdouble FHEsubfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b){
-    return ck.FHEsubfP(a,b);
-}
-CKKS::FHEdouble FHEsubfP(CKKS::CKKS_scheme& ck, double b, const CKKS::FHEdouble a){
-    return ck.FHEsubfP(b,a);
-}
-CKKS::FHEdouble FHEmulfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b){
-    return ck.FHEmulfP(a,b);
-}
-CKKS::FHEdouble FHEdivfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b){
-    return ck.FHEdivfP(a,b);
-}
-CKKS::FHEdouble FHEdivfP(CKKS::CKKS_scheme& ck, double b, const CKKS::FHEdouble a){
-    return ck.FHEdivfP(b,a);
-}
-
-// Use the Plaintext class from fhe_types.hpp
-CKKS::FHEplain FHEencode(CKKS::CKKS_scheme& ck, const std::vector<double>& a){
-    return ck.FHEencode(a);
-}
-CKKS::FHEdouble FHEencrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEplain p){
-    return ck.FHEencrypt(p);
-}
-CKKS::FHEplain FHEdecrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a){
-    return ck.FHEdecrypt(a);
-}
-
-CKKS::FHEdouble FHEencrypt(CKKS::CKKS_scheme& ck, const double a){
-    return ck.FHEencrypt(ck.FHEencode({a}));
+CKKS::FHEdouble FHEselect(FHEcontext* ctx, CKKS::FHEdouble sign, CKKS::FHEdouble value1, CKKS::FHEdouble value2){
+    auto sign_prime = FHEsubfP(ctx, 1.0,sign);
+    return FHEaddf(ctx, FHEmulf(ctx, sign,value1),FHEmulf(ctx, sign_prime,value2));
 }
