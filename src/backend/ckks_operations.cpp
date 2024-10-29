@@ -1,4 +1,5 @@
 #include "fhe_operations.hpp"
+#include "fhe_types.hpp"
 #include <openfhe.h>
 
 using namespace lbcrypto;
@@ -232,4 +233,56 @@ FHEi32 CGGI_scheme::FHEmuliP(FHEi32 a, int b) {
 //     return FHEi32(result);
 // }
 
+}
+
+
+std::vector<CGGI::FHEi32> CKKStoCGGI(CKKS::CKKS_scheme& ck, CKKS::FHEdouble a){
+    return ck.CKKStoCGGI(a);
+}
+CKKS::FHEdouble CGGItoCKKS(CKKS::CKKS_scheme& ck, std::vector<CGGI::FHEi32> a){
+    return ck.CGGItoCKKS(a);
+}
+
+CKKS::FHEdouble FHEaddf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b){
+    return ck.FHEaddf(a,b);
+}
+CKKS::FHEdouble FHEsubf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b){
+    return ck.FHEsubf(a,b);
+}
+CKKS::FHEdouble FHEmulf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b){
+    return ck.FHEmulf(a,b);
+}
+CKKS::FHEdouble FHEdivf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b){
+    return ck.FHEdivf(a,b);
+}
+
+// Arithmetic Operations with Plaintext
+CKKS::FHEdouble FHEaddfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b){
+    return ck.FHEaddfP(a,b);
+}
+CKKS::FHEdouble FHEsubfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b){
+    return ck.FHEsubfP(a,b);
+}
+CKKS::FHEdouble FHEsubfP(CKKS::CKKS_scheme& ck, double b, const CKKS::FHEdouble a){
+    return ck.FHEsubfP(b,a);
+}
+CKKS::FHEdouble FHEmulfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b){
+    return ck.FHEmulfP(a,b);
+}
+CKKS::FHEdouble FHEdivfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b){
+    return ck.FHEdivfP(a,b);
+}
+CKKS::FHEdouble FHEdivfP(CKKS::CKKS_scheme& ck, double b, const CKKS::FHEdouble a){
+    return ck.FHEdivfP(b,a);
+}
+
+// Use the Plaintext class from fhe_types.hpp
+CKKS::FHEplain FHEencode(CKKS::CKKS_scheme& ck, const std::vector<double>& a){
+    return ck.FHEencode(a);
+}
+CKKS::FHEdouble FHEencrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEplain p){
+    return ck.FHEencrypt(p);
+}
+CKKS::FHEplain FHEdecrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a){
+    return ck.FHEdecrypt(a);
 }

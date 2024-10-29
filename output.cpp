@@ -19,8 +19,8 @@ FHEdouble rostin(CKKS_scheme& v1, FHEdouble v2, FHEdouble v3) {
   FHEdouble v14 = v2;
   for (size_t v15 = v5; v15 < v4; v15 += v6) {
     FHEdouble v16 = FHEaddf(v1, v14, v13);
-    FHEdouble v17 = FHEoeqf(v16, v13);
-    FHEdouble v18 = FHEselectf(v17, v7, v12);
+    FHEdouble v17 = FHEoeqf(v1, v16, v13);
+    FHEdouble v18 = FHEselectf(v1, v17, v7, v12);
     FHEdouble v19 = FHEaddf(v1, v13, v18);
     v12 = v18;
     v13 = v19;

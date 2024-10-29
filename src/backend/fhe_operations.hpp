@@ -70,4 +70,26 @@ namespace CKKS {
     };
 }
 
+
+std::vector<CGGI::FHEi32> CKKStoCGGI(CKKS::CKKS_scheme& ck, CKKS::FHEdouble a);
+CKKS::FHEdouble CGGItoCKKS(CKKS::CKKS_scheme& ck, std::vector<CGGI::FHEi32> a);
+
+CKKS::FHEdouble FHEaddf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b);
+CKKS::FHEdouble FHEsubf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b);
+CKKS::FHEdouble FHEmulf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b);
+CKKS::FHEdouble FHEdivf(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, const CKKS::FHEdouble b);
+
+// Arithmetic Operations with Plaintext
+CKKS::FHEdouble FHEaddfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b);
+CKKS::FHEdouble FHEsubfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b);
+CKKS::FHEdouble FHEsubfP(CKKS::CKKS_scheme& ck, double b, const CKKS::FHEdouble a);
+CKKS::FHEdouble FHEmulfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b);
+CKKS::FHEdouble FHEdivfP(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a, double b);
+CKKS::FHEdouble FHEdivfP(CKKS::CKKS_scheme& ck, double b, const CKKS::FHEdouble a);
+
+// Use the Plaintext class from fhe_types.hpp
+CKKS::FHEplain FHEencode(CKKS::CKKS_scheme& ck, const std::vector<double>& a);
+CKKS::FHEdouble FHEencrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEplain p);
+CKKS::FHEplain FHEdecrypt(CKKS::CKKS_scheme& ck, const CKKS::FHEdouble a);
+
 #endif // FHE_OPERATIONS_HPP

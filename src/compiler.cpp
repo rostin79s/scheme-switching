@@ -107,6 +107,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
 
         auto ckarg = func.getArgument(0);
+        outs() << "ckarg: " << ckarg << '\n';
 
         func.walk([&](Operation *op) {
             outs() << "\noperation: " << *op << "\n\n\n";
@@ -130,7 +131,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                     llvm::StringRef("FHE" + s.str() + "f"),
                     ArrayAttr(),
                     ArrayAttr(),
-                    mlir::ArrayRef<mlir::Value>{arg0, arg1});
+                    mlir::ArrayRef<mlir::Value>{ckarg, arg0, arg1});
 
                 cmpOp.replaceAllUsesWith(newOp.getResult(0));
                 cmpOp.erase();
@@ -147,7 +148,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                     llvm::StringRef("FHEselectf"),
                     ArrayAttr(),
                     ArrayAttr(),
-                    mlir::ArrayRef<mlir::Value>{arg0, arg1, arg2});
+                    mlir::ArrayRef<mlir::Value>{ckarg, arg0, arg1, arg2});
 
                 selectOp.replaceAllUsesWith(newOp.getResult(0));
                 selectOp.erase();
@@ -226,7 +227,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                     llvm::StringRef("FHEsubf"),
                     ArrayAttr(),
                     ArrayAttr(),
-                    mlir::ArrayRef<mlir::Value>{arg0, arg1});
+                    mlir::ArrayRef<mlir::Value>{ckarg, arg0, arg1});
 
                 // Replace the original addf operation with the new one.
                 arithOp.replaceAllUsesWith(newOp.getResult(0));
@@ -247,7 +248,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                     llvm::StringRef("FHEmulf"),
                     ArrayAttr(),
                     ArrayAttr(),
-                    mlir::ArrayRef<mlir::Value>{arg0, arg1});
+                    mlir::ArrayRef<mlir::Value>{ckarg, arg0, arg1});
 
                 // Replace the original addf operation with the new one.
                 arithOp.replaceAllUsesWith(newOp.getResult(0));
@@ -267,7 +268,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                     llvm::StringRef("FHEdivf"),
                     ArrayAttr(),
                     ArrayAttr(),
-                    mlir::ArrayRef<mlir::Value>{arg0, arg1});
+                    mlir::ArrayRef<mlir::Value>{ckarg, arg0, arg1});
 
                 // Replace the original addf operation with the new one.
                 arithOp.replaceAllUsesWith(newOp.getResult(0));
