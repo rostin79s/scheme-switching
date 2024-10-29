@@ -1,5 +1,6 @@
 #include "fhe_operations.hpp"
 #include "fhe_types.hpp"
+#include <cstddef>
 #include <openfhe.h>
 
 using namespace lbcrypto;
@@ -183,7 +184,7 @@ CKKS::FHEdouble FHEeq(FHEcontext* ctx, CKKS::FHEdouble a, CKKS::FHEdouble b){
     auto sign_prime = FHEsign(ctx, lwes_prime);
 
     std::vector<CGGI::FHEi32> ors;
-    for (int i = 0; i < sign.size(); i++){
+    for (size_t i = 0; i < sign.size(); i++){
         sign[i] = FHEor(ctx, sign[i],sign_prime[i]);
     }
     return CGGItoCKKS(ctx, sign);
