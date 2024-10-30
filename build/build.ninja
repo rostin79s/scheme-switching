@@ -49,6 +49,13 @@ cmake_ninja_workdir = /home/rostin/scheme-switching/build/
 
 build cmake_object_order_depends_target_my_custom_lib: phony || .
 
+build CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o: CXX_COMPILER__my_custom_lib_unscanned_Debug /home/rostin/scheme-switching/src/backend/cggi_operations.cpp || cmake_object_order_depends_target_my_custom_lib
+  DEP_FILE = CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o.d
+  FLAGS = -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -g -std=gnu++17
+  INCLUDES = -I/usr/local/include/openfhe -I/usr/local/include/openfhe/third-party/include -I/usr/local/include/openfhe/core -I/usr/local/include/openfhe/pke -I/usr/local/include/openfhe/binfhe
+  OBJECT_DIR = CMakeFiles/my_custom_lib.dir
+  OBJECT_FILE_DIR = CMakeFiles/my_custom_lib.dir/src/backend
+
 build CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: CXX_COMPILER__my_custom_lib_unscanned_Debug /home/rostin/scheme-switching/src/backend/ckks_operations.cpp || cmake_object_order_depends_target_my_custom_lib
   DEP_FILE = CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o.d
   FLAGS = -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -g -std=gnu++17
@@ -64,7 +71,7 @@ build CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: CXX_COMPIL
 #############################################
 # Link the static library libmy_custom_lib.a
 
-build libmy_custom_lib.a: CXX_STATIC_LIBRARY_LINKER__my_custom_lib_Debug CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o
+build libmy_custom_lib.a: CXX_STATIC_LIBRARY_LINKER__my_custom_lib_Debug CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o
   LANGUAGE_COMPILE_FLAGS = -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -g
   OBJECT_DIR = CMakeFiles/my_custom_lib.dir
   POST_BUILD = :

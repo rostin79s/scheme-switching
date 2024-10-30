@@ -53,6 +53,7 @@ else()
 endif()
 
 add_library(my_custom_lib
+    src/backend/cggi_operations.cpp
     src/backend/ckks_operations.cpp
 )
 

@@ -69,10 +69,24 @@ include CMakeFiles/my_custom_lib.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/my_custom_lib.dir/flags.make
 
+CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o: CMakeFiles/my_custom_lib.dir/flags.make
+CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o: /home/rostin/scheme-switching/src/backend/cggi_operations.cpp
+CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o: CMakeFiles/my_custom_lib.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o -MF CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o.d -o CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o -c /home/rostin/scheme-switching/src/backend/cggi_operations.cpp
+
+CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/src/backend/cggi_operations.cpp > CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.i
+
+CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/src/backend/cggi_operations.cpp -o CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.s
+
 CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: CMakeFiles/my_custom_lib.dir/flags.make
 CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: /home/rostin/scheme-switching/src/backend/ckks_operations.cpp
 CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: CMakeFiles/my_custom_lib.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o -MF CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o.d -o CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o -c /home/rostin/scheme-switching/src/backend/ckks_operations.cpp
 
 CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.i: cmake_force
@@ -85,15 +99,17 @@ CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.s: cmake_force
 
 # Object files for target my_custom_lib
 my_custom_lib_OBJECTS = \
+"CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o" \
 "CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o"
 
 # External object files for target my_custom_lib
 my_custom_lib_EXTERNAL_OBJECTS =
 
+libmy_custom_lib.a: CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o
 libmy_custom_lib.a: CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o
 libmy_custom_lib.a: CMakeFiles/my_custom_lib.dir/build.make
 libmy_custom_lib.a: CMakeFiles/my_custom_lib.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libmy_custom_lib.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libmy_custom_lib.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/my_custom_lib.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/my_custom_lib.dir/link.txt --verbose=$(VERBOSE)
 

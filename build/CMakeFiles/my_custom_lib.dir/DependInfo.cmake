@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/rostin/scheme-switching/src/backend/cggi_operations.cpp" "CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o" "gcc" "CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o.d"
   "/home/rostin/scheme-switching/src/backend/ckks_operations.cpp" "CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o" "gcc" "CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o.d"
   )
 

@@ -240,6 +240,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/backend/cggi_operations.o: src/backend/cggi_operations.cpp.o
+.PHONY : src/backend/cggi_operations.o
+
+# target to build an object file
+src/backend/cggi_operations.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o
+.PHONY : src/backend/cggi_operations.cpp.o
+
+src/backend/cggi_operations.i: src/backend/cggi_operations.cpp.i
+.PHONY : src/backend/cggi_operations.i
+
+# target to preprocess a source file
+src/backend/cggi_operations.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.i
+.PHONY : src/backend/cggi_operations.cpp.i
+
+src/backend/cggi_operations.s: src/backend/cggi_operations.cpp.s
+.PHONY : src/backend/cggi_operations.s
+
+# target to generate assembly for a file
+src/backend/cggi_operations.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.s
+.PHONY : src/backend/cggi_operations.cpp.s
+
 src/backend/ckks_operations.o: src/backend/ckks_operations.cpp.o
 .PHONY : src/backend/ckks_operations.o
 
@@ -285,6 +309,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/backend/cggi_operations.o"
+	@echo "... src/backend/cggi_operations.i"
+	@echo "... src/backend/cggi_operations.s"
 	@echo "... src/backend/ckks_operations.o"
 	@echo "... src/backend/ckks_operations.i"
 	@echo "... src/backend/ckks_operations.s"

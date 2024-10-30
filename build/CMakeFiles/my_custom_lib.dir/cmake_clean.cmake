@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o"
+  "CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o.d"
   "CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o"
   "CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o.d"
   "libmy_custom_lib.a"
