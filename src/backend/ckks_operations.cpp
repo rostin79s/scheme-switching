@@ -60,12 +60,12 @@ Context_CKKS CKKS_scheme::getContext(){
 }
 
 
-FHEplain FHEencode(FHEcontext* ctx, const std::vector<double>& a){
-    FHEplain ptxt = ctx->getCKKS().getCryptoContext()->MakeCKKSPackedPlaintext(a);
-    return FHEplain(ptxt);
+FHEplainf FHEencode(FHEcontext* ctx, const std::vector<double>& a){
+    FHEplainf ptxt = ctx->getCKKS().getCryptoContext()->MakeCKKSPackedPlaintext(a);
+    return FHEplainf(ptxt);
 }
 
-FHEdouble FHEencrypt(FHEcontext* ctx, const FHEplain a){
+FHEdouble FHEencrypt(FHEcontext* ctx, const FHEplainf a){
     auto result = ctx->getCKKS().getCryptoContext()->Encrypt(ctx->getCKKS().getKeys().publicKey, a.getPlaintext());
     return FHEdouble(result);
 }
@@ -74,11 +74,10 @@ CKKS::FHEdouble FHEencrypt(FHEcontext* ctx, const double a){
     return FHEencrypt(ctx, FHEencode(ctx, {a}));
 }
 
-FHEplain FHEdecrypt(FHEcontext* ctx, const FHEdouble a){
+FHEplainf FHEdecrypt(FHEcontext* ctx, const FHEdouble a){
     Plaintext result;
     ctx->getCKKS().getCryptoContext()->Decrypt(ctx->getCKKS().getKeys().secretKey, a.getCiphertext(), &result);
-    FHEplain res = result;
-    return FHEplain(result);
+    return FHEplainf(result);
 }
 
 // Arithmetic Operations for FHEdouble
@@ -180,15 +179,16 @@ CKKS::FHEdouble FHEeq(FHEcontext* ctx, CKKS::FHEdouble a, CKKS::FHEdouble b){
     auto lwes = CKKStoCGGI(ctx, dif);
     auto sign = FHEsign(ctx, lwes);
 
-    auto dif_prime = FHEsubfP(ctx, 1.0,dif);
+    auto dif_prime = FHEsubf(ctx, b,a);
     auto lwes_prime = CKKStoCGGI(ctx, dif_prime);
     auto sign_prime = FHEsign(ctx, lwes_prime);
 
     std::vector<CGGI::FHEi32> ors;
     for (size_t i = 0; i < sign.size(); i++){
-        sign[i] = FHEor(ctx, sign[i],sign_prime[i]);
+        ors.push_back(CGGI::FHEor(ctx, sign[i],sign_prime[i]));
+        ors[i] = CGGI::FHEnot(ctx, ors[i]);
     }
-    return CGGItoCKKS(ctx, sign);
+    return CGGItoCKKS(ctx, ors);
     
 
 }

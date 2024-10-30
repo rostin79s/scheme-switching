@@ -1,3 +1,4 @@
+#include "binfhe-constants.h"
 #include "fhe_operations.hpp"
 #include "fhe_types.hpp"
 #include <openfhe.h>
@@ -19,6 +20,9 @@ CGGI_scheme::CGGI_scheme(CKKS::Context_CKKS ckcontext) {
     params.SetNumSlotsCKKS(batchSize);
     params.SetNumValues(batchSize);
     auto privateKeyFHEW = ckcontext.getCryptoContext()->EvalSchemeSwitchingSetup(params);
+
+    context.setKeys(privateKeyFHEW);
+
     context.setCryptoContext(ckcontext.getCryptoContext()->GetBinCCForSchemeSwitch());
     context.getCryptoContext()->BTKeyGen(privateKeyFHEW);
     ckcontext.getCryptoContext()->EvalSchemeSwitchingKeyGen(ckcontext.getKeys(), privateKeyFHEW);
@@ -34,10 +38,38 @@ Context_CGGI CGGI_scheme::getContext(){
     return context;
 }
 
+FHEplaini FHEdecrypt(FHEcontext* ctx, FHEi32 a, int p){
+    LWEPlaintext result;
+    std::cout << "sag" << std::endl;
+    ctx->getCGGI().getCryptoContext()->Decrypt(ctx->getCGGI().getKeys(), a.getCiphertext(),&result, p);
+    std::cout << "lol" << std::endl;
+    return FHEplaini(result);
+}
+
+FHEi32 FHEnot(FHEcontext* ctx, FHEi32 a){
+    auto res = ctx->getCGGI().getCryptoContext()->EvalNOT(a.getCiphertext());
+    return FHEi32(res);
+}
+
 FHEi32 FHEor(FHEcontext* ctx, FHEi32 a, FHEi32 b){
     auto res = ctx->getCGGI().getCryptoContext()->EvalBinGate(OR,a.getCiphertext(),b.getCiphertext());
     return FHEi32(res);
 
+}
+
+FHEi32 FHExor(FHEcontext* ctx, FHEi32 a, FHEi32 b){
+    auto res = ctx->getCGGI().getCryptoContext()->EvalBinGate(XOR,a.getCiphertext(),b.getCiphertext());
+    return FHEi32(res);
+}
+
+FHEi32 FHEand(FHEcontext* ctx, FHEi32 a, FHEi32 b){
+    auto res = ctx->getCGGI().getCryptoContext()->EvalBinGate(AND,a.getCiphertext(),b.getCiphertext());
+    return FHEi32(res);
+}
+
+FHEi32 FHExnor(FHEcontext* ctx, FHEi32 a, FHEi32 b){
+    auto res = ctx->getCGGI().getCryptoContext()->EvalBinGate(XNOR,a.getCiphertext(),b.getCiphertext());
+    return FHEi32(res);
 }
 
     

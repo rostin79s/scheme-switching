@@ -18,7 +18,8 @@
 						0,
 						1,
 						2,
-						3
+						3,
+						4
 					]
 				}
 			],
@@ -36,7 +37,8 @@
 						0,
 						1,
 						2,
-						3
+						3,
+						4
 					]
 				}
 			],
@@ -45,28 +47,35 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "example::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-example-75423f38a5d22dca76b6.json",
+					"jsonFile" : "target-example-7bc7cf4b31b27da501ac.json",
 					"name" : "example",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
+					"id" : "execute::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-execute-9a7e17ff1cf63d9288e9.json",
+					"name" : "execute",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
 					"id" : "ir::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-ir-83878dc8be6d2a4f6b74.json",
+					"jsonFile" : "target-ir-1d5b0a5674c9a6a26c62.json",
 					"name" : "ir",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "main::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-main-29fcf39151ef414370d8.json",
+					"jsonFile" : "target-main-20d16ae57773d0ccdb02.json",
 					"name" : "main",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "my_custom_lib::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-my_custom_lib-4a3580a6e535405466bc.json",
+					"jsonFile" : "target-my_custom_lib-6bc272a18816d061deaf.json",
 					"name" : "my_custom_lib",
 					"projectIndex" : 0
 				}

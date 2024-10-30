@@ -10,6 +10,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/rostin/scheme-switching/src/backend/cggi_operations.cpp" "CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o" "gcc" "CMakeFiles/my_custom_lib.dir/src/backend/cggi_operations.cpp.o.d"
   "/home/rostin/scheme-switching/src/backend/ckks_operations.cpp" "CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o" "gcc" "CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o.d"
+  "/home/rostin/scheme-switching/test/output.cpp" "CMakeFiles/my_custom_lib.dir/test/output.cpp.o" "gcc" "CMakeFiles/my_custom_lib.dir/test/output.cpp.o.d"
+  "/home/rostin/scheme-switching/test/test.cpp" "CMakeFiles/my_custom_lib.dir/test/test.cpp.o" "gcc" "CMakeFiles/my_custom_lib.dir/test/test.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

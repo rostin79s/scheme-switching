@@ -55,11 +55,14 @@ endif()
 add_library(my_custom_lib
     src/backend/cggi_operations.cpp
     src/backend/ckks_operations.cpp
+    test/output.cpp
+    test/test.cpp
 )
 
 target_link_libraries(my_custom_lib ${OpenFHE_LIBRARIES})
 
 ### ADD YOUR EXECUTABLE(s) HERE
+add_executable( execute test/execute.cpp )
 add_executable( ir ir.cpp )
 add_executable( main main.cpp )
 add_executable( example example.cpp )
@@ -68,3 +71,4 @@ add_executable( example example.cpp )
 ### add_executable( test demo-simple-example.cpp )
 
 target_link_libraries(ir my_custom_lib ${OpenFHE_LIBRARIES})
+target_link_libraries(execute my_custom_lib ${OpenFHE_LIBRARIES})

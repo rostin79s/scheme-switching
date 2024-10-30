@@ -130,6 +130,19 @@ my_custom_lib/fast:
 .PHONY : my_custom_lib/fast
 
 #=============================================================================
+# Target rules for targets named execute
+
+# Build rule for target.
+execute: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 execute
+.PHONY : execute
+
+# fast build rule for target.
+execute/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/execute.dir/build.make CMakeFiles/execute.dir/build
+.PHONY : execute/fast
+
+#=============================================================================
 # Target rules for targets named ir
 
 # Build rule for target.
@@ -288,6 +301,78 @@ src/backend/ckks_operations.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.s
 .PHONY : src/backend/ckks_operations.cpp.s
 
+test/execute.o: test/execute.cpp.o
+.PHONY : test/execute.o
+
+# target to build an object file
+test/execute.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/execute.dir/build.make CMakeFiles/execute.dir/test/execute.cpp.o
+.PHONY : test/execute.cpp.o
+
+test/execute.i: test/execute.cpp.i
+.PHONY : test/execute.i
+
+# target to preprocess a source file
+test/execute.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/execute.dir/build.make CMakeFiles/execute.dir/test/execute.cpp.i
+.PHONY : test/execute.cpp.i
+
+test/execute.s: test/execute.cpp.s
+.PHONY : test/execute.s
+
+# target to generate assembly for a file
+test/execute.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/execute.dir/build.make CMakeFiles/execute.dir/test/execute.cpp.s
+.PHONY : test/execute.cpp.s
+
+test/output.o: test/output.cpp.o
+.PHONY : test/output.o
+
+# target to build an object file
+test/output.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/test/output.cpp.o
+.PHONY : test/output.cpp.o
+
+test/output.i: test/output.cpp.i
+.PHONY : test/output.i
+
+# target to preprocess a source file
+test/output.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/test/output.cpp.i
+.PHONY : test/output.cpp.i
+
+test/output.s: test/output.cpp.s
+.PHONY : test/output.s
+
+# target to generate assembly for a file
+test/output.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/test/output.cpp.s
+.PHONY : test/output.cpp.s
+
+test/test.o: test/test.cpp.o
+.PHONY : test/test.o
+
+# target to build an object file
+test/test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/test/test.cpp.o
+.PHONY : test/test.cpp.o
+
+test/test.i: test/test.cpp.i
+.PHONY : test/test.i
+
+# target to preprocess a source file
+test/test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/test/test.cpp.i
+.PHONY : test/test.cpp.i
+
+test/test.s: test/test.cpp.s
+.PHONY : test/test.s
+
+# target to generate assembly for a file
+test/test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/my_custom_lib.dir/build.make CMakeFiles/my_custom_lib.dir/test/test.cpp.s
+.PHONY : test/test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -297,6 +382,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... example"
+	@echo "... execute"
 	@echo "... ir"
 	@echo "... main"
 	@echo "... my_custom_lib"
@@ -315,6 +401,15 @@ help:
 	@echo "... src/backend/ckks_operations.o"
 	@echo "... src/backend/ckks_operations.i"
 	@echo "... src/backend/ckks_operations.s"
+	@echo "... test/execute.o"
+	@echo "... test/execute.i"
+	@echo "... test/execute.s"
+	@echo "... test/output.o"
+	@echo "... test/output.i"
+	@echo "... test/output.s"
+	@echo "... test/test.o"
+	@echo "... test/test.i"
+	@echo "... test/test.s"
 .PHONY : help
 
 

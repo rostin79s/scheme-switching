@@ -36,8 +36,11 @@ namespace CGGI {
     // Boolean Operations for FHEi32
     FHEi32 FHEand(FHEcontext* ctx, FHEi32 a, FHEi32 b);
     FHEi32 FHEor(FHEcontext* ctx, FHEi32 a, FHEi32 b);
-    FHEi32 FHEXor(FHEcontext* ctx, FHEi32 a, FHEi32 b);
+    FHEi32 FHExor(FHEcontext* ctx, FHEi32 a, FHEi32 b);
+    FHEi32 FHExnor(FHEcontext* ctx, FHEi32 a, FHEi32 b);
     FHEi32 FHEnot(FHEcontext* ctx, FHEi32 a);
+
+    FHEplaini FHEdecrypt(FHEcontext* ctx, const FHEi32 a, int p);
 }
 
 namespace CKKS {
@@ -69,10 +72,10 @@ namespace CKKS {
     FHEdouble FHEdivfP(FHEcontext* ctx, double b, const FHEdouble a);
 
     // Use the Plaintext class from fhe_types.hpp
-    FHEplain FHEencode(FHEcontext* ctx, const std::vector<double>& a);
-    FHEdouble FHEencrypt(FHEcontext* ctx, const CKKS::FHEplain p);
+    FHEplainf FHEencode(FHEcontext* ctx, const std::vector<double>& a);
+    FHEdouble FHEencrypt(FHEcontext* ctx, const CKKS::FHEplainf p);
     CKKS::FHEdouble FHEencrypt(FHEcontext* ctx, const double a);
-    FHEplain FHEdecrypt(FHEcontext* ctx, const FHEdouble a);
+    FHEplainf FHEdecrypt(FHEcontext* ctx, const FHEdouble a);
 }
 
 

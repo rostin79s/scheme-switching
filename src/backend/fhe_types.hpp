@@ -33,10 +33,10 @@ private:
     lbcrypto::Ciphertext<lbcrypto::DCRTPoly> ciphertext;
 };
 
-class FHEplain {
+class FHEplainf {
 public:
-    FHEplain() = default;
-    FHEplain(const lbcrypto::Plaintext& ptxt) : plaintext(ptxt) {}
+    FHEplainf() = default;
+    FHEplainf(const lbcrypto::Plaintext& ptxt) : plaintext(ptxt) {}
     lbcrypto::Plaintext getPlaintext() const { return plaintext; }
 
 private:
@@ -55,6 +55,7 @@ public:
     std::shared_ptr<lbcrypto::BinFHEContext> getCryptoContext() const { return ccLWE; }
     void setCryptoContext(const std::shared_ptr<lbcrypto::BinFHEContext>& ccLWE) { this->ccLWE = ccLWE; }
     lbcrypto::LWEPrivateKey getKeys() const { return keysLWE; }
+    void setKeys(const lbcrypto::LWEPrivateKey& keys) { this->keysLWE = keys; }
 private:
     std::shared_ptr<lbcrypto::BinFHEContext> ccLWE;
     lbcrypto::LWEPrivateKey keysLWE;
@@ -68,6 +69,16 @@ public:
 
 private:
     lbcrypto::LWECiphertext ciphertext;
+};
+
+class FHEplaini {
+public:
+    FHEplaini() = default;
+    FHEplaini(const lbcrypto::LWEPlaintext& ptxt) : plaintext(ptxt) {}
+    lbcrypto::LWEPlaintext getPlaintext() const { return plaintext; }
+
+private:
+    lbcrypto::LWEPlaintext plaintext;
 };
 
 } // namespace CGGI

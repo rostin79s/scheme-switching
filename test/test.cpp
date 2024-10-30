@@ -1,0 +1,10 @@
+#include "test_plain.hpp"
+double rostin(double a, double b){
+    if (a == b){
+        return 3;
+    }
+    else{
+        return 4;
+    }
+    return b;
+}

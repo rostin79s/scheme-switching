@@ -22,7 +22,7 @@ int main() {
 	FHEdouble arg0 = FHEencrypt(ctx, 2); 
 	FHEdouble arg1 = FHEencrypt(ctx,3);
     FHEdouble result = rostin(ctx, arg0, arg1);
-    FHEplain res = FHEdecrypt(ctx,result);
+    FHEplainf res = FHEdecrypt(ctx,result);
     std::cout << "Result: " << res.getPlaintext() << std::endl;
     return 0;
 }

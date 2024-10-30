@@ -5,7 +5,8 @@ original_dir=$(pwd)
 
 cd build && cmake ..
 make
-./ir
+# ./ir
+./execute
 # ./main
 # ./example
 cd "$original_dir"
