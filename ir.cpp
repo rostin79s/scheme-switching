@@ -19,7 +19,7 @@ int main() {
 	CKKS_scheme ck(2,50,1);
     CGGI_scheme cg(ck.getContext());
     FHEcontext* ctx = new FHEcontext(ck.getContext(), cg.getContext());
-	FHEdouble arg0 = FHEencrypt(ctx, 2);
+	FHEdouble arg0 = FHEencrypt(ctx, 2); 
 	FHEdouble arg1 = FHEencrypt(ctx,3);
     FHEdouble result = rostin(ctx, arg0, arg1);
     FHEplain res = FHEdecrypt(ctx,result);

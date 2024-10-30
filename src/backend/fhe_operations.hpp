@@ -5,23 +5,23 @@
 
 class FHEcontext {
 public:
-    FHEcontext() : ck(nullptr), cg(nullptr) {}
-    FHEcontext(CKKS::Context_CKKS* ck, CGGI::Context_CGGI* cg) : ck(ck), cg(cg) {}
-    CKKS::Context_CKKS* getCKKS() { return ck; }
-    CGGI::Context_CGGI* getCGGI() { return cg; }
+    FHEcontext() : ck(), cg() {}
+    FHEcontext(CKKS::Context_CKKS ck, CGGI::Context_CGGI cg) : ck(ck), cg(cg) {}
+    CKKS::Context_CKKS getCKKS() { return ck; }
+    CGGI::Context_CGGI getCGGI() { return cg; }
 private:
-    CKKS::Context_CKKS* ck;
-    CGGI::Context_CGGI* cg;
+    CKKS::Context_CKKS ck;
+    CGGI::Context_CGGI cg;
     
 };
 
 namespace CGGI {
     class CGGI_scheme {
     public:
-        CGGI_scheme(CKKS::Context_CKKS* context);
-        Context_CGGI* getContext();
+        CGGI_scheme(CKKS::Context_CKKS context);
+        Context_CGGI getContext();
     private:
-        Context_CGGI* context;
+        Context_CGGI context;
     };
 
     FHEi32 FHEaddi(FHEcontext* ctx, FHEi32 a, FHEi32 b);
@@ -44,11 +44,11 @@ namespace CKKS {
     class CKKS_scheme {
     public:
         CKKS_scheme(int multDepth = 17, int scaleModSize = 50, int batchSize = 1);
-        Context_CKKS* getContext();
+        Context_CKKS getContext();
         std::vector<CGGI::FHEi32> FHEsign(std::vector<CGGI::FHEi32> lwes);
 
     private:
-        Context_CKKS* context;
+        Context_CKKS context;
         int multDepth;
         int scaleModSize;
         int batchSize;

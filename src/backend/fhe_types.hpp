@@ -16,7 +16,7 @@ public:
     void setKeys(const lbcrypto::KeyPair<lbcrypto::DCRTPoly>& keys) { this->keys = keys; }
     int getBatchSize() const { return batchSize; }
     void setBatchSize(int batchSize) { this->batchSize = batchSize; }
-private:
+    
     lbcrypto::CryptoContext<lbcrypto::DCRTPoly> cc;
     lbcrypto::KeyPair<lbcrypto::DCRTPoly> keys;
     int batchSize;

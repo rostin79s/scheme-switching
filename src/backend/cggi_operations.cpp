@@ -6,11 +6,11 @@ using namespace lbcrypto;
 
 namespace CGGI { 
 
-CGGI_scheme::CGGI_scheme(CKKS::Context_CKKS* ckcontext) {
+CGGI_scheme::CGGI_scheme(CKKS::Context_CKKS ckcontext) {
     SecurityLevel sl      = HEStd_NotSet;
     BINFHE_PARAMSET slBin = TOY;
     uint32_t logQ_ccLWE   = 25;
-    int batchSize = ckcontext->getBatchSize();
+    int batchSize = ckcontext.getBatchSize();
 
     SchSwchParams params;
     params.SetSecurityLevelCKKS(sl);
@@ -18,24 +18,24 @@ CGGI_scheme::CGGI_scheme(CKKS::Context_CKKS* ckcontext) {
     params.SetCtxtModSizeFHEWLargePrec(logQ_ccLWE);
     params.SetNumSlotsCKKS(batchSize);
     params.SetNumValues(batchSize);
-    auto privateKeyFHEW = ckcontext->getCryptoContext()->EvalSchemeSwitchingSetup(params);
-    context->setCryptoContext(ckcontext->getCryptoContext()->GetBinCCForSchemeSwitch());
-    context->getCryptoContext()->BTKeyGen(privateKeyFHEW);
-    ckcontext->getCryptoContext()->EvalSchemeSwitchingKeyGen(ckcontext->getKeys(), privateKeyFHEW);
+    auto privateKeyFHEW = ckcontext.getCryptoContext()->EvalSchemeSwitchingSetup(params);
+    context.setCryptoContext(ckcontext.getCryptoContext()->GetBinCCForSchemeSwitch());
+    context.getCryptoContext()->BTKeyGen(privateKeyFHEW);
+    ckcontext.getCryptoContext()->EvalSchemeSwitchingKeyGen(ckcontext.getKeys(), privateKeyFHEW);
 
     auto modulus_LWE     = 1 << logQ_ccLWE;
-    auto beta            = context->getCryptoContext()->GetBeta().ConvertToInt();
+    auto beta            = context.getCryptoContext()->GetBeta().ConvertToInt();
     auto pLWE2           = modulus_LWE / (2 * beta);  // Large precision
     double scaleSignFHEW = 1.0;
-    ckcontext->getCryptoContext()->EvalCompareSwitchPrecompute(pLWE2, scaleSignFHEW);
+    ckcontext.getCryptoContext()->EvalCompareSwitchPrecompute(pLWE2, scaleSignFHEW);
 }
 
-Context_CGGI* CGGI_scheme::getContext(){
+Context_CGGI CGGI_scheme::getContext(){
     return context;
 }
 
 FHEi32 FHEor(FHEcontext* ctx, FHEi32 a, FHEi32 b){
-    auto res = ctx->getCGGI()->getCryptoContext()->EvalBinGate(OR,a.getCiphertext(),b.getCiphertext());
+    auto res = ctx->getCGGI().getCryptoContext()->EvalBinGate(OR,a.getCiphertext(),b.getCiphertext());
     return FHEi32(res);
 
 }
@@ -43,35 +43,35 @@ FHEi32 FHEor(FHEcontext* ctx, FHEi32 a, FHEi32 b){
     
     // Arithmetic Operations for FHEdouble
 FHEi32 FHEaddi(FHEcontext* ctx, FHEi32 a, FHEi32 b) {
-    ctx->getCGGI()->getCryptoContext()->GetLWEScheme()->EvalAddEq(a.getCiphertext(), b.getCiphertext());
+    ctx->getCGGI().getCryptoContext()->GetLWEScheme()->EvalAddEq(a.getCiphertext(), b.getCiphertext());
     return a;
 }
 
 FHEi32 FHEsubi(FHEcontext* ctx, FHEi32 a, FHEi32 b) {
-    ctx->getCGGI()->getCryptoContext()->GetLWEScheme()->EvalSubEq(a.getCiphertext(), b.getCiphertext());
+    ctx->getCGGI().getCryptoContext()->GetLWEScheme()->EvalSubEq(a.getCiphertext(), b.getCiphertext());
     return a;
 }
 
 // Arithmetic Operations with Plaintext
 FHEi32 FHEaddiP(FHEcontext* ctx, FHEi32 a, int b) {
-    ctx->getCGGI()->getCryptoContext()->GetLWEScheme()->EvalAddConstEq(a.getCiphertext(), b);
+    ctx->getCGGI().getCryptoContext()->GetLWEScheme()->EvalAddConstEq(a.getCiphertext(), b);
     return a;
 }
 
 FHEi32 FHEsubiP(FHEcontext* ctx, FHEi32 a, int b) {
-    ctx->getCGGI()->getCryptoContext()->GetLWEScheme()->EvalSubConstEq(a.getCiphertext(), b);
+    ctx->getCGGI().getCryptoContext()->GetLWEScheme()->EvalSubConstEq(a.getCiphertext(), b);
     return a;
 }
 
 FHEi32 FHEsubiP(FHEcontext* ctx, int b, FHEi32 a) {
-    auto temp = ctx->getCGGI()->getCryptoContext()->EvalNOT(a.getCiphertext());
-    ctx->getCGGI()->getCryptoContext()->GetLWEScheme()->EvalAddConstEq(temp, 1);
-    ctx->getCGGI()->getCryptoContext()->GetLWEScheme()->EvalAddConstEq(temp,b);
+    auto temp = ctx->getCGGI().getCryptoContext()->EvalNOT(a.getCiphertext());
+    ctx->getCGGI().getCryptoContext()->GetLWEScheme()->EvalAddConstEq(temp, 1);
+    ctx->getCGGI().getCryptoContext()->GetLWEScheme()->EvalAddConstEq(temp,b);
     return FHEi32(temp);
 }
 
 FHEi32 FHEmuliP(FHEcontext* ctx, FHEi32 a, int b) {
-    ctx->getCGGI()->getCryptoContext()->GetLWEScheme()->EvalMultConstEq(a.getCiphertext(), b);
+    ctx->getCGGI().getCryptoContext()->GetLWEScheme()->EvalMultConstEq(a.getCiphertext(), b);
     return a;
 }
 
