@@ -5,7 +5,7 @@
 using namespace CKKS;
 using namespace CGGI;
 
-FHEdouble rostin(CKKS_scheme& v1, FHEdouble v2, FHEdouble v3) {
+FHEdouble rostin(FHEcontext* v1, FHEdouble v2, FHEdouble v3) {
   size_t v4 = 10;
   size_t v5 = 0;
   size_t v6 = 1;

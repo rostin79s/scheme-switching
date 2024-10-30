@@ -38,9 +38,7 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
     parameters.SetKeySwitchTechnique(HYBRID);
     parameters.SetNumLargeDigits(3);
 
-    std::cout << "sag" << std::endl;
     context.cc = GenCryptoContext(parameters);
-    std::cout << "sag" << std::endl;
     context.setBatchSize(batchSize);
 
     context.getCryptoContext()->Enable(PKE);

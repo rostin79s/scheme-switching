@@ -81,7 +81,7 @@ CKKS::FHEdouble CGGItoCKKS(FHEcontext* ctx, std::vector<CGGI::FHEi32> a);
 
 
 CKKS::FHEdouble FHEeq(FHEcontext* ctx, CKKS::FHEdouble a, CKKS::FHEdouble b);
-CKKS::FHEdouble FHEselect(CKKS::CKKS_scheme& ck, CKKS::FHEdouble sign, CKKS::FHEdouble value1, CKKS::FHEdouble value2);
+CKKS::FHEdouble FHEselect(FHEcontext* ctx, CKKS::FHEdouble sign, CKKS::FHEdouble value1, CKKS::FHEdouble value2);
 
 
 #endif // FHE_OPERATIONS_HPP

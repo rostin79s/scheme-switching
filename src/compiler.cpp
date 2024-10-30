@@ -54,7 +54,8 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
         ModuleOp module = getOperation();
         OpBuilder builder(module.getContext());
 
-        auto fhecontext = emitc::OpaqueType::get(builder.getContext(), "CKKS_scheme&");
+        auto context = emitc::OpaqueType::get(builder.getContext(), "FHEcontext");
+        auto fhecontext = emitc::PointerType::get(context);
         auto fhedouble = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
 
         // Iterate over functions in the module.
