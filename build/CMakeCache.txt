@@ -230,7 +230,13 @@ FHEcompiler_IS_TOP_LEVEL:STATIC=ON
 FHEcompiler_SOURCE_DIR:STATIC=/home/rostin/scheme-switching
 
 //No help, variable specified on the command line.
+MATHBACKEND:UNINITIALIZED=6
+
+//No help, variable specified on the command line.
 NATIVE_SIZE:UNINITIALIZED=32
+
+//No help, variable specified on the command line.
+OMP_NUM_THREADS:UNINITIALIZED=24
 
 //The directory containing a CMake configuration file for OpenFHE.
 OpenFHE_DIR:PATH=/usr/local/lib/OpenFHE
@@ -239,7 +245,10 @@ OpenFHE_DIR:PATH=/usr/local/lib/OpenFHE
 WITH_NATIVEOPT:UNINITIALIZED=ON
 
 //No help, variable specified on the command line.
-WITH_OPENMP:UNINITIALIZED=OFF
+WITH_NTL:UNINITIALIZED=ON
+
+//No help, variable specified on the command line.
+WITH_OPENMP:UNINITIALIZED=On
 
 //Dependencies for the target
 my_custom_lib_LIB_DEPENDS:STATIC=general;OPENFHEcore;general;OPENFHEpke;general;OPENFHEbinfhe;general;-fopenmp=libiomp5;general;OPENFHEcore;general;OPENFHEpke;general;OPENFHEbinfhe;general;-fopenmp=libiomp5;

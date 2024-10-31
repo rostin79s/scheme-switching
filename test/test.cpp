@@ -1,10 +1,10 @@
 #include "test_plain.hpp"
 double rostin(double a, double b){
     if (a == b){
-        return 100;
+        return a;
     }
     else{
-        return 200;
+        return b;
     }
     return b;
 }

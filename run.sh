@@ -4,7 +4,7 @@ original_dir=$(pwd)
 # ./test
 
 cd build 
-cmake -DNATIVE_SIZE=32 -DWITH_NATIVEOPT=ON -DCMAKE_C_COMPILER=clang-12 -DCMAKE_CXX_COMPILER=clang++-12 -DWITH_OPENMP=OFF ..
+cmake -DNATIVE_SIZE=32 -DCMAKE_C_COMPILER=clang-12 -DCMAKE_CXX_COMPILER=clang++-12 -DWITH_NTL=ON -DOMP_NUM_THREADS=24 ..
 make
 # ./ir
 ./execute

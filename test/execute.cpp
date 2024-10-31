@@ -1,6 +1,7 @@
 #include "../src/backend/fhe_operations.hpp"
 #include <vector>
 #include <iostream>
+#include <chrono>
 
 #include "test.hpp"
 #include "test_plain.hpp"
@@ -10,16 +11,28 @@ using namespace CGGI;
 
 int main(){
     double a = 2;
-    double b = 2;
+    double b = 4;
     double res_plain = rostin(a, b);
     std::cout << "Result: " << res_plain << std::endl;
 
-    CKKS_scheme ck(40,50,1);
+    CKKS_scheme ck(15,50,1);
     CGGI_scheme cg(ck.getContext());
     FHEcontext* ctx = new FHEcontext(ck.getContext(), cg.getContext());
 	FHEdouble arg0 = FHEencrypt(ctx,a); 
 	FHEdouble arg1 = FHEencrypt(ctx,b);
+
+    std::cout << "Starting computation" << std::endl;
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     FHEdouble result = rostin(ctx, arg0, arg1);
+
+    auto end = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> duration = end - start;
+
+    std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
+
     FHEplainf res = FHEdecrypt(ctx,result);
     std::cout << "Result: " << res.getPlaintext() << std::endl;
     return 0;

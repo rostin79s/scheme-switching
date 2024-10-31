@@ -8,8 +8,8 @@ using namespace lbcrypto;
 namespace CGGI { 
 
 CGGI_scheme::CGGI_scheme(CKKS::Context_CKKS ckcontext) {
-    SecurityLevel sl      = HEStd_NotSet;
-    BINFHE_PARAMSET slBin = TOY;
+    SecurityLevel sl      = lbcrypto::HEStd_128_classic;
+    BINFHE_PARAMSET slBin = lbcrypto::STD128;
     uint32_t logQ_ccLWE   = 25;
     int batchSize = ckcontext.getBatchSize();
 

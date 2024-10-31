@@ -1,9 +1,9 @@
 CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: \
   /home/rostin/scheme-switching/src/backend/ckks_operations.cpp \
-  /home/rostin/scheme-switching/src/backend/fhe_operations.hpp \
-  /home/rostin/scheme-switching/src/backend/fhe_types.hpp \
-  /usr/local/include/openfhe/pke/openfhe.h \
-  /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/initializer_list \
+  /usr/local/include/openfhe/pke/constants-defs.h \
+  /usr/local/include/openfhe/core/math/hal/basicint.h \
+  /usr/local/include/openfhe/core/config_core.h \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/cstdint \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12/bits/c++config.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12/bits/os_defines.h \
   /usr/include/features.h /usr/include/features-time64.h \
@@ -16,6 +16,19 @@ CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12/bits/cpu_defines.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/pstl/pstl_config.h \
   /usr/include/tbb/tbb.h \
+  /usr/lib/llvm-12/lib/clang/12.0.1/include/stdint.h \
+  /usr/include/stdint.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /home/rostin/scheme-switching/src/backend/fhe_operations.hpp \
+  /home/rostin/scheme-switching/src/backend/fhe_types.hpp \
+  /usr/local/include/openfhe/pke/openfhe.h \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/initializer_list \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/memory \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/allocator.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12/bits/c++allocator.h \
@@ -49,15 +62,6 @@ CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/stl_raw_storage_iter.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/align.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bit \
-  /usr/lib/llvm-12/lib/clang/12.0.1/include/stdint.h \
-  /usr/include/stdint.h \
-  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/types.h \
-  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
-  /usr/include/x86_64-linux-gnu/bits/time64.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/uses_allocator.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/unique_ptr.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/tuple \
@@ -133,7 +137,6 @@ CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/pstl/execution_defs.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/string \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/char_traits.h \
-  /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/cstdint \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/localefwd.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12/bits/c++locale.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/clocale \
@@ -183,11 +186,9 @@ CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: \
   /usr/local/include/openfhe/core/lattice/hal/default/ilparams.h \
   /usr/local/include/openfhe/core/lattice/hal/elemparams.h \
   /usr/local/include/openfhe/core/math/math-hal.h \
-  /usr/local/include/openfhe/core/config_core.h \
   /usr/local/include/openfhe/core/version.h \
   /usr/local/include/openfhe/core/math/hal/vector.h \
   /usr/local/include/openfhe/core/utils/inttypes.h \
-  /usr/local/include/openfhe/core/math/hal/basicint.h \
   /usr/local/include/openfhe/core/math/hal/bigintbackend.h \
   /usr/local/include/openfhe/core/math/hal/bigintfxd/backendfxd.h \
   /usr/local/include/openfhe/core/math/hal/bigintdyn/backenddyn.h \
@@ -381,7 +382,6 @@ CMakeFiles/my_custom_lib.dir/src/backend/ckks_operations.cpp.o: \
   /usr/local/include/openfhe/pke/encoding/plaintext.h \
   /usr/local/include/openfhe/pke/encoding/plaintext-fwd.h \
   /usr/local/include/openfhe/pke/constants.h \
-  /usr/local/include/openfhe/pke/constants-defs.h \
   /usr/local/include/openfhe/core/lattice/constants-lattice.h \
   /usr/local/include/openfhe/pke/scheme/scheme-id.h \
   /usr/local/include/openfhe/pke/encoding/encodings.h \

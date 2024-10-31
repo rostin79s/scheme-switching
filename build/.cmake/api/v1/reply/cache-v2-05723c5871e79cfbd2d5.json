@@ -1242,6 +1242,18 @@
 			"value" : "/home/rostin/scheme-switching"
 		},
 		{
+			"name" : "MATHBACKEND",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "UNINITIALIZED",
+			"value" : "6"
+		},
+		{
 			"name" : "NATIVE_SIZE",
 			"properties" : 
 			[
@@ -1252,6 +1264,18 @@
 			],
 			"type" : "UNINITIALIZED",
 			"value" : "32"
+		},
+		{
+			"name" : "OMP_NUM_THREADS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "UNINITIALIZED",
+			"value" : "24"
 		},
 		{
 			"name" : "OpenFHE_DIR",
@@ -1278,6 +1302,18 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "WITH_NTL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "UNINITIALIZED",
+			"value" : "ON"
+		},
+		{
 			"name" : "WITH_OPENMP",
 			"properties" : 
 			[
@@ -1287,7 +1323,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "OFF"
+			"value" : "On"
 		},
 		{
 			"name" : "_CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED",

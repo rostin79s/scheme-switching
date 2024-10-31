@@ -1,3 +1,4 @@
+#include "constants-defs.h"
 #include "fhe_operations.hpp"
 #include "fhe_types.hpp"
 #include <cstddef>
@@ -15,8 +16,7 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
 
     // uint32_t scaleModSize = 50;
     uint32_t firstModSize = 60;
-    uint32_t ringDim      = 8192;
-    SecurityLevel sl      = HEStd_NotSet;
+    SecurityLevel sl      = lbcrypto::HEStd_128_classic;
     // BINFHE_PARAMSET slBin = TOY;
     // uint32_t logQ_ccLWE   = 25;
     // uint32_t slots        = 1;  
@@ -32,7 +32,6 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
     parameters.SetFirstModSize(firstModSize);
     parameters.SetScalingTechnique(scTech);
     parameters.SetSecurityLevel(sl);
-    parameters.SetRingDim(ringDim);
     parameters.SetBatchSize(batchSize);
     parameters.SetSecretKeyDist(UNIFORM_TERNARY);
     parameters.SetKeySwitchTechnique(HYBRID);
