@@ -4,196 +4,213 @@
 CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
   /home/rostin/scheme-switching/src/backend/fhe_operations.hpp \
   /home/rostin/scheme-switching/src/backend/fhe_types.hpp \
+  /usr/include/c++/12/algorithm \
+  /usr/include/c++/12/array \
+  /usr/include/c++/12/backward/auto_ptr.h \
+  /usr/include/c++/12/backward/binders.h \
+  /usr/include/c++/12/bit \
+  /usr/include/c++/12/bits/algorithmfwd.h \
+  /usr/include/c++/12/bits/align.h \
+  /usr/include/c++/12/bits/alloc_traits.h \
+  /usr/include/c++/12/bits/allocated_ptr.h \
+  /usr/include/c++/12/bits/allocator.h \
+  /usr/include/c++/12/bits/atomic_base.h \
+  /usr/include/c++/12/bits/atomic_lockfree_defines.h \
+  /usr/include/c++/12/bits/basic_ios.h \
+  /usr/include/c++/12/bits/basic_ios.tcc \
+  /usr/include/c++/12/bits/basic_string.h \
+  /usr/include/c++/12/bits/basic_string.tcc \
+  /usr/include/c++/12/bits/char_traits.h \
+  /usr/include/c++/12/bits/charconv.h \
+  /usr/include/c++/12/bits/chrono.h \
+  /usr/include/c++/12/bits/codecvt.h \
+  /usr/include/c++/12/bits/concept_check.h \
+  /usr/include/c++/12/bits/cpp_type_traits.h \
+  /usr/include/c++/12/bits/cxxabi_forced.h \
+  /usr/include/c++/12/bits/cxxabi_init_exception.h \
+  /usr/include/c++/12/bits/deque.tcc \
+  /usr/include/c++/12/bits/enable_special_members.h \
+  /usr/include/c++/12/bits/erase_if.h \
+  /usr/include/c++/12/bits/exception.h \
+  /usr/include/c++/12/bits/exception_defines.h \
+  /usr/include/c++/12/bits/exception_ptr.h \
+  /usr/include/c++/12/bits/fstream.tcc \
+  /usr/include/c++/12/bits/functexcept.h \
+  /usr/include/c++/12/bits/functional_hash.h \
+  /usr/include/c++/12/bits/hash_bytes.h \
+  /usr/include/c++/12/bits/hashtable.h \
+  /usr/include/c++/12/bits/hashtable_policy.h \
+  /usr/include/c++/12/bits/invoke.h \
+  /usr/include/c++/12/bits/ios_base.h \
+  /usr/include/c++/12/bits/istream.tcc \
+  /usr/include/c++/12/bits/locale_classes.h \
+  /usr/include/c++/12/bits/locale_classes.tcc \
+  /usr/include/c++/12/bits/locale_conv.h \
+  /usr/include/c++/12/bits/locale_facets.h \
+  /usr/include/c++/12/bits/locale_facets.tcc \
+  /usr/include/c++/12/bits/locale_facets_nonio.h \
+  /usr/include/c++/12/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/12/bits/localefwd.h \
+  /usr/include/c++/12/bits/memoryfwd.h \
+  /usr/include/c++/12/bits/move.h \
+  /usr/include/c++/12/bits/nested_exception.h \
+  /usr/include/c++/12/bits/new_allocator.h \
+  /usr/include/c++/12/bits/node_handle.h \
+  /usr/include/c++/12/bits/ostream.tcc \
+  /usr/include/c++/12/bits/ostream_insert.h \
+  /usr/include/c++/12/bits/parse_numbers.h \
+  /usr/include/c++/12/bits/postypes.h \
+  /usr/include/c++/12/bits/predefined_ops.h \
+  /usr/include/c++/12/bits/ptr_traits.h \
+  /usr/include/c++/12/bits/quoted_string.h \
+  /usr/include/c++/12/bits/random.h \
+  /usr/include/c++/12/bits/random.tcc \
+  /usr/include/c++/12/bits/range_access.h \
+  /usr/include/c++/12/bits/refwrap.h \
+  /usr/include/c++/12/bits/shared_ptr.h \
+  /usr/include/c++/12/bits/shared_ptr_atomic.h \
+  /usr/include/c++/12/bits/shared_ptr_base.h \
+  /usr/include/c++/12/bits/specfun.h \
+  /usr/include/c++/12/bits/sstream.tcc \
+  /usr/include/c++/12/bits/std_abs.h \
+  /usr/include/c++/12/bits/std_function.h \
+  /usr/include/c++/12/bits/std_mutex.h \
+  /usr/include/c++/12/bits/stl_algo.h \
+  /usr/include/c++/12/bits/stl_algobase.h \
+  /usr/include/c++/12/bits/stl_bvector.h \
+  /usr/include/c++/12/bits/stl_construct.h \
+  /usr/include/c++/12/bits/stl_deque.h \
+  /usr/include/c++/12/bits/stl_function.h \
+  /usr/include/c++/12/bits/stl_heap.h \
+  /usr/include/c++/12/bits/stl_iterator.h \
+  /usr/include/c++/12/bits/stl_iterator_base_funcs.h \
+  /usr/include/c++/12/bits/stl_iterator_base_types.h \
+  /usr/include/c++/12/bits/stl_map.h \
+  /usr/include/c++/12/bits/stl_multimap.h \
+  /usr/include/c++/12/bits/stl_multiset.h \
+  /usr/include/c++/12/bits/stl_numeric.h \
+  /usr/include/c++/12/bits/stl_pair.h \
+  /usr/include/c++/12/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/12/bits/stl_relops.h \
+  /usr/include/c++/12/bits/stl_set.h \
+  /usr/include/c++/12/bits/stl_stack.h \
+  /usr/include/c++/12/bits/stl_tempbuf.h \
+  /usr/include/c++/12/bits/stl_tree.h \
+  /usr/include/c++/12/bits/stl_uninitialized.h \
+  /usr/include/c++/12/bits/stl_vector.h \
+  /usr/include/c++/12/bits/stream_iterator.h \
+  /usr/include/c++/12/bits/streambuf.tcc \
+  /usr/include/c++/12/bits/streambuf_iterator.h \
+  /usr/include/c++/12/bits/string_view.tcc \
+  /usr/include/c++/12/bits/stringfwd.h \
+  /usr/include/c++/12/bits/uniform_int_dist.h \
+  /usr/include/c++/12/bits/unique_lock.h \
+  /usr/include/c++/12/bits/unique_ptr.h \
+  /usr/include/c++/12/bits/unordered_map.h \
+  /usr/include/c++/12/bits/unordered_set.h \
+  /usr/include/c++/12/bits/uses_allocator.h \
+  /usr/include/c++/12/bits/utility.h \
+  /usr/include/c++/12/bits/vector.tcc \
+  /usr/include/c++/12/cctype \
+  /usr/include/c++/12/cerrno \
+  /usr/include/c++/12/chrono \
+  /usr/include/c++/12/climits \
+  /usr/include/c++/12/clocale \
+  /usr/include/c++/12/cmath \
+  /usr/include/c++/12/compare \
+  /usr/include/c++/12/complex \
+  /usr/include/c++/12/cstddef \
+  /usr/include/c++/12/cstdint \
+  /usr/include/c++/12/cstdio \
+  /usr/include/c++/12/cstdlib \
+  /usr/include/c++/12/cstring \
+  /usr/include/c++/12/ctime \
+  /usr/include/c++/12/cwchar \
+  /usr/include/c++/12/cwctype \
+  /usr/include/c++/12/cxxabi.h \
+  /usr/include/c++/12/debug/assertions.h \
+  /usr/include/c++/12/debug/debug.h \
+  /usr/include/c++/12/deque \
+  /usr/include/c++/12/exception \
+  /usr/include/c++/12/ext/aligned_buffer.h \
+  /usr/include/c++/12/ext/alloc_traits.h \
+  /usr/include/c++/12/ext/atomicity.h \
+  /usr/include/c++/12/ext/concurrence.h \
+  /usr/include/c++/12/ext/numeric_traits.h \
+  /usr/include/c++/12/ext/string_conversions.h \
+  /usr/include/c++/12/ext/type_traits.h \
+  /usr/include/c++/12/fstream \
+  /usr/include/c++/12/functional \
+  /usr/include/c++/12/initializer_list \
+  /usr/include/c++/12/iomanip \
+  /usr/include/c++/12/ios \
+  /usr/include/c++/12/iosfwd \
+  /usr/include/c++/12/iostream \
+  /usr/include/c++/12/istream \
+  /usr/include/c++/12/iterator \
+  /usr/include/c++/12/limits \
+  /usr/include/c++/12/locale \
+  /usr/include/c++/12/map \
+  /usr/include/c++/12/memory \
+  /usr/include/c++/12/mutex \
+  /usr/include/c++/12/new \
+  /usr/include/c++/12/numeric \
+  /usr/include/c++/12/ostream \
+  /usr/include/c++/12/pstl/execution_defs.h \
+  /usr/include/c++/12/pstl/glue_algorithm_defs.h \
+  /usr/include/c++/12/pstl/glue_memory_defs.h \
+  /usr/include/c++/12/pstl/glue_numeric_defs.h \
+  /usr/include/c++/12/pstl/pstl_config.h \
+  /usr/include/c++/12/random \
+  /usr/include/c++/12/ratio \
+  /usr/include/c++/12/set \
+  /usr/include/c++/12/sstream \
+  /usr/include/c++/12/stack \
+  /usr/include/c++/12/stdexcept \
+  /usr/include/c++/12/streambuf \
+  /usr/include/c++/12/string \
+  /usr/include/c++/12/string_view \
+  /usr/include/c++/12/system_error \
+  /usr/include/c++/12/tr1/bessel_function.tcc \
+  /usr/include/c++/12/tr1/beta_function.tcc \
+  /usr/include/c++/12/tr1/ell_integral.tcc \
+  /usr/include/c++/12/tr1/exp_integral.tcc \
+  /usr/include/c++/12/tr1/gamma.tcc \
+  /usr/include/c++/12/tr1/hypergeometric.tcc \
+  /usr/include/c++/12/tr1/legendre_function.tcc \
+  /usr/include/c++/12/tr1/modified_bessel_func.tcc \
+  /usr/include/c++/12/tr1/poly_hermite.tcc \
+  /usr/include/c++/12/tr1/poly_laguerre.tcc \
+  /usr/include/c++/12/tr1/riemann_zeta.tcc \
+  /usr/include/c++/12/tr1/special_function_util.h \
+  /usr/include/c++/12/tuple \
+  /usr/include/c++/12/type_traits \
+  /usr/include/c++/12/typeindex \
+  /usr/include/c++/12/typeinfo \
+  /usr/include/c++/12/unordered_map \
+  /usr/include/c++/12/unordered_set \
+  /usr/include/c++/12/utility \
+  /usr/include/c++/12/vector \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/atomic_word.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/c++allocator.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/c++config.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/c++io.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/c++locale.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/cpu_defines.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/ctype_base.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/ctype_inline.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/cxxabi_tweaks.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/error_constants.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/gthr-default.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/gthr.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/messages_members.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/opt_random.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/os_defines.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/time_members.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
-  /usr/include/c++/11/algorithm \
-  /usr/include/c++/11/array \
-  /usr/include/c++/11/backward/auto_ptr.h \
-  /usr/include/c++/11/backward/binders.h \
-  /usr/include/c++/11/bit \
-  /usr/include/c++/11/bits/algorithmfwd.h \
-  /usr/include/c++/11/bits/align.h \
-  /usr/include/c++/11/bits/alloc_traits.h \
-  /usr/include/c++/11/bits/allocated_ptr.h \
-  /usr/include/c++/11/bits/allocator.h \
-  /usr/include/c++/11/bits/atomic_base.h \
-  /usr/include/c++/11/bits/atomic_lockfree_defines.h \
-  /usr/include/c++/11/bits/basic_ios.h \
-  /usr/include/c++/11/bits/basic_ios.tcc \
-  /usr/include/c++/11/bits/basic_string.h \
-  /usr/include/c++/11/bits/basic_string.tcc \
-  /usr/include/c++/11/bits/char_traits.h \
-  /usr/include/c++/11/bits/charconv.h \
-  /usr/include/c++/11/bits/codecvt.h \
-  /usr/include/c++/11/bits/concept_check.h \
-  /usr/include/c++/11/bits/cpp_type_traits.h \
-  /usr/include/c++/11/bits/cxxabi_forced.h \
-  /usr/include/c++/11/bits/cxxabi_init_exception.h \
-  /usr/include/c++/11/bits/deque.tcc \
-  /usr/include/c++/11/bits/enable_special_members.h \
-  /usr/include/c++/11/bits/erase_if.h \
-  /usr/include/c++/11/bits/exception.h \
-  /usr/include/c++/11/bits/exception_defines.h \
-  /usr/include/c++/11/bits/exception_ptr.h \
-  /usr/include/c++/11/bits/fstream.tcc \
-  /usr/include/c++/11/bits/functexcept.h \
-  /usr/include/c++/11/bits/functional_hash.h \
-  /usr/include/c++/11/bits/hash_bytes.h \
-  /usr/include/c++/11/bits/hashtable.h \
-  /usr/include/c++/11/bits/hashtable_policy.h \
-  /usr/include/c++/11/bits/invoke.h \
-  /usr/include/c++/11/bits/ios_base.h \
-  /usr/include/c++/11/bits/istream.tcc \
-  /usr/include/c++/11/bits/locale_classes.h \
-  /usr/include/c++/11/bits/locale_classes.tcc \
-  /usr/include/c++/11/bits/locale_conv.h \
-  /usr/include/c++/11/bits/locale_facets.h \
-  /usr/include/c++/11/bits/locale_facets.tcc \
-  /usr/include/c++/11/bits/locale_facets_nonio.h \
-  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
-  /usr/include/c++/11/bits/localefwd.h \
-  /usr/include/c++/11/bits/memoryfwd.h \
-  /usr/include/c++/11/bits/move.h \
-  /usr/include/c++/11/bits/nested_exception.h \
-  /usr/include/c++/11/bits/node_handle.h \
-  /usr/include/c++/11/bits/ostream.tcc \
-  /usr/include/c++/11/bits/ostream_insert.h \
-  /usr/include/c++/11/bits/parse_numbers.h \
-  /usr/include/c++/11/bits/postypes.h \
-  /usr/include/c++/11/bits/predefined_ops.h \
-  /usr/include/c++/11/bits/ptr_traits.h \
-  /usr/include/c++/11/bits/quoted_string.h \
-  /usr/include/c++/11/bits/random.h \
-  /usr/include/c++/11/bits/random.tcc \
-  /usr/include/c++/11/bits/range_access.h \
-  /usr/include/c++/11/bits/refwrap.h \
-  /usr/include/c++/11/bits/shared_ptr.h \
-  /usr/include/c++/11/bits/shared_ptr_atomic.h \
-  /usr/include/c++/11/bits/shared_ptr_base.h \
-  /usr/include/c++/11/bits/specfun.h \
-  /usr/include/c++/11/bits/sstream.tcc \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/bits/std_function.h \
-  /usr/include/c++/11/bits/std_mutex.h \
-  /usr/include/c++/11/bits/std_thread.h \
-  /usr/include/c++/11/bits/stl_algo.h \
-  /usr/include/c++/11/bits/stl_algobase.h \
-  /usr/include/c++/11/bits/stl_bvector.h \
-  /usr/include/c++/11/bits/stl_construct.h \
-  /usr/include/c++/11/bits/stl_deque.h \
-  /usr/include/c++/11/bits/stl_function.h \
-  /usr/include/c++/11/bits/stl_heap.h \
-  /usr/include/c++/11/bits/stl_iterator.h \
-  /usr/include/c++/11/bits/stl_iterator_base_funcs.h \
-  /usr/include/c++/11/bits/stl_iterator_base_types.h \
-  /usr/include/c++/11/bits/stl_map.h \
-  /usr/include/c++/11/bits/stl_multimap.h \
-  /usr/include/c++/11/bits/stl_multiset.h \
-  /usr/include/c++/11/bits/stl_numeric.h \
-  /usr/include/c++/11/bits/stl_pair.h \
-  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
-  /usr/include/c++/11/bits/stl_relops.h \
-  /usr/include/c++/11/bits/stl_set.h \
-  /usr/include/c++/11/bits/stl_stack.h \
-  /usr/include/c++/11/bits/stl_tempbuf.h \
-  /usr/include/c++/11/bits/stl_tree.h \
-  /usr/include/c++/11/bits/stl_uninitialized.h \
-  /usr/include/c++/11/bits/stl_vector.h \
-  /usr/include/c++/11/bits/stream_iterator.h \
-  /usr/include/c++/11/bits/streambuf.tcc \
-  /usr/include/c++/11/bits/streambuf_iterator.h \
-  /usr/include/c++/11/bits/string_view.tcc \
-  /usr/include/c++/11/bits/stringfwd.h \
-  /usr/include/c++/11/bits/this_thread_sleep.h \
-  /usr/include/c++/11/bits/uniform_int_dist.h \
-  /usr/include/c++/11/bits/unique_lock.h \
-  /usr/include/c++/11/bits/unique_ptr.h \
-  /usr/include/c++/11/bits/unordered_map.h \
-  /usr/include/c++/11/bits/unordered_set.h \
-  /usr/include/c++/11/bits/uses_allocator.h \
-  /usr/include/c++/11/bits/vector.tcc \
-  /usr/include/c++/11/cctype \
-  /usr/include/c++/11/cerrno \
-  /usr/include/c++/11/chrono \
-  /usr/include/c++/11/climits \
-  /usr/include/c++/11/clocale \
-  /usr/include/c++/11/cmath \
-  /usr/include/c++/11/complex \
-  /usr/include/c++/11/cstddef \
-  /usr/include/c++/11/cstdint \
-  /usr/include/c++/11/cstdio \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/cstring \
-  /usr/include/c++/11/ctime \
-  /usr/include/c++/11/cwchar \
-  /usr/include/c++/11/cwctype \
-  /usr/include/c++/11/cxxabi.h \
-  /usr/include/c++/11/debug/assertions.h \
-  /usr/include/c++/11/debug/debug.h \
-  /usr/include/c++/11/deque \
-  /usr/include/c++/11/exception \
-  /usr/include/c++/11/ext/aligned_buffer.h \
-  /usr/include/c++/11/ext/alloc_traits.h \
-  /usr/include/c++/11/ext/atomicity.h \
-  /usr/include/c++/11/ext/concurrence.h \
-  /usr/include/c++/11/ext/new_allocator.h \
-  /usr/include/c++/11/ext/numeric_traits.h \
-  /usr/include/c++/11/ext/string_conversions.h \
-  /usr/include/c++/11/ext/type_traits.h \
-  /usr/include/c++/11/fstream \
-  /usr/include/c++/11/functional \
-  /usr/include/c++/11/initializer_list \
-  /usr/include/c++/11/iomanip \
-  /usr/include/c++/11/ios \
-  /usr/include/c++/11/iosfwd \
-  /usr/include/c++/11/iostream \
-  /usr/include/c++/11/istream \
-  /usr/include/c++/11/iterator \
-  /usr/include/c++/11/limits \
-  /usr/include/c++/11/locale \
-  /usr/include/c++/11/map \
-  /usr/include/c++/11/memory \
-  /usr/include/c++/11/mutex \
-  /usr/include/c++/11/new \
-  /usr/include/c++/11/numeric \
-  /usr/include/c++/11/ostream \
-  /usr/include/c++/11/pstl/execution_defs.h \
-  /usr/include/c++/11/pstl/glue_algorithm_defs.h \
-  /usr/include/c++/11/pstl/glue_memory_defs.h \
-  /usr/include/c++/11/pstl/glue_numeric_defs.h \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/random \
-  /usr/include/c++/11/ratio \
-  /usr/include/c++/11/set \
-  /usr/include/c++/11/sstream \
-  /usr/include/c++/11/stack \
-  /usr/include/c++/11/stdexcept \
-  /usr/include/c++/11/streambuf \
-  /usr/include/c++/11/string \
-  /usr/include/c++/11/string_view \
-  /usr/include/c++/11/system_error \
-  /usr/include/c++/11/thread \
-  /usr/include/c++/11/tr1/bessel_function.tcc \
-  /usr/include/c++/11/tr1/beta_function.tcc \
-  /usr/include/c++/11/tr1/ell_integral.tcc \
-  /usr/include/c++/11/tr1/exp_integral.tcc \
-  /usr/include/c++/11/tr1/gamma.tcc \
-  /usr/include/c++/11/tr1/hypergeometric.tcc \
-  /usr/include/c++/11/tr1/legendre_function.tcc \
-  /usr/include/c++/11/tr1/modified_bessel_func.tcc \
-  /usr/include/c++/11/tr1/poly_hermite.tcc \
-  /usr/include/c++/11/tr1/poly_laguerre.tcc \
-  /usr/include/c++/11/tr1/riemann_zeta.tcc \
-  /usr/include/c++/11/tr1/special_function_util.h \
-  /usr/include/c++/11/tuple \
-  /usr/include/c++/11/type_traits \
-  /usr/include/c++/11/typeindex \
-  /usr/include/c++/11/typeinfo \
-  /usr/include/c++/11/unordered_map \
-  /usr/include/c++/11/unordered_set \
-  /usr/include/c++/11/utility \
-  /usr/include/c++/11/vector \
   /usr/include/ctype.h \
   /usr/include/endian.h \
   /usr/include/errno.h \
@@ -214,6 +231,7 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
   /usr/include/stdlib.h \
   /usr/include/string.h \
   /usr/include/strings.h \
+  /usr/include/tbb/tbb.h \
   /usr/include/time.h \
   /usr/include/wchar.h \
   /usr/include/wctype.h \
@@ -246,18 +264,13 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
   /usr/include/x86_64-linux-gnu/bits/sched.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
-  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/bits/setjmp.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
   /usr/include/x86_64-linux-gnu/bits/stdio.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
   /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
-  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
   /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
   /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
@@ -296,38 +309,22 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
   /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
   /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/atomic_word.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++locale.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_base.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cxxabi_tweaks.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/error_constants.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/gthr.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/opt_random.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
+  /usr/lib/llvm-12/lib/clang/12.0.1/include/__stddef_max_align_t.h \
+  /usr/lib/llvm-12/lib/clang/12.0.1/include/inttypes.h \
+  /usr/lib/llvm-12/lib/clang/12.0.1/include/limits.h \
+  /usr/lib/llvm-12/lib/clang/12.0.1/include/sanitizer/tsan_interface.h \
+  /usr/lib/llvm-12/lib/clang/12.0.1/include/stdarg.h \
+  /usr/lib/llvm-12/lib/clang/12.0.1/include/stddef.h \
+  /usr/lib/llvm-12/lib/clang/12.0.1/include/stdint.h \
   /usr/local/include/openfhe/binfhe/binfhe-base-params.h \
   /usr/local/include/openfhe/binfhe/binfhe-base-scheme.h \
   /usr/local/include/openfhe/binfhe/binfhe-constants.h \
@@ -456,8 +453,7 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
   /usr/local/include/openfhe/core/utils/memory.h \
   /usr/local/include/openfhe/core/utils/openfhebase64.h \
   /usr/local/include/openfhe/core/utils/parallel.h \
-  /usr/local/include/openfhe/core/utils/prng/blake2.h \
-  /usr/local/include/openfhe/core/utils/prng/blake2engine.h \
+  /usr/local/include/openfhe/core/utils/prng/prng.h \
   /usr/local/include/openfhe/core/utils/serial.h \
   /usr/local/include/openfhe/core/utils/serializable.h \
   /usr/local/include/openfhe/core/utils/sertype.h \
@@ -564,7 +560,7 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
   /usr/local/include/openfhe/pke/schemerns/rns-scheme.h
 
 
-/usr/local/include/openfhe/pke/schemerns/rns-pre.h:
+/usr/local/include/openfhe/pke/schemerns/rns-scheme.h:
 
 /usr/local/include/openfhe/pke/schemerns/rns-pke.h:
 
@@ -586,25 +582,7 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/schemebase/base-scheme.h:
 
-/usr/local/include/openfhe/pke/schemebase/base-multiparty.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/timex.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
-
-/usr/include/x86_64-linux-gnu/bits/select2.h:
-
-/usr/local/include/openfhe/core/lattice/hal/poly-interface.h:
-
-/usr/include/x86_64-linux-gnu/bits/sched.h:
-
-/usr/include/c++/11/bits/postypes.h:
-
 /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
-
-/usr/include/c++/11/ext/alloc_traits.h:
 
 /usr/local/include/openfhe/core/lattice/hal/dcrtpoly-interface.h:
 
@@ -612,15 +590,9 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/binfhe/lwe-privatekey-fwd.h:
 
-/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/locale.h:
-
-/usr/include/c++/11/pstl/glue_numeric_defs.h:
-
 /usr/include/x86_64-linux-gnu/bits/local_lim.h:
 
-/usr/include/c++/11/string_view:
+/usr/include/x86_64-linux-gnu/c++/12/bits/error_constants.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
 
@@ -628,25 +600,603 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-parametergeneration.h:
 
-/usr/include/c++/11/iterator:
+/usr/include/c++/12/bits/stl_iterator_base_funcs.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+/usr/local/include/openfhe/cereal/archives/portable_binary.hpp:
 
-/usr/include/c++/11/bits/range_access.h:
+/usr/include/locale.h:
+
+/usr/include/linux/errno.h:
+
+/usr/include/x86_64-linux-gnu/bits/endianness.h:
+
+/usr/include/c++/12/bits/sstream.tcc:
+
+/usr/include/inttypes.h:
+
+/usr/include/errno.h:
+
+/usr/local/include/openfhe/core/version.h:
+
+/usr/include/ctype.h:
+
+/usr/include/asm-generic/errno.h:
+
+/usr/local/include/openfhe/binfhe/lwe-keyswitchkey-fwd.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/os_defines.h:
+
+/usr/local/include/openfhe/core/utils/sertype.h:
+
+/usr/include/stdint.h:
+
+/usr/include/endian.h:
+
+/usr/include/c++/12/bits/predefined_ops.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/opt_random.h:
+
+/usr/include/c++/12/bits/fstream.tcc:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/cpu_defines.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/gthr-default.h:
+
+/usr/include/c++/12/cstdio:
+
+/usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-cryptoparameters.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/cxxabi_tweaks.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+
+/usr/include/wchar.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/c++locale.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/c++io.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/basic_file.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
+
+/usr/include/c++/12/typeinfo:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/encodings.h:
+
+/usr/local/include/openfhe/cereal/types/base_class.hpp:
+
+/usr/include/c++/12/tr1/riemann_zeta.tcc:
+
+/usr/include/c++/12/bits/basic_ios.tcc:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/messages_members.h:
+
+/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+
+/usr/local/include/openfhe/binfhe/lwe-cryptoparameters.h:
+
+/usr/include/c++/12/tr1/poly_hermite.tcc:
+
+/usr/include/c++/12/tr1/legendre_function.tcc:
+
+/usr/local/include/openfhe/pke/schemerns/rns-pre.h:
+
+/usr/include/c++/12/tr1/ell_integral.tcc:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/gthr.h:
+
+/usr/local/include/openfhe/core/utils/exception.h:
+
+/usr/include/c++/12/tr1/beta_function.tcc:
+
+/usr/include/c++/12/system_error:
+
+/usr/include/c++/12/streambuf:
+
+/usr/include/c++/12/sstream:
+
+/usr/include/c++/12/ratio:
+
+/usr/include/c++/12/random:
+
+/usr/include/c++/12/pstl/glue_numeric_defs.h:
+
+/usr/include/c++/12/pstl/glue_algorithm_defs.h:
+
+/usr/include/c++/12/ostream:
+
+/usr/include/c++/12/type_traits:
+
+/usr/local/include/openfhe/cereal/types/common.hpp:
+
+/usr/include/c++/12/memory:
+
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
+
+/usr/include/c++/12/cstring:
+
+/usr/include/c++/12/bits/charconv.h:
+
+/usr/include/c++/12/locale:
+
+/usr/include/c++/12/limits:
 
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
-/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
+/usr/include/c++/12/bits/algorithmfwd.h:
 
-/usr/local/include/openfhe/core/math/hal/bigintfxd/backendfxd.h:
+/usr/include/c++/12/bits/unique_ptr.h:
 
-/usr/include/x86_64-linux-gnu/bits/errno.h:
+/usr/include/c++/12/iosfwd:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
+/usr/local/include/openfhe/cereal/external/base64.hpp:
+
+/usr/include/c++/12/tr1/gamma.tcc:
+
+/usr/include/libintl.h:
+
+/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
+
+/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
+
+/usr/include/c++/12/fstream:
+
+/usr/include/strings.h:
+
+/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-multiparty.h:
+
+/usr/include/c++/12/string:
+
+/usr/include/c++/12/ext/atomicity.h:
+
+/usr/include/c++/12/tr1/special_function_util.h:
+
+/usr/include/c++/12/ext/alloc_traits.h:
+
+/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-advancedshe.h:
+
+/usr/local/include/openfhe/core/utils/blockAllocator/xallocator.h:
+
+/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
+
+/usr/include/c++/12/exception:
+
+/usr/lib/llvm-12/lib/clang/12.0.1/include/__stddef_max_align_t.h:
+
+/usr/include/c++/12/ext/type_traits.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/memorystream.h:
+
+/usr/local/include/openfhe/core/lattice/hal/default/poly.h:
+
+/usr/include/c++/12/debug/debug.h:
+
+/usr/include/c++/12/iomanip:
+
+/usr/include/c++/12/bits/locale_facets.tcc:
+
+/usr/include/c++/12/ios:
+
+/usr/include/c++/12/bits/stream_iterator.h:
+
+/usr/include/c++/12/bits/stl_tree.h:
+
+/usr/include/c++/12/bits/functexcept.h:
+
+/usr/local/include/openfhe/cereal/types/polymorphic.hpp:
+
+/usr/local/include/openfhe/core/math/hal/intnat/transformnat-impl.h:
+
+/usr/include/c++/12/bits/move.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/atomic_word.h:
+
+/usr/include/c++/12/utility:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h:
+
+/usr/include/c++/12/bits/unique_lock.h:
+
+/usr/include/c++/12/bits/stl_pair.h:
+
+/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/locale.h:
+
+/usr/include/c++/12/stack:
+
+/usr/local/include/openfhe/pke/cryptocontext.h:
+
+/usr/include/c++/12/bits/locale_facets_nonio.h:
+
+/usr/include/c++/12/bits/exception.h:
+
+/usr/local/include/openfhe/pke/schemebase/base-multiparty.h:
+
+/usr/include/c++/12/bits/locale_facets_nonio.tcc:
+
+/usr/local/include/openfhe/binfhe/binfhecontext.h:
+
+/usr/include/c++/12/unordered_map:
+
+/usr/include/c++/12/tuple:
+
+/usr/include/c++/12/bits/functional_hash.h:
+
+/usr/include/c++/12/bits/locale_facets.h:
+
+/usr/include/c++/12/string_view:
+
+/usr/include/c++/12/bits/stl_algobase.h:
+
+/usr/include/c++/12/bits/locale_classes.h:
+
+/usr/include/c++/12/bits/stl_set.h:
+
+/usr/include/c++/12/bits/unordered_map.h:
+
+/usr/include/c++/12/bits/hashtable_policy.h:
+
+/usr/lib/llvm-12/lib/clang/12.0.1/include/stdint.h:
+
+/usr/local/include/openfhe/core/math/distributiongenerator.h:
+
+/usr/include/c++/12/typeindex:
+
+/usr/include/c++/12/climits:
+
+/usr/local/include/openfhe/binfhe/lwe-privatekey.h:
+
+/usr/include/c++/12/ext/concurrence.h:
+
+/usr/include/c++/12/bits/hashtable.h:
+
+/usr/local/include/openfhe/core/lattice/hal/poly-interface.h:
+
+/usr/include/stdio.h:
+
+/usr/include/c++/12/bits/istream.tcc:
+
+/usr/include/c++/12/bits/shared_ptr_base.h:
+
+/usr/include/tbb/tbb.h:
+
+/usr/include/c++/12/bits/stl_multimap.h:
 
 /usr/include/string.h:
+
+/usr/include/c++/12/bits/stl_uninitialized.h:
+
+/usr/include/x86_64-linux-gnu/bits/iscanonical.h:
+
+/usr/include/c++/12/bits/locale_conv.h:
+
+/usr/include/c++/12/bits/ostream.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
+
+/usr/include/c++/12/bits/locale_classes.tcc:
+
+/usr/include/c++/12/ext/string_conversions.h:
+
+/usr/include/c++/12/tr1/hypergeometric.tcc:
+
+/usr/include/c++/12/bits/vector.tcc:
+
+/usr/include/c++/12/bits/stl_deque.h:
+
+/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
+
+/usr/include/c++/12/bits/allocator.h:
+
+/usr/include/c++/12/bits/cpp_type_traits.h:
+
+/usr/include/c++/12/bits/codecvt.h:
+
+/usr/include/c++/12/map:
+
+/usr/local/include/openfhe/core/lattice/constants-lattice.h:
+
+/usr/include/c++/12/bits/basic_string.tcc:
+
+/usr/include/c++/12/bits/stl_map.h:
+
+/usr/include/c++/12/bits/stl_iterator.h:
+
+/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-multiparty.h:
+
+/usr/include/c++/12/bits/utility.h:
+
+/usr/include/c++/12/bits/invoke.h:
+
+/usr/local/include/openfhe/core/math/discretegaussiangenerator.h:
+
+/usr/local/include/openfhe/pke/keyswitch/keyswitch-bv.h:
+
+/usr/include/c++/12/backward/binders.h:
+
+/usr/include/c++/12/bits/memoryfwd.h:
+
+/usr/include/c++/12/bits/cxxabi_init_exception.h:
+
+/usr/local/include/openfhe/core/lattice/ilelement.h:
+
+/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
+
+/usr/include/c++/12/clocale:
+
+/usr/local/include/openfhe/pke/key/privatekey.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/timex.h:
+
+/usr/include/c++/12/backward/auto_ptr.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/internal/diyfp.h:
+
+/usr/local/include/openfhe/cereal/types/concepts/pair_associative_container.hpp:
+
+/usr/include/c++/12/array:
+
+/usr/include/c++/12/set:
+
+/usr/include/c++/12/bits/enable_special_members.h:
+
+/usr/local/include/openfhe/pke/schemebase/base-fhe.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/internal/dtoa.h:
+
+/usr/include/c++/12/bits/stl_heap.h:
+
+/usr/local/include/openfhe/cereal/types/vector.hpp:
+
+/usr/include/c++/12/bits/hash_bytes.h:
+
+/usr/include/c++/12/algorithm:
+
+/usr/include/c++/12/bits/random.tcc:
+
+/usr/include/alloca.h:
+
+/usr/include/c++/12/bits/exception_defines.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/reader.h:
+
+/usr/include/c++/12/bit:
+
+/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
+
+/usr/include/c++/12/initializer_list:
+
+/usr/local/include/openfhe/binfhe/rgsw-acc-dm.h:
+
+/usr/include/c++/12/bits/align.h:
+
+/usr/include/c++/12/bits/erase_if.h:
+
+/usr/include/c++/12/unordered_set:
+
+/usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
+
+/usr/include/c++/12/tr1/modified_bessel_func.tcc:
+
+/usr/include/c++/12/ext/aligned_buffer.h:
 
 /usr/include/stdlib.h:
 
 /usr/include/stdc-predef.h:
+
+/usr/include/c++/12/bits/basic_string.h:
+
+/usr/include/c++/12/bits/stl_vector.h:
+
+/usr/include/c++/12/bits/atomic_lockfree_defines.h:
+
+/usr/lib/llvm-12/lib/clang/12.0.1/include/stddef.h:
+
+/usr/local/include/openfhe/pke/encoding/plaintextfactory.h:
+
+/usr/local/include/openfhe/cereal/details/traits.hpp:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/internal/pow10.h:
+
+/usr/include/c++/12/bits/uniform_int_dist.h:
+
+/usr/include/limits.h:
+
+/usr/include/c++/12/new:
+
+/usr/include/features.h:
+
+/usr/local/include/openfhe/cereal/macros.hpp:
+
+/usr/include/c++/12/mutex:
+
+/usr/include/c++/12/iterator:
+
+/usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-leveledshe.h:
+
+/usr/include/c++/12/bits/quoted_string.h:
+
+/usr/local/include/openfhe/binfhe/lwe-ciphertext.h:
+
+/usr/local/include/openfhe/core/utils/blockAllocator/xvector.h:
+
+/usr/include/c++/12/cmath:
+
+/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
+
+/usr/local/include/openfhe/core/utils/utilities.h:
+
+/usr/local/include/openfhe/pke/schemebase/base-cryptoparameters.h:
+
+/usr/include/c++/12/bits/random.h:
+
+/usr/include/x86_64-linux-gnu/bits/sched.h:
+
+/usr/include/c++/12/bits/range_access.h:
+
+/usr/include/c++/12/cerrno:
+
+/usr/lib/llvm-12/lib/clang/12.0.1/include/stdarg.h:
+
+/usr/include/c++/12/bits/ptr_traits.h:
+
+/usr/local/include/openfhe/pke/key/keypair.h:
+
+/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-leveledshe.h:
+
+/usr/include/c++/12/pstl/glue_memory_defs.h:
+
+/usr/include/c++/12/bits/stl_construct.h:
+
+/usr/include/c++/12/bits/shared_ptr_atomic.h:
+
+/usr/include/c++/12/bits/specfun.h:
+
+/usr/include/c++/12/bits/std_mutex.h:
+
+/usr/local/include/openfhe/pke/scheme/scheme-id.h:
+
+/usr/include/c++/12/bits/stl_algo.h:
+
+/usr/include/c++/12/bits/exception_ptr.h:
+
+/usr/local/include/openfhe/core/utils/debug.h:
+
+/usr/include/c++/12/compare:
+
+/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-leveledshe.h:
+
+/home/rostin/scheme-switching/src/backend/fhe_types.hpp:
+
+/usr/include/c++/12/bits/unordered_set.h:
+
+/usr/local/include/openfhe/core/utils/type_name.h:
+
+/usr/include/c++/12/bits/std_function.h:
+
+/usr/include/c++/12/bits/stl_function.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/c++config.h:
+
+/usr/include/c++/12/bits/concept_check.h:
+
+/usr/local/include/openfhe/binfhe/lwe-publickey.h:
+
+/usr/include/c++/12/bits/stl_numeric.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/c++allocator.h:
+
+/usr/include/x86_64-linux-gnu/bits/math-vector.h:
+
+/usr/include/c++/12/bits/allocated_ptr.h:
+
+/usr/include/c++/12/pstl/pstl_config.h:
+
+/usr/include/x86_64-linux-gnu/asm/errno.h:
+
+/usr/local/include/openfhe/pke/encoding/plaintext.h:
+
+/usr/include/c++/12/ext/numeric_traits.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+
+/usr/local/include/openfhe/cereal/types/map.hpp:
+
+/usr/include/c++/12/bits/cxxabi_forced.h:
+
+/usr/include/c++/12/bits/stl_stack.h:
+
+/usr/include/c++/12/bits/postypes.h:
+
+/usr/include/c++/12/bits/stl_tempbuf.h:
+
+/usr/include/c++/12/bits/parse_numbers.h:
+
+/usr/include/c++/12/bits/stl_bvector.h:
+
+/usr/include/c++/12/bits/streambuf.tcc:
+
+/usr/include/c++/12/vector:
+
+/usr/include/c++/12/numeric:
+
+/usr/include/c++/12/bits/streambuf_iterator.h:
+
+/usr/include/c++/12/debug/assertions.h:
+
+/usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-pre.h:
+
+/usr/local/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-internal.h:
+
+/usr/include/c++/12/bits/uses_allocator.h:
+
+/usr/local/include/openfhe/binfhe/lwe-pke.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/time_members.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/error/error.h:
+
+/usr/include/c++/12/chrono:
+
+/usr/include/c++/12/stdexcept:
+
+/usr/include/c++/12/istream:
+
+/usr/include/c++/12/cctype:
+
+/usr/include/c++/12/ctime:
+
+/usr/include/c++/12/complex:
+
+/usr/include/x86_64-linux-gnu/bits/errno.h:
+
+/usr/include/c++/12/bits/new_allocator.h:
+
+/usr/local/include/openfhe/core/config_core.h:
+
+/usr/local/include/openfhe/pke/key/evalkeyrelin.h:
+
+/usr/include/c++/12/functional:
+
+/usr/include/c++/12/bits/deque.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/endian.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
+
+/usr/include/c++/12/bits/stl_relops.h:
+
+/usr/local/include/openfhe/pke/encoding/coefpackedencoding.h:
+
+/usr/local/include/openfhe/pke/globals.h:
+
+/usr/include/c++/12/cstdint:
+
+/usr/local/include/openfhe/core/math/hal/transform.h:
+
+/usr/include/c++/12/cstdlib:
+
+/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
 
 /usr/include/x86_64-linux-gnu/bits/setjmp.h:
 
@@ -654,585 +1204,53 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/binfhe/binfhe-constants.h:
 
-/usr/include/locale.h:
+/usr/local/include/openfhe/pke/encoding/packedencoding.h:
 
-/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
-
-/usr/include/stdint.h:
-
-/usr/include/c++/11/bits/erase_if.h:
-
-/usr/include/c++/11/bits/ptr_traits.h:
-
-/usr/include/c++/11/bits/shared_ptr_base.h:
-
-/usr/include/c++/11/bits/basic_string.h:
-
-/usr/include/inttypes.h:
-
-/usr/include/c++/11/debug/debug.h:
-
-/usr/include/c++/11/bits/alloc_traits.h:
-
-/usr/include/errno.h:
-
-/usr/local/include/openfhe/core/version.h:
-
-/usr/include/time.h:
-
-/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-pre.h:
-
-/usr/include/c++/11/typeinfo:
-
-/usr/include/c++/11/typeindex:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
-
-/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-advancedshe.h:
-
-/usr/include/c++/11/tr1/riemann_zeta.tcc:
-
-/usr/local/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-internal.h:
-
-/usr/include/x86_64-linux-gnu/bits/endianness.h:
-
-/usr/include/c++/11/tr1/modified_bessel_func.tcc:
-
-/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
-
-/usr/include/stdio.h:
-
-/usr/include/c++/11/thread:
-
-/usr/include/c++/11/ratio:
-
-/usr/include/c++/11/string:
-
-/usr/include/x86_64-linux-gnu/bits/uio_lim.h:
-
-/usr/include/c++/11/stdexcept:
-
-/usr/include/c++/11/pstl/glue_algorithm_defs.h:
-
-/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
-
-/usr/include/c++/11/stack:
-
-/usr/include/c++/11/sstream:
-
-/usr/include/c++/11/random:
-
-/usr/local/include/openfhe/binfhe/lwe-publickey-fwd.h:
-
-/usr/local/include/openfhe/pke/keyswitch/keyswitch-hybrid.h:
-
-/usr/include/c++/11/pstl/execution_defs.h:
-
-/usr/include/c++/11/mutex:
-
-/usr/local/include/openfhe/core/utils/blockAllocator/xallocator.h:
-
-/usr/include/c++/11/memory:
-
-/usr/include/x86_64-linux-gnu/bits/string_fortified.h:
-
-/usr/include/c++/11/locale:
-
-/usr/include/ctype.h:
-
-/usr/include/c++/11/limits:
-
-/usr/include/c++/11/istream:
-
-/usr/include/c++/11/iosfwd:
-
-/usr/include/c++/11/initializer_list:
-
-/usr/include/c++/11/pstl/glue_memory_defs.h:
-
-/usr/include/c++/11/ext/type_traits.h:
-
-/usr/local/include/openfhe/pke/key/keypair.h:
-
-/usr/include/c++/11/ext/new_allocator.h:
-
-/usr/include/c++/11/ext/concurrence.h:
-
-/usr/include/x86_64-linux-gnu/sys/types.h:
-
-/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-cryptoparameters.h:
-
-/usr/include/c++/11/exception:
-
-/usr/include/c++/11/deque:
-
-/usr/include/c++/11/debug/assertions.h:
-
-/usr/include/c++/11/cxxabi.h:
-
-/usr/include/c++/11/bits/node_handle.h:
-
-/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
-
-/usr/include/c++/11/cstdint:
-
-/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
-
-/usr/include/c++/11/bits/locale_classes.h:
-
-/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
-
-/usr/include/c++/11/bits/move.h:
-
-/usr/include/limits.h:
-
-/usr/include/c++/11/ostream:
-
-/usr/include/c++/11/bits/unique_ptr.h:
-
-/usr/local/include/openfhe/cereal/types/polymorphic.hpp:
-
-/usr/local/include/openfhe/core/math/hal/intnat/transformnat-impl.h:
-
-/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar2.h:
-
-/usr/include/c++/11/bits/ios_base.h:
-
-/usr/include/c++/11/bits/invoke.h:
-
-/usr/include/features.h:
-
-/usr/local/include/openfhe/cereal/macros.hpp:
-
-/usr/include/c++/11/bits/stl_multimap.h:
-
-/usr/include/c++/11/bits/string_view.tcc:
-
-/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
-
-/usr/local/include/openfhe/core/utils/serializable.h:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/stream.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio2.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio.h:
-
-/usr/include/c++/11/bits/locale_facets.tcc:
-
-/usr/include/c++/11/bits/this_thread_sleep.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
-
-/usr/local/include/openfhe/cereal/external/base64.hpp:
-
-/usr/include/c++/11/bits/exception.h:
-
-/usr/include/c++/11/bits/locale_facets.h:
-
-/usr/include/c++/11/bits/istream.tcc:
-
-/usr/include/c++/11/bits/enable_special_members.h:
-
-/usr/include/c++/11/bits/codecvt.h:
-
-/usr/include/c++/11/bits/basic_ios.tcc:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/opt_random.h:
-
-/usr/include/c++/11/vector:
-
-/usr/include/c++/11/bits/align.h:
-
-/usr/local/include/openfhe/pke/ciphertext-fwd.h:
-
-/usr/local/include/openfhe/pke/constants-defs.h:
-
-/usr/include/c++/11/bits/concept_check.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/memorystream.h:
-
-/usr/include/c++/11/ext/numeric_traits.h:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/istreamwrapper.h:
-
-/usr/local/include/openfhe/pke/schemebase/base-pke.h:
-
-/usr/include/c++/11/bits/std_thread.h:
-
-/usr/include/endian.h:
-
-/usr/include/c++/11/bits/cpp_type_traits.h:
-
-/usr/include/c++/11/bits/streambuf.tcc:
-
-/usr/local/include/openfhe/core/lattice/hal/default/poly.h:
-
-/usr/include/c++/11/bits/stl_iterator_base_funcs.h:
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 
 /usr/include/x86_64-linux-gnu/bits/select.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
+/usr/include/c++/12/bits/ostream_insert.h:
+
 /usr/local/include/openfhe/binfhe/rgsw-cryptoparameters.h:
 
-/usr/include/c++/11/bits/deque.tcc:
+/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-pre.h:
 
-/usr/include/c++/11/backward/binders.h:
-
-/usr/include/c++/11/algorithm:
-
-/usr/include/asm-generic/errno-base.h:
-
-/usr/include/c++/11/bits/specfun.h:
-
-/usr/include/c++/11/tr1/poly_hermite.tcc:
-
-/usr/include/c++/11/type_traits:
-
-/usr/include/x86_64-linux-gnu/sys/single_threaded.h:
-
-/usr/include/c++/11/tuple:
-
-/usr/include/c++/11/bits/stl_tree.h:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/reader.h:
-
-/usr/include/alloca.h:
-
-/usr/include/c++/11/bits/shared_ptr_atomic.h:
-
-/usr/include/c++/11/cmath:
-
-/usr/local/include/openfhe/core/lattice/hal/lat-backend.h:
-
-/usr/include/c++/11/streambuf:
-
-/usr/include/c++/11/bits/parse_numbers.h:
-
-/usr/local/include/openfhe/pke/scheme/gen-cryptocontext-params.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib.h:
-
-/usr/include/c++/11/bits/functexcept.h:
-
-/usr/include/c++/11/bits/locale_conv.h:
-
-/usr/include/c++/11/bits/allocated_ptr.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h:
-
-/usr/include/c++/11/bits/std_abs.h:
-
-/usr/include/c++/11/bits/stl_multiset.h:
-
-/usr/include/c++/11/fstream:
-
-/usr/include/x86_64-linux-gnu/bits/endian.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
-
-/usr/include/c++/11/bits/random.h:
-
-/usr/local/include/openfhe/pke/schemebase/base-cryptoparameters.h:
-
-/usr/include/c++/11/bits/stl_stack.h:
-
-/usr/local/include/openfhe/cereal/access.hpp:
-
-/usr/include/c++/11/bits/stream_iterator.h:
-
-/usr/include/c++/11/tr1/beta_function.tcc:
-
-/usr/include/c++/11/array:
-
-/usr/include/c++/11/bits/unique_lock.h:
-
-/usr/include/c++/11/bits/uses_allocator.h:
-
-/usr/local/include/openfhe/pke/schemerns/rns-scheme.h:
-
-/usr/include/c++/11/map:
-
-/usr/include/c++/11/cstddef:
-
-/usr/include/c++/11/bits/unordered_set.h:
-
-/usr/include/c++/11/bits/stl_vector.h:
-
-/usr/include/c++/11/ext/aligned_buffer.h:
-
-/usr/include/c++/11/bits/locale_classes.tcc:
-
-/home/rostin/scheme-switching/src/backend/fhe_types.hpp:
-
-/usr/include/c++/11/bits/stl_algo.h:
-
-/usr/include/c++/11/tr1/legendre_function.tcc:
-
-/usr/local/include/openfhe/core/lattice/hal/default/ildcrtparams.h:
-
-/usr/local/include/openfhe/core/utils/prng/blake2engine.h:
-
-/usr/local/include/openfhe/core/utils/utilities.h:
-
-/usr/include/c++/11/ctime:
-
-/usr/include/c++/11/bits/basic_string.tcc:
-
-/usr/local/include/openfhe/pke/cryptocontext.h:
-
-/usr/include/c++/11/bits/stl_algobase.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/error_constants.h:
-
-/usr/include/c++/11/tr1/ell_integral.tcc:
-
-/usr/include/asm-generic/errno.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
-
-/usr/local/include/openfhe/binfhe/lwe-keyswitchkey-fwd.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
-
-/usr/include/c++/11/bits/stl_bvector.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
-
-/usr/include/c++/11/cwctype:
-
-/usr/local/include/openfhe/pke/openfhe.h:
-
-/usr/include/c++/11/unordered_set:
-
-/usr/local/include/openfhe/cereal/types/vector.hpp:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h:
-
-/usr/include/c++/11/bits/basic_ios.h:
-
-/usr/include/c++/11/bits/uniform_int_dist.h:
-
-/usr/local/include/openfhe/core/math/hal/bigintdyn/mubintvecdyn.h:
-
-/usr/include/c++/11/bits/unordered_map.h:
-
-/usr/include/c++/11/tr1/hypergeometric.tcc:
-
-/usr/local/include/openfhe/core/math/hal/basicint.h:
-
-/usr/include/c++/11/bits/localefwd.h:
-
-/usr/include/c++/11/bits/functional_hash.h:
-
-/usr/local/include/openfhe/cereal/archives/portable_binary.hpp:
-
-/usr/include/c++/11/ext/string_conversions.h:
-
-/usr/include/x86_64-linux-gnu/bits/iscanonical.h:
-
-/usr/include/c++/11/bits/stl_map.h:
-
-/usr/include/c++/11/tr1/special_function_util.h:
-
-/usr/include/c++/11/bits/predefined_ops.h:
-
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
-
-/usr/include/c++/11/bits/ostream.tcc:
-
-/usr/include/c++/11/clocale:
-
-/usr/include/c++/11/cstring:
-
-/usr/include/c++/11/bits/quoted_string.h:
-
-/usr/include/c++/11/bits/refwrap.h:
-
-/usr/local/include/openfhe/core/lattice/ilelement.h:
-
-/usr/include/c++/11/bits/shared_ptr.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h:
-
-/usr/include/c++/11/bits/stl_construct.h:
-
-/usr/include/strings.h:
-
-/usr/include/c++/11/functional:
-
-/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-multiparty.h:
-
-/usr/include/c++/11/numeric:
-
-/usr/include/c++/11/bits/sstream.tcc:
-
-/usr/include/c++/11/new:
-
-/usr/include/c++/11/climits:
-
-/usr/include/c++/11/pstl/pstl_config.h:
-
-/usr/local/include/openfhe/binfhe/lwe-keyswitchkey.h:
-
-/usr/local/include/openfhe/binfhe/rgsw-acc-cggi.h:
-
-/usr/include/c++/11/bits/std_mutex.h:
-
-/usr/include/c++/11/tr1/poly_laguerre.tcc:
-
-/usr/include/c++/11/tr1/exp_integral.tcc:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/prettywriter.h:
-
-/usr/include/c++/11/bits/stl_function.h:
-
-/usr/include/c++/11/bits/memoryfwd.h:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/error/error.h:
-
-/usr/include/c++/11/ext/atomicity.h:
-
-/usr/include/c++/11/bits/nested_exception.h:
-
-/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-advancedshe.h:
-
-/usr/include/c++/11/bits/locale_facets_nonio.tcc:
-
-/usr/include/c++/11/bits/stl_pair.h:
-
-/usr/local/include/openfhe/core/math/matrix.h:
-
-/usr/include/c++/11/bits/stl_deque.h:
-
-/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-pke.h:
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
 
-/usr/include/c++/11/bits/stl_iterator.h:
+/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
 
-/usr/include/c++/11/bits/stl_numeric.h:
-
-/usr/include/c++/11/bits/stl_uninitialized.h:
-
-/usr/include/c++/11/bits/stl_set.h:
-
-/usr/include/c++/11/tr1/bessel_function.tcc:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/encodings.h:
-
-/usr/local/include/openfhe/cereal/types/base_class.hpp:
-
-/usr/include/c++/11/bits/atomic_lockfree_defines.h:
-
-/usr/include/c++/11/bits/streambuf_iterator.h:
-
-/usr/include/c++/11/bits/stl_tempbuf.h:
-
-/home/rostin/scheme-switching/ir.cpp:
-
-/usr/local/include/openfhe/core/math/discreteuniformgenerator.h:
-
-/usr/include/wctype.h:
-
-/usr/local/include/openfhe/core/utils/blockAllocator/stl_allocator.h:
-
-/usr/local/include/openfhe/core/math/hal/integer.h:
-
-/usr/local/include/openfhe/core/math/nbtheory.h:
-
-/usr/include/c++/11/bits/stringfwd.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
-
-/usr/include/wchar.h:
-
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
-
-/usr/local/include/openfhe/pke/encoding/packedencoding.h:
-
-/usr/include/c++/11/bits/cxxabi_init_exception.h:
-
-/usr/local/include/openfhe/core/math/hal/intnat/transformnat.h:
-
-/usr/include/c++/11/cerrno:
-
-/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
-
-/usr/include/c++/11/bits/ostream_insert.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/math-vector.h:
-
-/usr/include/c++/11/complex:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h:
-
-/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-leveledshe.h:
-
-/usr/local/include/openfhe/core/math/hal/vector.h:
-
-/usr/local/include/openfhe/pke/cryptoobject.h:
-
-/usr/include/c++/11/chrono:
-
-/usr/include/x86_64-linux-gnu/bits/wordsize.h:
-
-/usr/local/include/openfhe/binfhe/lwe-cryptoparameters.h:
-
-/usr/local/include/openfhe/binfhe/lwe-keypair-fwd.h:
-
-/usr/include/c++/11/cstdio:
-
-/usr/include/c++/11/bit:
-
-/usr/include/c++/11/bits/stl_iterator_base_types.h:
-
-/usr/include/c++/11/cstdlib:
-
-/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
-
-/usr/include/libintl.h:
-
-/usr/include/c++/11/bits/char_traits.h:
-
-/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
+/usr/include/x86_64-linux-gnu/bits/stdio.h:
 
 /usr/include/x86_64-linux-gnu/bits/time64.h:
 
-/usr/local/include/openfhe/binfhe/rgsw-acckey.h:
-
-/usr/include/x86_64-linux-gnu/bits/timesize.h:
-
 /usr/include/x86_64-linux-gnu/bits/types.h:
+
+/usr/local/include/openfhe/pke/key/publickey-fwd.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/document.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+/usr/include/c++/12/deque:
 
-/usr/local/include/openfhe/cereal/types/map.hpp:
+/usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
+/usr/include/math.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
 
 /usr/include/features-time64.h:
-
-/usr/include/c++/11/system_error:
 
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
@@ -1240,87 +1258,59 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
+/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
-
-/usr/include/c++/11/bits/std_function.h:
+/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-advancedshe.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
 
-/usr/include/c++/11/iostream:
+/usr/local/include/openfhe/pke/gen-cryptocontext.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 
 /usr/local/include/openfhe/cereal/external/rapidjson/internal/swap.h:
 
-/usr/include/c++/11/bits/algorithmfwd.h:
-
-/usr/include/c++/11/bits/cxxabi_forced.h:
+/usr/include/x86_64-linux-gnu/c++/12/bits/ctype_base.h:
 
 /usr/local/include/openfhe/cereal/types/memory.hpp:
 
-/usr/local/include/openfhe/cereal/external/rapidjson/writer.h:
+/usr/include/x86_64-linux-gnu/bits/uio_lim.h:
 
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:
+/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
 
-/usr/local/include/openfhe/pke/schemebase/base-pre.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
+/usr/include/c++/12/cwctype:
 
 /usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
 
-/usr/include/x86_64-linux-gnu/c++/11/bits/atomic_word.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
-
-/usr/include/c++/11/bits/exception_ptr.h:
-
-/usr/include/c++/11/bits/charconv.h:
-
-/usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h:
-
-/usr/local/include/openfhe/core/utils/debug.h:
-
-/usr/local/include/openfhe/pke/schemebase/base-parametergeneration.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h:
-
-/usr/include/linux/errno.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++locale.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h:
-
-/usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-cryptoparameters.h:
-
-/usr/local/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-internal.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/cxxabi_tweaks.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
-
-/usr/local/include/openfhe/core/math/nbtheory-impl.h:
+/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
 /usr/include/x86_64-linux-gnu/sys/select.h:
 
 /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-multiparty.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h:
+/usr/include/x86_64-linux-gnu/sys/single_threaded.h:
 
-/usr/local/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-params.h:
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
+/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-cryptoparameters.h:
+
+/usr/lib/llvm-12/lib/clang/12.0.1/include/inttypes.h:
+
+/usr/lib/llvm-12/lib/clang/12.0.1/include/limits.h:
+
+/usr/include/sched.h:
+
+/usr/local/include/openfhe/pke/key/publickey.h:
+
+/usr/local/include/openfhe/core/utils/openfhebase64.h:
+
+/usr/include/c++/12/bits/stl_multiset.h:
+
+/usr/local/include/openfhe/binfhe/binfhe-base-params.h:
 
 /usr/local/include/openfhe/binfhe/binfhe-base-scheme.h:
-
-/usr/local/include/openfhe/binfhe/binfhecontext.h:
 
 /usr/local/include/openfhe/binfhe/lwe-ciphertext-fwd.h:
 
@@ -1328,45 +1318,35 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/scheme/scheme-utils.h:
 
-/usr/local/include/openfhe/binfhe/lwe-ciphertext.h:
+/usr/include/c++/12/tr1/poly_laguerre.tcc:
 
-/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-pke.h:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/internal/strtod.h:
+/usr/local/include/openfhe/binfhe/lwe-keypair-fwd.h:
 
 /usr/local/include/openfhe/binfhe/lwe-keypair.h:
 
-/usr/include/x86_64-linux-gnu/c++/11/bits/gthr.h:
+/usr/local/include/openfhe/binfhe/lwe-keyswitchkey.h:
 
-/usr/local/include/openfhe/binfhe/lwe-pke.h:
+/usr/include/x86_64-linux-gnu/c++/12/bits/ctype_inline.h:
 
-/usr/local/include/openfhe/cereal/external/rapidjson/document.h:
+/usr/local/include/openfhe/binfhe/rgsw-acc-cggi.h:
 
-/usr/local/include/openfhe/pke/key/publickey-fwd.h:
+/usr/include/x86_64-linux-gnu/bits/timesize.h:
 
-/usr/local/include/openfhe/binfhe/lwe-privatekey.h:
+/usr/local/include/openfhe/binfhe/rgsw-acckey.h:
 
-/usr/local/include/openfhe/binfhe/lwe-publickey.h:
+/usr/local/include/openfhe/binfhe/lwe-publickey-fwd.h:
 
-/usr/local/include/openfhe/binfhe/rgsw-acc-dm.h:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/internal/stack.h:
-
-/usr/include/c++/11/bits/allocator.h:
-
-/usr/local/include/openfhe/binfhe/rgsw-acc.h:
+/usr/local/include/openfhe/pke/keyswitch/keyswitch-hybrid.h:
 
 /usr/local/include/openfhe/binfhe/rgsw-evalkey.h:
 
 /usr/local/include/openfhe/binfhe/rlwe-ciphertext.h:
 
+/usr/local/include/openfhe/cereal/access.hpp:
+
+/usr/local/include/openfhe/pke/schemebase/base-pke.h:
+
 /usr/local/include/openfhe/cereal/archives/json.hpp:
-
-/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-scheme.h:
-
-/usr/include/c++/11/bits/hashtable.h:
-
-/usr/local/include/openfhe/cereal/cereal.hpp:
 
 /usr/local/include/openfhe/cereal/details/polymorphic_impl_fwd.hpp:
 
@@ -1375,16 +1355,6 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
 /usr/local/include/openfhe/cereal/details/static_object.hpp:
-
-/usr/local/include/openfhe/pke/encoding/plaintextfactory.h:
-
-/usr/local/include/openfhe/cereal/details/traits.hpp:
-
-/usr/include/c++/11/bits/stl_raw_storage_iter.h:
-
-/usr/local/include/openfhe/core/utils/blockAllocator/xvector.h:
-
-/usr/include/c++/11/set:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
 
@@ -1396,8 +1366,6 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/cereal/external/rapidjson/rapidjson.h:
 
-/usr/include/x86_64-linux-gnu/c++/11/bits/ctype_base.h:
-
 /usr/local/include/openfhe/cereal/details/helpers.hpp:
 
 /usr/local/include/openfhe/cereal/external/rapidjson/internal/biginteger.h:
@@ -1406,19 +1374,33 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/cereal/external/rapidjson/internal/itoa.h:
 
+/usr/include/c++/12/cwchar:
+
 /usr/local/include/openfhe/cereal/external/rapidjson/internal/meta.h:
 
-/usr/local/include/openfhe/cereal/external/rapidjson/internal/pow10.h:
+/usr/local/include/openfhe/binfhe/rgsw-acc.h:
 
-/usr/include/c++/11/bits/stl_heap.h:
+/usr/local/include/openfhe/cereal/external/rapidjson/internal/stack.h:
 
 /usr/local/include/openfhe/cereal/external/rapidjson/internal/strfunc.h:
 
+/usr/local/include/openfhe/cereal/external/rapidjson/istreamwrapper.h:
+
 /usr/local/include/openfhe/cereal/external/rapidjson/ostreamwrapper.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/prettywriter.h:
 
 /usr/local/include/openfhe/cereal/external/rapidjson/stringbuffer.h:
 
-/usr/include/c++/11/bits/locale_facets_nonio.h:
+/usr/include/c++/12/bits/basic_ios.h:
+
+/usr/include/x86_64-linux-gnu/bits/waitflags.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/writer.h:
+
+/usr/local/include/openfhe/cereal/external/rapidjson/internal/strtod.h:
+
+/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-pke.h:
 
 /usr/local/include/openfhe/cereal/specialize.hpp:
 
@@ -1426,27 +1408,25 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/key/evalkey.h:
 
-/usr/include/c++/11/bits/fstream.tcc:
+/usr/include/c++/12/bits/string_view.tcc:
 
 /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-fhe.h:
 
-/usr/local/include/openfhe/cereal/types/common.hpp:
-
-/usr/local/include/openfhe/cereal/external/rapidjson/internal/diyfp.h:
-
-/usr/local/include/openfhe/cereal/types/concepts/pair_associative_container.hpp:
-
-/usr/include/c++/11/bits/hashtable_policy.h:
+/usr/include/c++/12/cstddef:
 
 /usr/local/include/openfhe/cereal/types/string.hpp:
 
-/usr/local/include/openfhe/core/config_core.h:
+/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-cryptoparameters.h:
 
-/usr/local/include/openfhe/pke/key/evalkeyrelin.h:
+/usr/local/include/openfhe/core/lattice/hal/default/dcrtpoly.h:
 
-/usr/local/include/openfhe/core/lattice/constants-lattice.h:
+/usr/include/c++/12/tr1/exp_integral.tcc:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h:
+/usr/include/c++/12/bits/chrono.h:
+
+/usr/local/include/openfhe/core/lattice/hal/default/ildcrtparams.h:
+
+/usr/include/c++/12/bits/alloc_traits.h:
 
 /usr/local/include/openfhe/core/lattice/hal/default/ilparams.h:
 
@@ -1454,13 +1434,9 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-params.h:
 
+/usr/local/include/openfhe/core/lattice/hal/lat-backend.h:
+
 /usr/local/include/openfhe/core/lattice/lat-hal.h:
-
-/usr/local/include/openfhe/core/math/hal/bigintdyn/transformdyn.h:
-
-/usr/local/include/openfhe/core/lattice/stdlatticeparms.h:
-
-/usr/include/c++/11/tr1/gamma.tcc:
 
 /usr/local/include/openfhe/pke/encoding/stringencoding.h:
 
@@ -1468,45 +1444,49 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/core/math/binaryuniformgenerator.h:
 
-/usr/include/c++/11/bits/stl_relops.h:
-
-/usr/local/include/openfhe/core/math/discretegaussiangenerator.h:
-
-/usr/local/include/openfhe/pke/keyswitch/keyswitch-bv.h:
+/usr/include/c++/12/bits/atomic_base.h:
 
 /usr/local/include/openfhe/core/math/discretegaussiangeneratorgeneric.h:
+
+/home/rostin/scheme-switching/ir.cpp:
+
+/usr/local/include/openfhe/core/math/discreteuniformgenerator.h:
+
+/usr/include/wctype.h:
+
+/usr/local/include/openfhe/core/utils/blockAllocator/stl_allocator.h:
+
+/usr/local/include/openfhe/core/math/hal/integer.h:
 
 /usr/local/include/openfhe/cereal/details/polymorphic_impl.hpp:
 
 /usr/local/include/openfhe/core/math/distrgen.h:
 
-/usr/local/include/openfhe/core/math/distributiongenerator.h:
+/usr/local/include/openfhe/core/math/hal/basicint.h:
 
 /usr/local/include/openfhe/core/math/hal/bigintbackend.h:
 
-/usr/include/c++/11/unordered_map:
+/usr/local/include/openfhe/core/math/hal/bigintdyn/mubintvecdyn.h:
 
 /usr/local/include/openfhe/core/math/hal/bigintdyn/transformdyn-impl.h:
 
+/usr/local/include/openfhe/core/lattice/stdlatticeparms.h:
+
+/usr/local/include/openfhe/core/math/hal/bigintdyn/transformdyn.h:
+
+/usr/local/include/openfhe/core/math/hal/bigintfxd/backendfxd.h:
+
 /usr/local/include/openfhe/core/math/hal/bigintdyn/ubintdyn.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
-
-/usr/local/include/openfhe/core/utils/inttypes.h:
-
-/usr/local/include/openfhe/core/math/hal/bigintntl/backendntl.h:
-
-/usr/local/include/openfhe/core/utils/exception.h:
-
-/usr/include/c++/11/bits/random.tcc:
 
 /usr/local/include/openfhe/core/math/hal/bigintdyn/backenddyn.h:
 
-/usr/include/c++/11/bits/atomic_base.h:
-
 /usr/local/include/openfhe/core/math/hal/intnat/mubintvecnat.h:
 
+/usr/local/include/openfhe/core/math/hal/intnat/transformnat.h:
+
 /usr/local/include/openfhe/core/math/hal/intnat/ubintnat.h:
+
+/usr/include/c++/12/iostream:
 
 /usr/local/include/openfhe/pke/key/evalkeyrelin-fwd.h:
 
@@ -1518,67 +1498,87 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/core/math/hal/nativeintbackend.h:
 
-/usr/include/c++/11/iomanip:
-
-/usr/local/include/openfhe/core/math/hal/transform.h:
-
 /usr/local/include/openfhe/core/math/math-hal.h:
+
+/usr/local/include/openfhe/core/math/matrix.h:
+
+/usr/lib/llvm-12/lib/clang/12.0.1/include/sanitizer/tsan_interface.h:
+
+/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-pke.h:
+
+/usr/local/include/openfhe/core/math/nbtheory-impl.h:
+
+/usr/local/include/openfhe/core/math/nbtheory.h:
+
+/usr/include/c++/12/bits/ios_base.h:
+
+/usr/local/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-internal.h:
 
 /usr/local/include/openfhe/core/math/ternaryuniformgenerator.h:
 
+/usr/include/c++/12/bits/node_handle.h:
+
 /usr/local/include/openfhe/core/openfhecore.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+/usr/include/c++/12/bits/nested_exception.h:
 
-/usr/include/c++/11/backward/auto_ptr.h:
+/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
 
 /usr/local/include/openfhe/pke/scheme/gen-cryptocontext-params-validation.h:
 
 /usr/local/include/openfhe/core/utils/caller_info.h:
 
+/usr/include/c++/12/bits/stringfwd.h:
+
 /usr/local/include/openfhe/core/utils/demangle.h:
 
 /usr/local/include/openfhe/core/utils/get-call-stack.h:
 
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h:
+/usr/local/include/openfhe/core/math/hal/bigintntl/backendntl.h:
+
+/usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
+
+/usr/local/include/openfhe/core/utils/inttypes.h:
 
 /home/rostin/scheme-switching/src/backend/fhe_operations.hpp:
 
 /usr/local/include/openfhe/core/utils/memory.h:
 
-/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-leveledshe.h:
-
 /usr/local/include/openfhe/core/utils/parallel.h:
 
-/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-pre.h:
+/usr/local/include/openfhe/core/utils/prng/prng.h:
 
-/usr/local/include/openfhe/core/utils/prng/blake2.h:
-
-/usr/include/c++/11/bits/vector.tcc:
+/usr/include/c++/12/bits/localefwd.h:
 
 /usr/local/include/openfhe/core/utils/serial.h:
 
-/usr/include/c++/11/bits/exception_defines.h:
+/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
-/usr/local/include/openfhe/core/utils/sertype.h:
+/usr/local/include/openfhe/cereal/external/rapidjson/stream.h:
 
-/usr/local/include/openfhe/core/utils/type_name.h:
+/usr/local/include/openfhe/core/utils/serializable.h:
 
-/usr/include/x86_64-linux-gnu/bits/strings_fortified.h:
+/usr/local/include/openfhe/pke/ciphertext-fwd.h:
+
+/usr/local/include/openfhe/pke/constants-defs.h:
+
+/usr/include/c++/12/tr1/bessel_function.tcc:
+
+/usr/include/c++/12/bits/shared_ptr.h:
 
 /usr/local/include/openfhe/pke/ciphertext.h:
 
 /usr/local/include/openfhe/pke/constants.h:
 
-/usr/include/c++/11/cwchar:
-
 /usr/local/include/openfhe/pke/cryptocontext-fwd.h:
-
-/usr/include/c++/11/utility:
 
 /usr/local/include/openfhe/pke/cryptocontextfactory.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h:
+/usr/local/include/openfhe/core/math/hal/vector.h:
+
+/usr/include/c++/12/bits/stl_iterator_base_types.h:
+
+/usr/local/include/openfhe/pke/cryptoobject.h:
 
 /usr/local/include/openfhe/pke/encoding/encodingparams.h:
 
@@ -1588,19 +1588,7 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/encoding/plaintext-fwd.h:
 
-/usr/include/x86_64-linux-gnu/asm/errno.h:
-
-/usr/local/include/openfhe/pke/encoding/plaintext.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
-
-/usr/local/include/openfhe/pke/gen-cryptocontext.h:
-
-/usr/local/include/openfhe/pke/encoding/coefpackedencoding.h:
-
-/usr/include/c++/11/ios:
-
-/usr/local/include/openfhe/pke/globals.h:
+/usr/include/c++/12/cxxabi.h:
 
 /usr/local/include/openfhe/pke/key/evalkey-fwd.h:
 
@@ -1608,31 +1596,27 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/key/key.h:
 
-/usr/include/c++/11/bits/hash_bytes.h:
-
 /usr/local/include/openfhe/pke/key/privatekey-fwd.h:
 
-/usr/local/include/openfhe/pke/key/privatekey.h:
-
-/usr/include/sched.h:
-
-/usr/local/include/openfhe/binfhe/binfhe-base-params.h:
-
-/usr/local/include/openfhe/core/utils/openfhebase64.h:
-
-/usr/local/include/openfhe/pke/key/publickey.h:
+/usr/include/c++/12/bits/refwrap.h:
 
 /usr/local/include/openfhe/pke/keyswitch/keyswitch-rns.h:
 
+/usr/include/c++/12/bits/stl_raw_storage_iter.h:
+
 /usr/local/include/openfhe/pke/metadata.h:
 
-/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-fhe.h:
+/usr/local/include/openfhe/pke/openfhe.h:
 
-/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-multiparty.h:
+/usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-fhe.h:
 
 /usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-parametergeneration.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
+
+/usr/include/c++/12/bits/char_traits.h:
+
+/usr/include/c++/12/bits/std_abs.h:
 
 /usr/local/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-params.h:
 
@@ -1640,13 +1624,7 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-advancedshe.h:
 
-/usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-leveledshe.h:
-
-/usr/include/c++/11/cctype:
-
 /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-pke.h:
-
-/usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-pre.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/error_t.h:
 
@@ -1658,22 +1636,32 @@ CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp \
 
 /usr/local/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns.h:
 
-/usr/local/include/openfhe/core/lattice/hal/default/dcrtpoly.h:
-
-/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-cryptoparameters.h:
-
 /usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-parametergeneration.h:
+
+/usr/include/time.h:
+
+/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-pre.h:
+
+/usr/local/include/openfhe/cereal/cereal.hpp:
+
+/usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-scheme.h:
 
 /usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-schemeswitching.h:
 
+/usr/local/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-params.h:
+
+/usr/include/c++/12/pstl/execution_defs.h:
+
 /usr/local/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns.h:
 
-/usr/local/include/openfhe/pke/scheme/scheme-id.h:
+/usr/local/include/openfhe/pke/scheme/gen-cryptocontext-params.h:
 
 /usr/local/include/openfhe/cereal/external/rapidjson/internal/ieee754.h:
 
 /usr/local/include/openfhe/pke/scheme/scheme-swch-params.h:
 
-/usr/local/include/openfhe/cereal/external/rapidjson/internal/dtoa.h:
+/usr/local/include/openfhe/pke/schemebase/base-parametergeneration.h:
 
-/usr/local/include/openfhe/pke/schemebase/base-fhe.h:
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+/usr/local/include/openfhe/pke/schemebase/base-pre.h:

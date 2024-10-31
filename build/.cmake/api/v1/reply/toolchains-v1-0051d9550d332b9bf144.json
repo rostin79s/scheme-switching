@@ -5,22 +5,26 @@
 		{
 			"compiler" : 
 			{
-				"id" : "GNU",
+				"id" : "Clang",
 				"implicit" : 
 				{
 					"includeDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-linux-gnu/11/include",
 						"/usr/local/include",
+						"/usr/lib/llvm-12/lib/clang/12.0.1/include",
 						"/usr/include/x86_64-linux-gnu",
+						"/include",
 						"/usr/include"
 					],
 					"linkDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-linux-gnu/11",
+						"/usr/lib/gcc/x86_64-linux-gnu/12",
 						"/usr/lib/x86_64-linux-gnu",
-						"/usr/lib",
+						"/usr/lib64",
 						"/lib/x86_64-linux-gnu",
+						"/lib64",
+						"/usr/lib",
+						"/usr/lib/llvm-12/lib",
 						"/lib"
 					],
 					"linkFrameworkDirectories" : [],
@@ -33,8 +37,8 @@
 						"gcc_s"
 					]
 				},
-				"path" : "/usr/bin/cc",
-				"version" : "11.4.0"
+				"path" : "/usr/bin/clang-12",
+				"version" : "12.0.1"
 			},
 			"language" : "C",
 			"sourceFileExtensions" : 
@@ -46,25 +50,29 @@
 		{
 			"compiler" : 
 			{
-				"id" : "GNU",
+				"id" : "Clang",
 				"implicit" : 
 				{
 					"includeDirectories" : 
 					[
-						"/usr/include/c++/11",
-						"/usr/include/x86_64-linux-gnu/c++/11",
-						"/usr/include/c++/11/backward",
-						"/usr/lib/gcc/x86_64-linux-gnu/11/include",
+						"/usr/include/c++/12",
+						"/usr/include/x86_64-linux-gnu/c++/12",
+						"/usr/include/c++/12/backward",
 						"/usr/local/include",
+						"/usr/lib/llvm-12/lib/clang/12.0.1/include",
 						"/usr/include/x86_64-linux-gnu",
+						"/include",
 						"/usr/include"
 					],
 					"linkDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-linux-gnu/11",
+						"/usr/lib/gcc/x86_64-linux-gnu/12",
 						"/usr/lib/x86_64-linux-gnu",
-						"/usr/lib",
+						"/usr/lib64",
 						"/lib/x86_64-linux-gnu",
+						"/lib64",
+						"/usr/lib",
+						"/usr/lib/llvm-12/lib",
 						"/lib"
 					],
 					"linkFrameworkDirectories" : [],
@@ -79,8 +87,8 @@
 						"gcc"
 					]
 				},
-				"path" : "/usr/bin/c++",
-				"version" : "11.4.0"
+				"path" : "/usr/bin/clang++-12",
+				"version" : "12.0.1"
 			},
 			"language" : "CXX",
 			"sourceFileExtensions" : 

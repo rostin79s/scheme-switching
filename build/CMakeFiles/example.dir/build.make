@@ -73,15 +73,15 @@ CMakeFiles/example.dir/example.cpp.o: CMakeFiles/example.dir/flags.make
 CMakeFiles/example.dir/example.cpp.o: /home/rostin/scheme-switching/example.cpp
 CMakeFiles/example.dir/example.cpp.o: CMakeFiles/example.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/example.dir/example.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/example.dir/example.cpp.o -MF CMakeFiles/example.dir/example.cpp.o.d -o CMakeFiles/example.dir/example.cpp.o -c /home/rostin/scheme-switching/example.cpp
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/example.dir/example.cpp.o -MF CMakeFiles/example.dir/example.cpp.o.d -o CMakeFiles/example.dir/example.cpp.o -c /home/rostin/scheme-switching/example.cpp
 
 CMakeFiles/example.dir/example.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/example.dir/example.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/example.cpp > CMakeFiles/example.dir/example.cpp.i
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/example.cpp > CMakeFiles/example.dir/example.cpp.i
 
 CMakeFiles/example.dir/example.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/example.dir/example.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/example.cpp -o CMakeFiles/example.dir/example.cpp.s
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/example.cpp -o CMakeFiles/example.dir/example.cpp.s
 
 # Object files for target example
 example_OBJECTS = \
@@ -92,9 +92,9 @@ example_EXTERNAL_OBJECTS =
 
 example: CMakeFiles/example.dir/example.cpp.o
 example: CMakeFiles/example.dir/build.make
-example: /usr/local/lib/libOPENFHEpke.so.1.2.0
-example: /usr/local/lib/libOPENFHEbinfhe.so.1.2.0
-example: /usr/local/lib/libOPENFHEcore.so.1.2.0
+example: /usr/local/lib/libOPENFHEpke.so.1.2.3
+example: /usr/local/lib/libOPENFHEbinfhe.so.1.2.3
+example: /usr/local/lib/libOPENFHEcore.so.1.2.3
 example: CMakeFiles/example.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable example"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/example.dir/link.txt --verbose=$(VERBOSE)

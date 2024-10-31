@@ -67,7 +67,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -std=gnu++17"
+					"fragment" : " -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.3  -DMATHBACKEND=4 -fopenmp=libiomp5 -std=gnu++17"
 				}
 			],
 			"includes" : 

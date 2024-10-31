@@ -73,15 +73,15 @@ CMakeFiles/ir.dir/ir.cpp.o: CMakeFiles/ir.dir/flags.make
 CMakeFiles/ir.dir/ir.cpp.o: /home/rostin/scheme-switching/ir.cpp
 CMakeFiles/ir.dir/ir.cpp.o: CMakeFiles/ir.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ir.dir/ir.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ir.dir/ir.cpp.o -MF CMakeFiles/ir.dir/ir.cpp.o.d -o CMakeFiles/ir.dir/ir.cpp.o -c /home/rostin/scheme-switching/ir.cpp
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ir.dir/ir.cpp.o -MF CMakeFiles/ir.dir/ir.cpp.o.d -o CMakeFiles/ir.dir/ir.cpp.o -c /home/rostin/scheme-switching/ir.cpp
 
 CMakeFiles/ir.dir/ir.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ir.dir/ir.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/ir.cpp > CMakeFiles/ir.dir/ir.cpp.i
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/ir.cpp > CMakeFiles/ir.dir/ir.cpp.i
 
 CMakeFiles/ir.dir/ir.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ir.dir/ir.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/ir.cpp -o CMakeFiles/ir.dir/ir.cpp.s
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/ir.cpp -o CMakeFiles/ir.dir/ir.cpp.s
 
 # Object files for target ir
 ir_OBJECTS = \
@@ -93,9 +93,9 @@ ir_EXTERNAL_OBJECTS =
 ir: CMakeFiles/ir.dir/ir.cpp.o
 ir: CMakeFiles/ir.dir/build.make
 ir: libmy_custom_lib.a
-ir: /usr/local/lib/libOPENFHEpke.so.1.2.0
-ir: /usr/local/lib/libOPENFHEbinfhe.so.1.2.0
-ir: /usr/local/lib/libOPENFHEcore.so.1.2.0
+ir: /usr/local/lib/libOPENFHEpke.so.1.2.3
+ir: /usr/local/lib/libOPENFHEbinfhe.so.1.2.3
+ir: /usr/local/lib/libOPENFHEcore.so.1.2.3
 ir: CMakeFiles/ir.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ir"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ir.dir/link.txt --verbose=$(VERBOSE)

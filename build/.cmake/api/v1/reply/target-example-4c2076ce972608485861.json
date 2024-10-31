@@ -73,7 +73,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -std=gnu++17"
+					"fragment" : " -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.3  -DMATHBACKEND=4 -fopenmp=libiomp5 -std=gnu++17"
 				}
 			],
 			"includes" : 
@@ -120,7 +120,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp",
+				"fragment" : "-Wall -Werror -O3  -DOPENFHE_VERSION=1.2.3  -DMATHBACKEND=4 -fopenmp=libiomp5",
 				"role" : "flags"
 			},
 			{
@@ -138,27 +138,27 @@
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "/usr/local/lib/libOPENFHEpke.so.1.2.0",
+				"fragment" : "/usr/local/lib/libOPENFHEpke.so.1.2.3",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "/usr/local/lib/libOPENFHEbinfhe.so.1.2.0",
+				"fragment" : "/usr/local/lib/libOPENFHEbinfhe.so.1.2.3",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "-fopenmp",
+				"fragment" : "-fopenmp=libiomp5",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "/usr/local/lib/libOPENFHEcore.so.1.2.0",
+				"fragment" : "/usr/local/lib/libOPENFHEcore.so.1.2.3",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "-fopenmp",
+				"fragment" : "-fopenmp=libiomp5",
 				"role" : "libraries"
 			}
 		],

@@ -73,15 +73,15 @@ CMakeFiles/execute.dir/test/execute.cpp.o: CMakeFiles/execute.dir/flags.make
 CMakeFiles/execute.dir/test/execute.cpp.o: /home/rostin/scheme-switching/test/execute.cpp
 CMakeFiles/execute.dir/test/execute.cpp.o: CMakeFiles/execute.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/execute.dir/test/execute.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/execute.dir/test/execute.cpp.o -MF CMakeFiles/execute.dir/test/execute.cpp.o.d -o CMakeFiles/execute.dir/test/execute.cpp.o -c /home/rostin/scheme-switching/test/execute.cpp
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/execute.dir/test/execute.cpp.o -MF CMakeFiles/execute.dir/test/execute.cpp.o.d -o CMakeFiles/execute.dir/test/execute.cpp.o -c /home/rostin/scheme-switching/test/execute.cpp
 
 CMakeFiles/execute.dir/test/execute.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/execute.dir/test/execute.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/test/execute.cpp > CMakeFiles/execute.dir/test/execute.cpp.i
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/rostin/scheme-switching/test/execute.cpp > CMakeFiles/execute.dir/test/execute.cpp.i
 
 CMakeFiles/execute.dir/test/execute.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/execute.dir/test/execute.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/test/execute.cpp -o CMakeFiles/execute.dir/test/execute.cpp.s
+	/usr/bin/clang++-12 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/rostin/scheme-switching/test/execute.cpp -o CMakeFiles/execute.dir/test/execute.cpp.s
 
 # Object files for target execute
 execute_OBJECTS = \
@@ -93,9 +93,9 @@ execute_EXTERNAL_OBJECTS =
 execute: CMakeFiles/execute.dir/test/execute.cpp.o
 execute: CMakeFiles/execute.dir/build.make
 execute: libmy_custom_lib.a
-execute: /usr/local/lib/libOPENFHEpke.so.1.2.0
-execute: /usr/local/lib/libOPENFHEbinfhe.so.1.2.0
-execute: /usr/local/lib/libOPENFHEcore.so.1.2.0
+execute: /usr/local/lib/libOPENFHEpke.so.1.2.3
+execute: /usr/local/lib/libOPENFHEbinfhe.so.1.2.3
+execute: /usr/local/lib/libOPENFHEcore.so.1.2.3
 execute: CMakeFiles/execute.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/rostin/scheme-switching/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable execute"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/execute.dir/link.txt --verbose=$(VERBOSE)

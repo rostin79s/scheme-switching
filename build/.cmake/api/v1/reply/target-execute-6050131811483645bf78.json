@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "main"
+			"path" : "execute"
 		}
 	],
 	"backtrace" : 1,
@@ -12,6 +12,7 @@
 		[
 			"add_executable",
 			"link_directories",
+			"target_link_libraries",
 			"include_directories"
 		],
 		"files" : 
@@ -26,7 +27,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 67,
+				"line" : 65,
 				"parent" : 0
 			},
 			{
@@ -38,29 +39,35 @@
 			{
 				"command" : 2,
 				"file" : 0,
+				"line" : 74,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
 				"line" : 38,
 				"parent" : 0
 			},
 			{
-				"command" : 2,
+				"command" : 3,
 				"file" : 0,
 				"line" : 39,
 				"parent" : 0
 			},
 			{
-				"command" : 2,
+				"command" : 3,
 				"file" : 0,
 				"line" : 40,
 				"parent" : 0
 			},
 			{
-				"command" : 2,
+				"command" : 3,
 				"file" : 0,
 				"line" : 41,
 				"parent" : 0
 			},
 			{
-				"command" : 2,
+				"command" : 3,
 				"file" : 0,
 				"line" : 42,
 				"parent" : 0
@@ -73,29 +80,29 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -std=gnu++17"
+					"fragment" : " -Wall -Werror -O3  -DOPENFHE_VERSION=1.2.3  -DMATHBACKEND=4 -fopenmp=libiomp5 -std=gnu++17"
 				}
 			],
 			"includes" : 
 			[
 				{
-					"backtrace" : 3,
+					"backtrace" : 4,
 					"path" : "/usr/local/include/openfhe"
 				},
 				{
-					"backtrace" : 4,
+					"backtrace" : 5,
 					"path" : "/usr/local/include/openfhe/third-party/include"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 6,
 					"path" : "/usr/local/include/openfhe/core"
 				},
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"path" : "/usr/local/include/openfhe/pke"
 				},
 				{
-					"backtrace" : 7,
+					"backtrace" : 8,
 					"path" : "/usr/local/include/openfhe/binfhe"
 				}
 			],
@@ -114,13 +121,20 @@
 			]
 		}
 	],
-	"id" : "main::@6890427a1f51a3e7e1df",
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "my_custom_lib::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "execute::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-Wall -Werror -O3  -DOPENFHE_VERSION=1.2.0 -Wno-parentheses -DMATHBACKEND=4 -fopenmp",
+				"fragment" : "-Wall -Werror -O3  -DOPENFHE_VERSION=1.2.3  -DMATHBACKEND=4 -fopenmp=libiomp5",
 				"role" : "flags"
 			},
 			{
@@ -138,34 +152,44 @@
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "/usr/local/lib/libOPENFHEpke.so.1.2.0",
+				"fragment" : "-fopenmp=libiomp5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "libmy_custom_lib.a",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "/usr/local/lib/libOPENFHEbinfhe.so.1.2.0",
+				"fragment" : "/usr/local/lib/libOPENFHEpke.so.1.2.3",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "-fopenmp",
+				"fragment" : "/usr/local/lib/libOPENFHEbinfhe.so.1.2.3",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "/usr/local/lib/libOPENFHEcore.so.1.2.0",
+				"fragment" : "-fopenmp=libiomp5",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "-fopenmp",
+				"fragment" : "/usr/local/lib/libOPENFHEcore.so.1.2.3",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 1,
+				"fragment" : "-fopenmp=libiomp5",
 				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
-	"name" : "main",
-	"nameOnDisk" : "main",
+	"name" : "execute",
+	"nameOnDisk" : "execute",
 	"paths" : 
 	{
 		"build" : ".",
@@ -186,7 +210,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "main.cpp",
+			"path" : "test/execute.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],
