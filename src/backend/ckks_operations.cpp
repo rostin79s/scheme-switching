@@ -22,20 +22,19 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
     // uint32_t slots        = 1;  
     // uint32_t batchSize    = slots;
 
-    ScalingTechnique scTech = FLEXIBLEAUTO;
+    ScalingTechnique scTech = lbcrypto::FIXEDAUTO;
     // uint32_t multDepth      = 17;
 
     CCParams<CryptoContextCKKSRNS> parameters;
-    parameters.SetMultiplicativeDepth(multDepth);
     parameters.SetMultiplicativeDepth(multDepth);
     parameters.SetScalingModSize(scaleModSize);
     parameters.SetFirstModSize(firstModSize);
     parameters.SetScalingTechnique(scTech);
     parameters.SetSecurityLevel(sl);
     parameters.SetBatchSize(batchSize);
-    parameters.SetSecretKeyDist(UNIFORM_TERNARY);
-    parameters.SetKeySwitchTechnique(HYBRID);
-    parameters.SetNumLargeDigits(3);
+    // parameters.SetSecretKeyDist(UNIFORM_TERNARY);
+    // parameters.SetKeySwitchTechnique(HYBRID);
+    // parameters.SetNumLargeDigits(3);
 
     context.cc = GenCryptoContext(parameters);
     context.setBatchSize(batchSize);
@@ -45,6 +44,8 @@ CKKS_scheme::CKKS_scheme(int multDepth, int scaleModSize, int batchSize)
     context.getCryptoContext()->Enable(LEVELEDSHE);
     context.getCryptoContext()->Enable(ADVANCEDSHE);
     context.getCryptoContext()->Enable(SCHEMESWITCH);
+
+    std::cout << "CKKS scheme is using ring dimension " << context.getCryptoContext()->GetRingDimension() << "\n";
 
 
     context.setKeys(context.getCryptoContext()->KeyGen());

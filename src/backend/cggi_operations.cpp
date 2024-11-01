@@ -16,6 +16,7 @@ CGGI_scheme::CGGI_scheme(CKKS::Context_CKKS ckcontext) {
     SchSwchParams params;
     params.SetSecurityLevelCKKS(sl);
     params.SetSecurityLevelFHEW(slBin);
+    // params.SetArbitraryFunctionEvaluation(true);
     params.SetCtxtModSizeFHEWLargePrec(logQ_ccLWE);
     params.SetNumSlotsCKKS(batchSize);
     params.SetNumValues(batchSize);

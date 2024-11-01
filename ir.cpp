@@ -16,7 +16,7 @@ FHEdouble rostin(FHEcontext* ck, FHEdouble arg0, FHEdouble arg1) {
 }
 
 int main() {
-	CKKS_scheme ck(2,50,1);
+	CKKS_scheme ck(2,50,8);
     CGGI_scheme cg(ck.getContext());
     FHEcontext* ctx = new FHEcontext(ck.getContext(), cg.getContext());
 	FHEdouble arg0 = FHEencrypt(ctx, 2); 
