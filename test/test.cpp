@@ -1,10 +1,16 @@
 #include "test_plain.hpp"
+#define N 40
+// double* rostin(double a[N], double b[N]){
+//     double* c = new double[N];
+//     for (int i = 0; i < N-2; i++){
+//         c[i] = a[i] + b[i+2];
+//     }
+//     return c;
+// }
+
 double rostin(double a, double b){
-    if (a == b){
-        return a;
+    for (int i = 0; i < N-2; i++){
+        a = a + b;
     }
-    else{
-        return b;
-    }
-    return b;
+    return a;
 }

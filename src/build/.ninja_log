@@ -3,6 +3,6 @@
 1	11471	1729539048846884981	CMakeFiles/compiler.dir/frontend/frontend.cpp.o	a9d809f584eb766d
 10137	11028	1730251991011167286	/home/rostin/scheme-switching/src/compiler	23994f7f086cea04
 2	10137	1730251990126163044	CMakeFiles/compiler.dir/compiler.cpp.o	d51d67cc570dedd1
-0	59	1730391799814925864	build.ninja	952d40cd108c56ee
+0	59	1730516621074331944	build.ninja	952d40cd108c56ee
 1	11801	1729539049176872748	CMakeFiles/compiler.dir/backend/backend.cpp.o	398842285438a70a
 1	8556	1726771586816778056	CMakeFiles/emitc-translate.dir/emitc-translate.cpp.o	8ad99d6a0d8969e9
