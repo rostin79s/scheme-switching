@@ -9,8 +9,9 @@
 // }
 
 double rostin(double a, double b){
+    double x = 0;
     for (int i = 0; i < N-2; i++){
-        a = a + b;
+        x += a + b;
     }
-    return a;
+    return x;
 }

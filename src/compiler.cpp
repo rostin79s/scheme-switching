@@ -28,7 +28,10 @@
 
 #include <llvm/Support/Casting.h>
 #include <llvm/Support/raw_ostream.h>
+#include <mlir/Dialect/Affine/IR/AffineOps.h>
+#include <mlir/Dialect/Func/IR/FuncOps.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
+#include <mlir/IR/Operation.h>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -108,24 +111,114 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
 
         auto ckarg = func.getArgument(0);
-        outs() << "ckarg: " << ckarg << '\n';
+        func.walk([&](Operation *op) {    
 
-        func.walk([&](Operation *op) {
-            outs() << "\noperation: " << *op << "\n\n\n";
+            if (op->getDialect()->getNamespace() == "affine") {
+                builder.setInsertionPointAfter(op);
+                outs() << "operation: " << *op << "\n\n\n";
+
+
+                if (auto forOp = dyn_cast<affine::AffineForOp>(op)){
+                    auto *newblock = forOp.getBody();
+                    auto res = forOp.getResults();
+                    for (auto it : llvm::enumerate(res)) {
+                        if (it.value().getType().isF64()) {
+                            it.value().setType(fhedouble);
+                        }
+                    }
+                    for (auto it : llvm::enumerate(newblock->getArguments())) {                    
+                        if (it.value().getType().isF64()) {
+                            it.value().setType(fhedouble);
+                        }
+                    }
+
+                    auto lowerBound = forOp.getLowerBoundMap().getSingleConstantResult();
+                    auto upperBound = forOp.getUpperBoundMap().getSingleConstantResult();
+                    // lowerBound.print(outs());
+                    outs() << "lowerBound: " << lowerBound << "\n";
+                    outs() << "upperBound: " << upperBound << "\n";
+                    auto step = forOp.getStep();
+                    outs() << "step: " << step << "\n";
+
+                    mlir::Value lowerBoundValue = builder.create<arith::ConstantIndexOp>(
+                        forOp.getLoc(), lowerBound);
+                    
+                    outs() << "lowerBoundValue: " << lowerBoundValue << "\n";
+                    
+                    mlir::Value upperBoundValue = builder.create<arith::ConstantIndexOp>(
+                        forOp.getLoc(), upperBound);
+                    
+                    mlir::Value stepValue = builder.create<arith::ConstantIndexOp>(
+                        forOp.getLoc(), step);
+
+                    // ValueRange iterArgs = forOp.getRegionIterArgs();
+                    auto ops = forOp.getOperands();
+                    for (auto op : ops) {
+                        outs() << "op: " << op << "\n";
+                    }
+
+                    // for (auto arg : iterArgs) {
+                    //     outs() << "arg: " << arg << "\n";
+                    //     // auto orig = arg.getDefiningOp();
+
+                        
+                    // }
+                    
+                    auto scfForOp = builder.create<scf::ForOp>(
+                        forOp.getLoc(),
+                        lowerBoundValue,
+                        upperBoundValue,
+                        stepValue,
+                        ops);
+                    outs() << "scfForOp: " << scfForOp << "\n";
+
+                    scfForOp.getBody()->getOperations().splice(
+                        scfForOp.getBody()->begin(), forOp.getBody()->getOperations());
+                    outs() << "scfForOp-1: " << scfForOp << "\n";
+
+
+                    auto newForBlock = scfForOp.getBody()->getArguments();
+                    auto oldForBlock = forOp.getBody()->getArguments();
+
+                    for (auto it : llvm::zip(oldForBlock, newForBlock)) {
+                        std::get<0>(it).replaceAllUsesWith(std::get<1>(it));
+                    }
+
+                    for (auto it : llvm::zip(forOp.getResults(), scfForOp.getResults())) {
+                        std::get<0>(it).replaceAllUsesWith(std::get<1>(it));
+                    }
+                    outs() << "\n\n\nlols" << forOp->getParentOfType<mlir::func::FuncOp>() << "\n\n\n";
+
+
+                    if (!forOp->use_empty()) {
+                        llvm::errs() << "Operation result has uses:\n";
+                        for (auto &use : forOp->getUses()) {
+                            llvm::errs() << "  Used by: " << *use.getOwner() << "\n";
+                        }
+                    }
+                    auto oldBody = forOp.getBody();
+                    auto newBody = scfForOp.getBody();
+                    for (auto it : llvm::zip(oldBody->getArguments(), newBody->getArguments())) {
+                        std::get<0>(it).replaceAllUsesWith(std::get<1>(it));
+                    }
+                    
+                    forOp.replaceAllUsesWith(scfForOp.getResults());
+                    forOp.erase();
+                    outs() << "lol" << "\n\n\n";
+
+                }
+                else if (auto yieldOp = dyn_cast<affine::AffineYieldOp>(op)){
+                    builder.create<scf::YieldOp>(yieldOp.getLoc(), yieldOp.getOperands());
+                    yieldOp.erase();
+                }
+            }        
             
-            
-            if (auto cmpOp = dyn_cast<arith::CmpFOp>(op)){
+            else if (auto cmpOp = dyn_cast<arith::CmpFOp>(op)){
                 builder.setInsertionPoint(cmpOp);
                 auto arg0 = cmpOp.getOperand(0);
                 auto arg1 = cmpOp.getOperand(1);
                 auto predicate = cmpOp.getPredicate();
                 auto s = stringifyCmpFPredicate(predicate);
-
-                outs() << "operation: " << *op << "\n\n\n";
-
-                outs() << "arg0: " << arg0 << '\n';
-                outs() << "arg1: " << arg1 << '\n';
-                outs() << "predicate: " << predicate << '\n';
                 auto newOp = builder.create<emitc::CallOp>(
                     cmpOp.getLoc(),
                     TypeRange(fhedouble),
@@ -161,23 +254,18 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 auto *newblock = forOp.getBody();
                 auto res = forOp.getResults();
                 for (auto it : llvm::enumerate(res)) {
-                    outs() <<"for loop res: " << it.value() << "  type: " << it.value().getType() << "\n";
                     if (it.value().getType().isF64()) {
                         it.value().setType(fhedouble);
                     }
                 }
-                for (auto it : llvm::enumerate(newblock->getArguments())) {
-                    outs() <<"for loop arg: " << it.value() << "  type: " << it.value().getType() << "\n";
+                for (auto it : llvm::enumerate(newblock->getArguments())) {                    
                     if (it.value().getType().isF64()) {
-                        
                         it.value().setType(fhedouble);
                     }
                 }
             }
 
-            else if (auto arithOp = dyn_cast<arith::ConstantFloatOp>(op)){
-                outs()<<"float constant"<<"\n";
-                builder.setInsertionPoint(arithOp);
+            else if (auto arithOp = dyn_cast<arith::ConstantFloatOp>(op)){                builder.setInsertionPoint(arithOp);
                 auto value = arithOp.value();
                 double value2 = value.convertToDouble();
 
@@ -212,9 +300,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
                 // Create a new `emitc.call` operation.
                 auto arg0 = arithOp.getOperand(0);
-                auto arg1 = arithOp.getOperand(1);
-                outs() << "arg1: " << arg1 << '\n';
-                
+                auto arg1 = arithOp.getOperand(1);                
 
                 auto newOp = builder.create<emitc::CallOp>(
                     arithOp.getLoc(),
@@ -297,14 +383,15 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
 }; // end anonymous namespace
 
-}
 
+} // end namespace
 int main(int argc, char **argv) {
     // Initialize MLIR context with all dialects.
     mlir::MLIRContext context;
     context.getOrLoadDialect<mlir::emitc::EmitCDialect>();
     context.getOrLoadDialect<mlir::arith::ArithDialect>();
     context.getOrLoadDialect<mlir::func::FuncDialect>();
+    context.getOrLoadDialect<mlir::affine::AffineDialect>();
     context.getOrLoadDialect<mlir::scf::SCFDialect>();
 
     mlir::DialectRegistry registry;
@@ -313,6 +400,7 @@ int main(int argc, char **argv) {
     registry.insert<mlir::LLVM::LLVMDialect>();
     registry.insert<mlir::func::FuncDialect>();
     registry.insert<emitc::EmitCDialect>();
+    registry.insert<mlir::affine::AffineDialect>();
     registry.insert<mlir::scf::SCFDialect>();
 
     // Attach the registry to the context
@@ -331,6 +419,7 @@ int main(int argc, char **argv) {
     outs() << "starting pass\n";
     PassManager pm(&context);
     pm.addPass(std::make_unique<ArithToEmitc>());
+    // pm.addPass(std::make_unique<AffineOps>());
     if (failed(pm.run(*module))) {
         llvm::errs() << "Pass failed\n";
         return 1;
