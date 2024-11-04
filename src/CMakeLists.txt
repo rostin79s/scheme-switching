@@ -28,9 +28,8 @@ include(HandleLLVMOptions)
 
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${MLIR_INCLUDE_DIRS})
-include_directories(${CMAKE_SOURCE_DIR}/backend)
+# include_directories(${CMAKE_SOURCE_DIR}/backend)
 include_directories(${CMAKE_SOURCE_DIR}/frontend)
-include_directories(${CMAKE_SOURCE_DIR}/middleend)
 message(STATUS "CMAKE_SOURCE_DIR is: ${CMAKE_SOURCE_DIR}")
 
 # include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -68,7 +67,7 @@ set(LIBS
         MLIRTransforms  
         )
 add_llvm_executable(compiler 
-  compiler.cpp
+  frontend/compiler.cpp
 )
 
 llvm_update_compile_flags(compiler)
