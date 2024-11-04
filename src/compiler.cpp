@@ -39,16 +39,27 @@
 #include <vector>
 #include <cstdlib>
 
-#include "frontend/dag.hpp"
-#include "frontend/frontend.hpp"
-#include "backend/backend.hpp"
+#include <llvm/Demangle/Demangle.h>
 
 using namespace mlir;
+using namespace llvm;
 
 
 
 
+std::string demangle(const std::string &mangledName) {
+    char *demangledName = llvm::itaniumDemangle(mangledName.c_str());
+    std::string result(demangledName);
+    free(demangledName);
+    size_t pos = result.find('(');
 
+    if (pos != std::string::npos) {
+        result = result.substr(0, pos);
+    }
+
+    std::cout << result << std::endl;
+    return result;
+}
 
 namespace {
 
@@ -407,7 +418,7 @@ int main(int argc, char **argv) {
     context.appendDialectRegistry(registry);
 
     // Open and parse the MLIR file
-    std::string filename = "test.mlir";
+    std::string filename = "output1.mlir";
     auto module = mlir::parseSourceFile<mlir::ModuleOp>(filename, &context);
     if (!module) {
         llvm::errs() << "Error parsing MLIR file\n";
