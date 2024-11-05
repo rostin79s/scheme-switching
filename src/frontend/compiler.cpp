@@ -26,12 +26,17 @@
 
 
 
+#include <llvm/ADT/APFloat.h>
 #include <llvm/Support/Casting.h>
 #include <llvm/Support/raw_ostream.h>
 #include <mlir/Dialect/Affine/IR/AffineOps.h>
 #include <mlir/Dialect/Func/IR/FuncOps.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
+#include <mlir/Dialect/Vector/IR/VectorOps.h>
+#include <mlir/IR/BuiltinAttributes.h>
+#include <mlir/IR/BuiltinTypes.h>
 #include <mlir/IR/Operation.h>
+#include <mlir/IR/Value.h>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -91,7 +96,20 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
             // Convert types like `f64` to `emitc.opaque<"FHEdouble">`.
             if (inputType.isF64()) {
             newInputTypes.push_back(fhedouble);
-            } else {
+            } 
+            else if(auto vecType = inputType.dyn_cast<mlir::VectorType>()) {
+                auto elemType = vecType.getElementType();
+                if (elemType.isF64()) {
+                    newInputTypes.push_back(fhedouble);
+                }
+            }
+            else if(auto memRefType = inputType.dyn_cast<mlir::MemRefType>()) {
+                auto elemType = memRefType.getElementType();
+                if (elemType.isF64()) {
+                    newInputTypes.push_back(fhedouble);
+                }
+            }
+            else {
             newInputTypes.push_back(inputType);
             }
         }
@@ -122,107 +140,73 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
 
 
         auto ckarg = func.getArgument(0);
-        func.walk([&](Operation *op) {    
 
-            if (op->getDialect()->getNamespace() == "affine") {
-                builder.setInsertionPointAfter(op);
-                outs() << "operation: " << *op << "\n\n\n";
+        func.walk([&](Operation *op) {      
+            builder.setInsertionPoint(op);
 
-
-                if (auto forOp = dyn_cast<affine::AffineForOp>(op)){
-                    auto *newblock = forOp.getBody();
-                    auto res = forOp.getResults();
-                    for (auto it : llvm::enumerate(res)) {
-                        if (it.value().getType().isF64()) {
-                            it.value().setType(fhedouble);
-                        }
+            if (op->getDialect()->getNamespace() == "vector") { 
+                if (auto vectorOp = dyn_cast<vector::BroadcastOp>(op)){
+                    auto value = vectorOp->getOperand(0);
+                    if (value.dyn_cast<BlockArgument>()){
+                        vectorOp.replaceAllUsesWith(value);
                     }
-                    for (auto it : llvm::enumerate(newblock->getArguments())) {                    
-                        if (it.value().getType().isF64()) {
-                            it.value().setType(fhedouble);
-                        }
-                    }
+                    else{
+                        auto newOp = builder.create<emitc::CallOp>(
+                        vectorOp.getLoc(),
+                        TypeRange(fhedouble),
+                        llvm::StringRef("FHEbroadcast"),
+                        ArrayAttr(),
+                        ArrayAttr(),
+                        mlir::ArrayRef<mlir::Value>{ckarg, value});
 
-                    auto lowerBound = forOp.getLowerBoundMap().getSingleConstantResult();
-                    auto upperBound = forOp.getUpperBoundMap().getSingleConstantResult();
-                    // lowerBound.print(outs());
-                    outs() << "lowerBound: " << lowerBound << "\n";
-                    outs() << "upperBound: " << upperBound << "\n";
-                    auto step = forOp.getStep();
-                    outs() << "step: " << step << "\n";
-
-                    mlir::Value lowerBoundValue = builder.create<arith::ConstantIndexOp>(
-                        forOp.getLoc(), lowerBound);
-                    
-                    outs() << "lowerBoundValue: " << lowerBoundValue << "\n";
-                    
-                    mlir::Value upperBoundValue = builder.create<arith::ConstantIndexOp>(
-                        forOp.getLoc(), upperBound);
-                    
-                    mlir::Value stepValue = builder.create<arith::ConstantIndexOp>(
-                        forOp.getLoc(), step);
-
-                    // ValueRange iterArgs = forOp.getRegionIterArgs();
-                    auto ops = forOp.getOperands();
-                    for (auto op : ops) {
-                        outs() << "op: " << op << "\n";
-                    }
-
-                    // for (auto arg : iterArgs) {
-                    //     outs() << "arg: " << arg << "\n";
-                    //     // auto orig = arg.getDefiningOp();
-
-                        
-                    // }
-                    
-                    auto scfForOp = builder.create<scf::ForOp>(
-                        forOp.getLoc(),
-                        lowerBoundValue,
-                        upperBoundValue,
-                        stepValue,
-                        ops);
-                    outs() << "scfForOp: " << scfForOp << "\n";
-
-                    scfForOp.getBody()->getOperations().splice(
-                        scfForOp.getBody()->begin(), forOp.getBody()->getOperations());
-                    outs() << "scfForOp-1: " << scfForOp << "\n";
-
-
-                    auto newForBlock = scfForOp.getBody()->getArguments();
-                    auto oldForBlock = forOp.getBody()->getArguments();
-
-                    for (auto it : llvm::zip(oldForBlock, newForBlock)) {
-                        std::get<0>(it).replaceAllUsesWith(std::get<1>(it));
-                    }
-
-                    for (auto it : llvm::zip(forOp.getResults(), scfForOp.getResults())) {
-                        std::get<0>(it).replaceAllUsesWith(std::get<1>(it));
-                    }
-                    outs() << "\n\n\nlols" << forOp->getParentOfType<mlir::func::FuncOp>() << "\n\n\n";
-
-
-                    if (!forOp->use_empty()) {
-                        llvm::errs() << "Operation result has uses:\n";
-                        for (auto &use : forOp->getUses()) {
-                            llvm::errs() << "  Used by: " << *use.getOwner() << "\n";
-                        }
-                    }
-                    auto oldBody = forOp.getBody();
-                    auto newBody = scfForOp.getBody();
-                    for (auto it : llvm::zip(oldBody->getArguments(), newBody->getArguments())) {
-                        std::get<0>(it).replaceAllUsesWith(std::get<1>(it));
+                    vectorOp.replaceAllUsesWith(newOp.getResult(0));
                     }
                     
-                    forOp.replaceAllUsesWith(scfForOp.getResults());
-                    forOp.erase();
-                    outs() << "lol" << "\n\n\n";
-
+                    vectorOp.erase();
                 }
-                else if (auto yieldOp = dyn_cast<affine::AffineYieldOp>(op)){
-                    builder.create<scf::YieldOp>(yieldOp.getLoc(), yieldOp.getOperands());
-                    yieldOp.erase();
+                else if (auto vectorOp = dyn_cast<vector::TransferReadOp>(op)){
+                    auto value = vectorOp.getOperand(0);
+                    vectorOp.replaceAllUsesWith(value);
+
+                    // Now erase the original vector.transfer_read operation
+                    vectorOp.erase();
                 }
-            }        
+                else if (auto vectorOp = dyn_cast<vector::ReductionOp>(op)){
+                    auto red = vectorOp.getKind();
+                    outs() << "Reduction kind: " << red << "\n";
+                    auto value = vectorOp.getOperand(0);
+
+                    llvm::StringRef funcName;
+                    switch (red) {
+                        case vector::CombiningKind::ADD:
+                            funcName = "FHEvectorSum";
+                            break;
+                        case vector::CombiningKind::MUL:
+                            funcName = "FHEvectorMul";
+                            break;
+                        case vector::CombiningKind::MINF:
+                            funcName = "FHEvectorMin";
+                            break;
+                        case vector::CombiningKind::MAXF:
+                            funcName = "FHEvectorMax";
+                            break;
+                        default:
+                            llvm::errs() << "Unsupported reduction operation\n";
+                            return;
+                    }
+                    auto newOp = builder.create<emitc::CallOp>(
+                        vectorOp.getLoc(),
+                        TypeRange(fhedouble),
+                        funcName,
+                        ArrayAttr(),
+                        ArrayAttr(),
+                        mlir::ArrayRef<mlir::Value>{ckarg, value});
+                
+                    vectorOp.replaceAllUsesWith(newOp->getResult(0));
+                    vectorOp.erase();
+                }
+            
+            }
             
             else if (auto cmpOp = dyn_cast<arith::CmpFOp>(op)){
                 builder.setInsertionPoint(cmpOp);
@@ -265,45 +249,108 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 auto *newblock = forOp.getBody();
                 auto res = forOp.getResults();
                 for (auto it : llvm::enumerate(res)) {
+                    outs() << "Result " << "\n";
                     if (it.value().getType().isF64()) {
                         it.value().setType(fhedouble);
+                    }
+                    else if(auto vecType = it.value().getType().dyn_cast<mlir::VectorType>()) {
+                        outs() << "Vector type\n";
+                        auto elemType = vecType.getElementType();
+                        if (elemType.isF64()) {
+                            outs() << "F64\n";
+                            it.value().setType(fhedouble);
+                        }
                     }
                 }
                 for (auto it : llvm::enumerate(newblock->getArguments())) {                    
                     if (it.value().getType().isF64()) {
                         it.value().setType(fhedouble);
                     }
+                    else if(auto vecType = it.value().getType().dyn_cast<mlir::VectorType>()) {
+                        auto elemType = vecType.getElementType();
+                        if (elemType.isF64()) {
+                            it.value().setType(fhedouble);
+                        }
+                    }
                 }
+
+                outs() << "ForOp\n" << forOp->getParentOfType<func::FuncOp>();
             }
 
-            else if (auto arithOp = dyn_cast<arith::ConstantFloatOp>(op)){                builder.setInsertionPoint(arithOp);
-                auto value = arithOp.value();
-                double value2 = value.convertToDouble();
+            else if (auto arithOp = dyn_cast<arith::ConstantOp>(op)){                
+                outs() << "ConstantFloatOp\n" << arithOp << "\n";
 
-                auto newConstantOp = builder.create<emitc::ConstantOp>(
-                    arithOp.getLoc(),
-                    builder.getF64Type(), // Type for the constant
-                    builder.getF64FloatAttr(value2) // Create an F64 attribute for the double value
-                );
+                if (auto vectorType = arithOp.getType().dyn_cast<mlir::VectorType>()) {
+                    // Handle vector constant
+                    auto denseAttr = arithOp.getValue().cast<DenseElementsAttr>();
+                    std::vector<double> values;
+                    for (auto value : denseAttr.getValues<APFloat>()) {
+                        values.push_back(value.convertToDouble());
+                    }
+                    
+                    std::stringstream ss;
+                    auto dim = vectorType.getDimSize(0);
+                    auto size = values.size();
+                    if (size == 1){
+                        ss << "std::vector<double>(";
+                        ss << dim << ", " << values[0] << ")";
+                    }
+                    else{
+                        ss << "std::vector<double>{";
+                        for (size_t i = 0; i < values.size(); ++i) {
+                            if (i > 0) ss << ", ";
+                            ss << values[i];
+                        }
+                        ss << "}";
+                    }
 
-                // std::stringstream ss;
-                // ss << value2;
-                // auto opaqueAttr = emitc::OpaqueAttr::get(builder.getContext(),ss.str());
-
-                // auto newConstantOp = builder.create<emitc::ConstantOp>(
-                //     arithOp.getLoc(),fhedouble,opaqueAttr);
-
-                auto newCallOp = builder.create<emitc::CallOp>(
-                    arithOp.getLoc(),
-                    TypeRange(fhedouble),
-                    llvm::StringRef("FHEencrypt"),
-                    ArrayAttr(),
-                    ArrayAttr(),
-                    mlir::ArrayRef<mlir::Value>{ckarg, newConstantOp.getResult()}
-                );
+                    auto opaqueAttr = emitc::OpaqueAttr::get(builder.getContext(), ss.str());
+                    auto vecDoubleType = emitc::OpaqueType::get(builder.getContext(), "std::vector<double>");
+        
+                    auto newConstantOp = builder.create<emitc::ConstantOp>(
+                        arithOp.getLoc(),
+                        vecDoubleType, // Keep the original type
+                        opaqueAttr
+                    );
+                    
+                    auto newCallOp = builder.create<emitc::CallOp>(
+                        arithOp.getLoc(),
+                        TypeRange(fhedouble),
+                        llvm::StringRef("FHEencrypt"),
+                        ArrayAttr(),
+                        ArrayAttr(),
+                        mlir::ArrayRef<mlir::Value>{ckarg, newConstantOp.getResult()}
+                    );
+                    
+                    arithOp.replaceAllUsesWith(newCallOp->getResult(0));
+                    arithOp.erase();
                 
-                arithOp.replaceAllUsesWith(newCallOp->getResult(0));
-                arithOp.erase();          
+                } 
+                else {
+                    // Handle scalar constant - fixed the FloatAttr casting
+                    if (auto floatAttr = arithOp.getValue().dyn_cast<FloatAttr>()) {
+                        double value2 = floatAttr.getValueAsDouble();
+                        
+                        auto newConstantOp = builder.create<emitc::ConstantOp>(
+                            arithOp.getLoc(),
+                            builder.getF64Type(),
+                            builder.getF64FloatAttr(value2)
+                        );
+                        
+                        auto newCallOp = builder.create<emitc::CallOp>(
+                            arithOp.getLoc(),
+                            TypeRange(fhedouble),
+                            llvm::StringRef("FHEencrypt"),
+                            ArrayAttr(),
+                            ArrayAttr(),
+                            mlir::ArrayRef<mlir::Value>{ckarg, newConstantOp.getResult()}
+                        );
+                        
+                        arithOp.replaceAllUsesWith(newCallOp->getResult(0));
+                        arithOp.erase();
+                    }
+                }
+                         
             }
 
             else if (auto arithOp = dyn_cast<arith::AddFOp>(op)) {
@@ -404,6 +451,8 @@ int main(int argc, char **argv) {
     context.getOrLoadDialect<mlir::func::FuncDialect>();
     context.getOrLoadDialect<mlir::affine::AffineDialect>();
     context.getOrLoadDialect<mlir::scf::SCFDialect>();
+    context.getOrLoadDialect<mlir::LLVM::LLVMDialect>();
+    context.getLoadedDialect<mlir::vector::VectorDialect>();
 
     mlir::DialectRegistry registry;
     registry.insert<mlir::DLTIDialect>();  // Assuming DLTI dialect is available
@@ -413,6 +462,7 @@ int main(int argc, char **argv) {
     registry.insert<emitc::EmitCDialect>();
     registry.insert<mlir::affine::AffineDialect>();
     registry.insert<mlir::scf::SCFDialect>();
+    registry.insert<mlir::vector::VectorDialect>();
 
     // Attach the registry to the context
     context.appendDialectRegistry(registry);
@@ -439,7 +489,7 @@ int main(int argc, char **argv) {
     outs() << "Pass succeeded\n";
 
     // Output the transformed module
-    std::string outputFilename = "ir.mlir";
+    std::string outputFilename = "frontend/ir.mlir";
     auto outputFile = openOutputFile(outputFilename);
     if (!outputFile) {
         llvm::errs() << "Error opening output file\n";
