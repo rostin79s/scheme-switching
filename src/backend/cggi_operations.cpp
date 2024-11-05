@@ -1,4 +1,3 @@
-#include "binfhe-constants.h"
 #include "fhe_operations.hpp"
 #include "fhe_types.hpp"
 #include <openfhe.h>
