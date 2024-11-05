@@ -8,6 +8,6 @@
 using namespace CKKS;
 using namespace CGGI;
 
-FHEdouble rostin(FHEcontext* v1, FHEdouble v2, FHEdouble v3);
+FHEdouble rostin(FHEcontext* v1, FHEdouble v2, FHEdouble v3, FHEdouble v4);
 
 #endif // TEST_HPP

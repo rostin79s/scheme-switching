@@ -79,7 +79,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
         module->removeAttr("polygeist.target-features");
         module->removeAttr("polygeist.tune-cpu");
 
-        
+
         OpBuilder builder(module.getContext());
 
         auto context = emitc::OpaqueType::get(builder.getContext(), "FHEcontext");
@@ -181,9 +181,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                     vectorOp.erase();
                 }
                 else if (auto vectorOp = dyn_cast<vector::ReductionOp>(op)){
-                    auto red = vectorOp.getKind();
-                    outs() << "Reduction kind: " << red << "\n";
-                    auto value = vectorOp.getOperand(0);
+                    auto red = vectorOp.getKind();                    auto value = vectorOp.getOperand(0);
 
                     llvm::StringRef funcName;
                     switch (red) {
@@ -257,16 +255,12 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                 builder.setInsertionPoint(forOp);
                 auto *newblock = forOp.getBody();
                 auto res = forOp.getResults();
-                for (auto it : llvm::enumerate(res)) {
-                    outs() << "Result " << "\n";
+                for (auto it : llvm::enumerate(res)) {                    
                     if (it.value().getType().isF64()) {
                         it.value().setType(fhedouble);
                     }
-                    else if(auto vecType = it.value().getType().dyn_cast<mlir::VectorType>()) {
-                        outs() << "Vector type\n";
-                        auto elemType = vecType.getElementType();
-                        if (elemType.isF64()) {
-                            outs() << "F64\n";
+                    else if(auto vecType = it.value().getType().dyn_cast<mlir::VectorType>()) {                        auto elemType = vecType.getElementType();
+                        if (elemType.isF64()) {                            
                             it.value().setType(fhedouble);
                         }
                     }
@@ -282,13 +276,9 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
                         }
                     }
                 }
-
-                outs() << "ForOp\n" << forOp->getParentOfType<func::FuncOp>();
             }
 
             else if (auto arithOp = dyn_cast<arith::ConstantOp>(op)){                
-                outs() << "ConstantFloatOp\n" << arithOp << "\n";
-
                 if (auto vectorType = arithOp.getType().dyn_cast<mlir::VectorType>()) {
                     // Handle vector constant
                     auto denseAttr = arithOp.getValue().cast<DenseElementsAttr>();

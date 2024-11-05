@@ -75,7 +75,6 @@ namespace CKKS {
     FHEdouble FHEdivfP(FHEcontext* ctx, const FHEdouble a, double b);
     FHEdouble FHEdivfP(FHEcontext* ctx, double b, const FHEdouble a);
 
-    // Use the Plaintext class from fhe_types.hpp
     FHEplainf FHEencode(FHEcontext* ctx, const std::vector<double>& a);
     FHEdouble FHEencrypt(FHEcontext* ctx, const CKKS::FHEplainf p);
     FHEdouble FHEencrypt(FHEcontext* ctx, const std::vector<double>& a);

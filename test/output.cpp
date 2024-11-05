@@ -12,17 +12,17 @@ FHEdouble rostin(FHEcontext* v1, FHEdouble v2, FHEdouble v3, FHEdouble v4) {
   FHEdouble v6 = FHEencrypt(v1, v5);
   double v7 = (double)0.0e+00;
   FHEdouble v8 = FHEencrypt(v1, v7);
-  std::vector<double> v9 = std::vector<double>{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  std::vector<double> v9 = std::vector<double>{0, 0, 0, 0, 0};
   FHEdouble v10 = FHEencrypt(v1, v9);
   size_t v11 = 0;
-  size_t v12 = 20;
-  size_t v13 = 20;
+  size_t v12 = 5;
+  size_t v13 = 5;
   FHEdouble v14;
   FHEdouble v15 = v10;
   for (size_t v16 = v11; v16 < v12; v16 += v13) {
-    std::vector<double> v17 = std::vector<double>{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    std::vector<double> v17 = std::vector<double>{0, 0, 0, 0, 0};
     FHEdouble v18 = FHEencrypt(v1, v17);
-    std::vector<double> v19 = std::vector<double>{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    std::vector<double> v19 = std::vector<double>{1, 1, 1, 1, 1};
     FHEdouble v20 = FHEencrypt(v1, v19);
     double v21 = (double)0.0e+00;
     FHEdouble v22 = FHEencrypt(v1, v21);
