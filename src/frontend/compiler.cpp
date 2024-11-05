@@ -71,6 +71,15 @@ namespace {
 struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> {
     void runOnOperation() override {
         ModuleOp module = getOperation();
+
+        module->removeAttr("llvm.data_layout");
+        module->removeAttr("llvm.target_triple");
+        module->removeAttr("dlti.dl_spec");
+        module->removeAttr("polygeist.target-cpu");
+        module->removeAttr("polygeist.target-features");
+        module->removeAttr("polygeist.tune-cpu");
+
+        
         OpBuilder builder(module.getContext());
 
         auto context = emitc::OpaqueType::get(builder.getContext(), "FHEcontext");

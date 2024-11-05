@@ -58,6 +58,10 @@ namespace CKKS {
         int ringDimension;
     };
 
+    FHEdouble FHEvectorSum(FHEcontext* ctx, CKKS::FHEdouble a);
+    FHEdouble FHEbroadcast(FHEcontext* ctx, CKKS::FHEdouble a);
+    FHEdouble FHErotate(FHEcontext* ctx, CKKS::FHEdouble a, int n);
+
     FHEdouble FHEaddf(FHEcontext* ctx, const FHEdouble a, const FHEdouble b);
     FHEdouble FHEsubf(FHEcontext* ctx, const FHEdouble a, const FHEdouble b);
     FHEdouble FHEmulf(FHEcontext* ctx, const FHEdouble a, const FHEdouble b);
@@ -74,6 +78,7 @@ namespace CKKS {
     // Use the Plaintext class from fhe_types.hpp
     FHEplainf FHEencode(FHEcontext* ctx, const std::vector<double>& a);
     FHEdouble FHEencrypt(FHEcontext* ctx, const CKKS::FHEplainf p);
+    FHEdouble FHEencrypt(FHEcontext* ctx, const std::vector<double>& a);
     CKKS::FHEdouble FHEencrypt(FHEcontext* ctx, const double a);
     FHEplainf FHEdecrypt(FHEcontext* ctx, const FHEdouble a);
 }

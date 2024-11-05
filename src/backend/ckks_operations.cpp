@@ -70,6 +70,10 @@ FHEdouble FHEencrypt(FHEcontext* ctx, const FHEplainf a){
     return FHEdouble(result);
 }
 
+FHEdouble FHEencrypt(FHEcontext* ctx, const std::vector<double>& a){
+    return FHEencrypt(ctx, FHEencode(ctx, a));
+}
+
 CKKS::FHEdouble FHEencrypt(FHEcontext* ctx, const double a){
     return FHEencrypt(ctx, FHEencode(ctx, {a}));
 }
@@ -196,4 +200,34 @@ CKKS::FHEdouble FHEeq(FHEcontext* ctx, CKKS::FHEdouble a, CKKS::FHEdouble b){
 CKKS::FHEdouble FHEselect(FHEcontext* ctx, CKKS::FHEdouble sign, CKKS::FHEdouble value1, CKKS::FHEdouble value2){
     auto sign_prime = FHEsubfP(ctx, 1.0,sign);
     return FHEaddf(ctx, FHEmulf(ctx, sign,value1),FHEmulf(ctx, sign_prime,value2));
+}
+
+CKKS::FHEdouble FHErotate(FHEcontext* ctx, CKKS::FHEdouble a, int n){
+    auto result = ctx->getCKKS().getCryptoContext()->EvalRotate(a.getCiphertext(), n);
+    return CKKS::FHEdouble(result);
+}
+
+CKKS::FHEdouble FHEbroadcast(FHEcontext* ctx, CKKS::FHEdouble a){
+    int slots = ctx->getCKKS().getBatchSize();
+    std::vector<double> mask(slots, 0);
+    mask[0] = 1;
+    auto maskctxt = CKKS::FHEencrypt(ctx,mask);
+    auto valuectxt = CKKS::FHEmulf(ctx, a, maskctxt);
+    int shift = 1;
+    while (shift < slots) {
+        auto rotatedctxt = ctx->getCKKS().getCryptoContext()->EvalRotate(valuectxt.getCiphertext(), shift);
+        valuectxt = CKKS::FHEdouble(ctx->getCKKS().getCryptoContext()->EvalAdd(valuectxt.getCiphertext(), rotatedctxt));
+        shift *= 2;
+    }
+    return valuectxt;
+}
+
+CKKS::FHEdouble FHEvectorSum(FHEcontext* ctx, CKKS::FHEdouble a){
+    int shift = ctx->getCKKS().getBatchSize()/2;
+    while (shift > 0) {
+        auto rotatedctxt = ctx->getCKKS().getCryptoContext()->EvalRotate(a.getCiphertext(), shift);
+        a = CKKS::FHEdouble(ctx->getCKKS().getCryptoContext()->EvalAdd(a.getCiphertext(), rotatedctxt));
+        shift /= 2;
+    }
+    return a;
 }
