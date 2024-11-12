@@ -1,4 +1,5 @@
 #include "binfhe-constants.h"
+#include "math/hal/nativeintbackend.h"
 #include "openfhe.h"
 #include "binfhecontext.h"
 #include <iostream>
@@ -195,31 +196,33 @@ void cmux() {
 
 }
 
-void SwitchFHEWtoCKKS() {
-    cout << "\n-----SwitchFHEWtoCKKS-----\n" << endl;
-    cout << "Output precision is only wrt the operations in CKKS after switching back.\n" << endl;
+void SwitchCKKSToFHEW() {
+    /*
+  Example of switching a packed ciphertext from CKKS to multiple FHEW ciphertexts.
+ */
 
-    // Step 1: Setup CryptoContext for CKKS to be switched into
+    std::cout << "\n-----SwitchCKKSToFHEW-----\n" << std::endl;
 
-    // A. Specify main parameters
-    ScalingTechnique scTech = FIXEDAUTO;
-    // for r = 3 in FHEWtoCKKS, Chebyshev max depth allowed is 9, 1 more level for postscaling
-    uint32_t multDepth = 3 + 9 + 1;
-    if (scTech == FLEXIBLEAUTOEXT)
-        multDepth += 1;
+    // Step 1: Setup CryptoContext for CKKS
+
+    // Specify main parameters
+    uint32_t multDepth    = 3;
+    uint32_t firstModSize = 60;
     uint32_t scaleModSize = 50;
-    uint32_t ringDim      = 8192;
-    SecurityLevel sl      = HEStd_NotSet;  // If this is not HEStd_NotSet, ensure ringDim is compatible
-    uint32_t logQ_ccLWE   = 29;
-
-    // uint32_t slots = ringDim/2; // Uncomment for fully-packed
+    uint32_t ringDim      = 4096;
+    SecurityLevel sl      = HEStd_NotSet;
+    BINFHE_PARAMSET slBin = TOY;
+    uint32_t logQ_ccLWE   = 25;
+    // uint32_t slots        = ringDim / 2;  // Uncomment for fully-packed
     uint32_t slots     = 16;  // sparsely-packed
     uint32_t batchSize = slots;
 
     CCParams<CryptoContextCKKSRNS> parameters;
+
     parameters.SetMultiplicativeDepth(multDepth);
+    parameters.SetFirstModSize(firstModSize);
     parameters.SetScalingModSize(scaleModSize);
-    parameters.SetScalingTechnique(scTech);
+    parameters.SetScalingTechnique(FLEXIBLEAUTOEXT);
     parameters.SetSecurityLevel(sl);
     parameters.SetRingDim(ringDim);
     parameters.SetBatchSize(batchSize);
@@ -230,135 +233,236 @@ void SwitchFHEWtoCKKS() {
     cc->Enable(PKE);
     cc->Enable(KEYSWITCH);
     cc->Enable(LEVELEDSHE);
-    cc->Enable(ADVANCEDSHE);
     cc->Enable(SCHEMESWITCH);
 
-    cout << "CKKS scheme is using ring dimension " << cc->GetRingDimension();
-    cout << ", number of slots " << slots << ", and supports a multiplicative depth of " << multDepth << endl
-              << endl;
+    std::cout << "CKKS scheme is using ring dimension " << cc->GetRingDimension();
+    std::cout << ", number of slots " << slots << ", and supports a multiplicative depth of " << multDepth << std::endl
+              << std::endl;
 
-    // Generate encryption keys.
+    // Generate encryption keys
     auto keys = cc->KeyGen();
 
     // Step 2: Prepare the FHEW cryptocontext and keys for FHEW and scheme switching
-    auto ccLWE = make_shared<BinFHEContext>();
-    ccLWE->BinFHEContext::GenerateBinFHEContext(TOY, false, logQ_ccLWE, 0, GINX, false);
+    SchSwchParams params;
+    params.SetSecurityLevelCKKS(sl);
+    params.SetSecurityLevelFHEW(slBin);
+    params.SetCtxtModSizeFHEWLargePrec(logQ_ccLWE);
+    params.SetNumSlotsCKKS(slots);
+    auto privateKeyFHEW = cc->EvalCKKStoFHEWSetup(params);
+    auto ccLWE          = cc->GetBinCCForSchemeSwitch();
+    cc->EvalCKKStoFHEWKeyGen(keys, privateKeyFHEW);
 
-    // LWE private key
-    LWEPrivateKey lwesk;
-    lwesk = ccLWE->KeyGen();
+    std::cout << "FHEW scheme is using lattice parameter " << ccLWE->GetParams()->GetLWEParams()->Getn();
+    std::cout << ", logQ " << logQ_ccLWE;
+    std::cout << ", and modulus q " << ccLWE->GetParams()->GetLWEParams()->Getq() << std::endl << std::endl;
 
-    ccLWE->BTKeyGen(lwesk);
-
-    cout << "FHEW scheme is using lattice parameter " << ccLWE->GetParams()->GetLWEParams()->Getn();
-    cout << ", logQ " << logQ_ccLWE;
-    cout << ", and modulus q " << ccLWE->GetParams()->GetLWEParams()->Getq() << endl << endl;
-
-    // Step 3. Precompute the necessary keys and information for switching from FHEW to CKKS
-    cc->EvalFHEWtoCKKSSetup(ccLWE, slots, logQ_ccLWE);
-    cc->SetBinCCForSchemeSwitch(ccLWE);
-
-    cc->EvalFHEWtoCKKSKeyGen(keys, lwesk);
-    // Step 4: Encoding and encryption of inputs
-    // For correct CKKS decryption, the messages have to be much smaller than the FHEW plaintext modulus!
-
-    // auto pLWE1       = ccLWE->GetMaxPlaintextSpace().ConvertToInt();  // Small precision
-    // uint32_t pLWE2   = 256;                                           // Medium precision
+    // Compute the scaling factor to decrypt correctly in FHEW; under the hood, the LWE mod switch will performed on the ciphertext at the last level
+    auto pLWE1       = ccLWE->GetMaxPlaintextSpace().ConvertToInt();  // Small precision
     auto modulus_LWE = 1 << logQ_ccLWE;
-    cout<<"modulus_LWE: "<<modulus_LWE <<endl;
-    // auto beta        = ccLWE->GetBeta().ConvertToInt();
-    auto pLWE3       = 1<<10;  // Large precision
+    auto beta        = ccLWE->GetBeta().ConvertToInt();
+    auto pLWE2       = modulus_LWE / (2 * beta);  // Large precision
+
+    double scale1 = 1.0 / pLWE1;
+    double scale2 = 1.0 / pLWE2;
+
+    // Perform the precomputation for switching
+    cc->EvalCKKStoFHEWPrecompute(scale1);
+
+    // Step 3: Encoding and encryption of inputs
+
     // Inputs
-    cout << "beta: "<<ccLWE->GetBeta().ConvertToInt() << "logQ_ccLWE: "<<logQ_ccLWE;
-    vector<int> x1 = {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0};
-    vector<int> x2 = {23, 12, 1, 3, 4, 5, 6, 7, 8, 9, 10, 110, 1200, 13000, 140000, 1500000};
-    if (x1.size() < slots) {
-        vector<int> zeros(slots - x1.size(), 0);
-        x1.insert(x1.end(), zeros.begin(), zeros.end());
-        x2.insert(x2.end(), zeros.begin(), zeros.end());
-    }
+    std::vector<double> x1  = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    std::vector<double> x2  = {3, 271.0, 30000.0, static_cast<double>(pLWE2) - 2};
+    uint32_t encodedLength1 = x1.size();
+    uint32_t encodedLength2 = x2.size();
 
-    // // Encrypt
-    // vector<LWECiphertext> ctxtsLWE1(slots);
-    // for (uint32_t i = 0; i < slots; i++) {
-    //     ctxtsLWE1[i] =
-    //         ccLWE->Encrypt(lwesk, x1[i]);  // encrypted under small plantext modulus p = 4 and ciphertext modulus
-    // }
+    // Encoding as plaintexts
+    Plaintext ptxt1 = cc->MakeCKKSPackedPlaintext(x1, 1, 0, nullptr);
+    Plaintext ptxt2 = cc->MakeCKKSPackedPlaintext(x2, 1, 0, nullptr);
 
-    // vector<LWECiphertext> ctxtsLWE2(slots);
-    // for (uint32_t i = 0; i < slots; i++) {
-    //     ctxtsLWE2[i] =
-    //         ccLWE->Encrypt(lwesk, x1[i], FRESH,
-    //                        pLWE1);  // encrypted under larger plaintext modulus p = 16 but small ciphertext modulus
-    // }
+    // Encrypt the encoded vectors
+    auto c1 = cc->Encrypt(keys.publicKey, ptxt1);
+    auto c2 = cc->Encrypt(keys.publicKey, ptxt2);
 
-    // vector<LWECiphertext> ctxtsLWE3(slots);
-    // for (uint32_t i = 0; i < slots; i++) {
-    //     ctxtsLWE3[i] =
-    //         ccLWE->Encrypt(lwesk, x2[i], FRESH, pLWE2,
-    //                        modulus_LWE);  // encrypted under larger plaintext modulus and large ciphertext modulus
-    // }
+    // Step 4: Scheme switching from CKKS to FHEW
 
-    vector<LWECiphertext> ctxtsLWE4(slots);
-    for (uint32_t i = 0; i < slots; i++) {
-        ctxtsLWE4[i] =
-            ccLWE->Encrypt(lwesk, x2[i], FRESH, pLWE3,
-                           modulus_LWE);  // encrypted under large plaintext modulus and large ciphertext modulus
-    }
+    // A: First scheme switching case
 
+    // Transform the ciphertext from CKKS to FHEW
+    auto cTemp = cc->EvalCKKStoFHEW(c1, encodedLength1);
+
+    std::cout << "\n---Decrypting switched ciphertext with small precision (plaintext modulus " << NativeInteger(pLWE1)
+              << ")---\n"
+              << std::endl;
+
+    std::vector<int32_t> x1Int(encodedLength1);
+    std::transform(x1.begin(), x1.end(), x1Int.begin(), [&](const double& elem) {
+        return static_cast<int32_t>(static_cast<int32_t>(std::round(elem)) % pLWE1);
+    });
+    ptxt1->SetLength(encodedLength1);
+    std::cout << "Input x1: " << ptxt1->GetRealPackedValue() << "; which rounds to: " << x1Int << std::endl;
+    std::cout << "FHEW decryption: ";
     LWEPlaintext result;
-    ccLWE->GetLWEScheme()->EvalAddEq(ctxtsLWE4[0],ctxtsLWE4[1]);
-    // auto sag = ccLWE->EvalBinGate(CMUX,);
-    ccLWE->Decrypt(lwesk,ctxtsLWE4[0],&result,pLWE3);
-    cout<<"\naddition: "<<result<<"\n";
+    for (uint32_t i = 0; i < cTemp.size(); ++i) {
+        ccLWE->Decrypt(privateKeyFHEW, cTemp[i], &result, pLWE1);
+        std::cout << result << " ";
+    }
+    std::cout << "\n" << std::endl;
 
-    // // Step 5. Perform the scheme switching
-    // auto cTemp = cc->EvalFHEWtoCKKS(ctxtsLWE1, slots, slots);
+    // B: Second scheme switching case
 
-    // cout << "\n---Input x1: " << x1 << " encrypted under p = " << 4 << " and Q = " << ctxtsLWE1[0]->GetModulus()
-    //           << "---" << endl;
+    // Perform the precomputation for switching
+    cc->EvalCKKStoFHEWPrecompute(scale2);
 
-    // // Step 6. Decrypt
-    // Plaintext plaintextDec;
-    // cc->Decrypt(keys.secretKey, cTemp, &plaintextDec);
-    // plaintextDec->SetLength(slots);
-    // cout << "Switched CKKS decryption 1: " << plaintextDec << endl;
+    // Transform the ciphertext from CKKS to FHEW (only for the number of inputs given)
+    auto cTemp2 = cc->EvalCKKStoFHEW(c2, encodedLength2);
 
-    // // Step 5'. Perform the scheme switching
-    // cTemp = cc->EvalFHEWtoCKKS(ctxtsLWE2, slots, slots, pLWE1, 0, pLWE1);
+    std::cout << "\n---Decrypting switched ciphertext with large precision (plaintext modulus " << NativeInteger(pLWE2)
+              << ")---\n"
+              << std::endl;
 
-    // cout << "\n---Input x1: " << x1 << " encrypted under p = " << NativeInteger(pLWE1)
-    //           << " and Q = " << ctxtsLWE2[0]->GetModulus() << "---" << endl;
+    ptxt2->SetLength(encodedLength2);
+    std::cout << "Input x2: " << ptxt2->GetRealPackedValue() << std::endl;
+    std::cout << "FHEW decryption: ";
+    for (uint32_t i = 0; i < cTemp2.size(); ++i) {
+        ccLWE->Decrypt(privateKeyFHEW, cTemp2[i], &result, pLWE2);
+        std::cout << result << " ";
+    }
+    std::cout << "\n" << std::endl;
 
-    // // Step 6'. Decrypt
-    // cc->Decrypt(keys.secretKey, cTemp, &plaintextDec);
-    // plaintextDec->SetLength(slots);
-    // cout << "Switched CKKS decryption 2: " << plaintextDec << endl;
+    // C: Decompose the FHEW ciphertexts in smaller digits
+    std::cout << "Decomposed values for digit size of " << NativeInteger(pLWE1) << ": " << std::endl;
+    // Generate the bootstrapping keys (refresh and switching keys)
+    ccLWE->BTKeyGen(privateKeyFHEW);
 
-    // // Step 5''. Perform the scheme switching
-    // cTemp = cc->EvalFHEWtoCKKS(ctxtsLWE3, slots, slots, pLWE2, 0, pLWE2);
 
-    // cout << "\n---Input x2: " << x2 << " encrypted under p = " << pLWE2
-    //           << " and Q = " << ctxtsLWE3[0]->GetModulus() << "---" << endl;
+    // ccLWE->GetLWEScheme()->EvalAddEq(cTemp2[1],cTemp2[3]);
+    // LWEPlaintext resultadd;
+    // ccLWE->Decrypt(privateKeyFHEW, cTemp2[1], &resultadd, pLWE2);
+    // std::cout << "addition: " << resultadd << std::endl;
 
-    // // Step 6''. Decrypt
-    // cc->Decrypt(keys.secretKey, cTemp, &plaintextDec);
-    // plaintextDec->SetLength(slots);
-    // cout << "Switched CKKS decryption 3: " << plaintextDec << endl;
 
-    // Step 5'''. Perform the scheme switching
 
-    // setprecision(logQ_ccLWE +50);
-    auto cTemp2 = cc->EvalFHEWtoCKKS(ctxtsLWE4, slots, slots, pLWE3, 0, pLWE3);
+    auto dec1 = ccLWE->EvalDecomp(cTemp2[0]);
+    auto dec2 = ccLWE->EvalDecomp(cTemp2[1]);
 
-    cout << "\n---Input x2: " << x2 << " encrypted under p = " << NativeInteger(pLWE3)
-              << " and Q = " << ctxtsLWE4[0]->GetModulus() << "---" << endl;
 
-    // Step 6'''. Decrypt
-    Plaintext plaintextDec2;
-    cc->Decrypt(keys.secretKey, cTemp2, &plaintextDec2);
-    plaintextDec2->SetLength(slots);
-    cout << "Switched CKKS decryption 4: " << plaintextDec2 << endl;
+
+
+    auto saglength = dec1[0]->GetLength();
+    auto qmod = dec1[0]->GetModulus();
+    auto pmod = dec1[0]->GetptModulus();
+    auto N = ccLWE->GetParams()->GetLWEParams()->GetN();
+    std::cout << "N: " << N << std::endl;   
+    std::cout << "pmod: " << pmod << std::endl;
+    std::cout << "qmod: " << qmod << std::endl;
+    std::cout << "saglengths: " << saglength << std::endl;
+
+
+    int p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();  // Obtain the maximum plaintext space
+    std::cout << "p: " << p << std::endl;
+
+
+
+
+    // Initialize Function f(x) = x^3 % p
+    auto fp = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
+        auto im = m.ConvertToInt();
+        auto r = im & 0b0011;
+        auto l = im & 0b1100;
+        r = r & (r/2);
+        l = l & (l/2);
+
+
+        // auto lhs = (m/p1) % p1;
+        // auto rhs= (m%p1) % p1;
+        // auto l = lhs.ConvertToInt();
+        // auto r = rhs.ConvertToInt();
+        auto res = r;
+        NativeInteger result(res);
+        return result;
+    };
+    auto fshift = [](NativeInteger m, NativeInteger p2) -> NativeInteger {
+        auto im = m.ConvertToInt();
+        auto res = im & 0b0001;
+        return NativeInteger(res);
+    };
+    auto lutshift = ccLWE->GenerateLUTviaFunction(fshift, p);
+    auto ctxshift1 = ccLWE->EvalFunc(dec1[0],lutshift);
+    auto ctxshift2 = ccLWE->EvalFunc(dec2[0],lutshift);
+
+    ccLWE->GetLWEScheme()->EvalMultConstEq(ctxshift1,2);
+    ccLWE->GetLWEScheme()->EvalAddEq(ctxshift1,ctxshift2);
+
+    auto lutand = ccLWE->GenerateLUTviaFunction(fp,p);
+    auto ctand1 = ccLWE->EvalFunc(ctxshift1, lutand);
+    LWEPlaintext resultand;
+    ccLWE->Decrypt(privateKeyFHEW, ctand1, &resultand, p);
+    std::cout << "and: " << resultand << std::endl;
+
+    LWEPlaintext resultshift;
+    ccLWE->Decrypt(privateKeyFHEW, ctxshift1, &resultshift, p);
+    std::cout << "shift: " << resultshift << std::endl;
+
+
+
+
+
+
+    
+    // Generate LUT from function f(x)
+    ccLWE->GetLWEScheme()->EvalMultConstEq(dec1[0], 16);
+    ccLWE->GetLWEScheme()->EvalAddEq(dec1[0],dec2[0]);
+
+    LWEPlaintext resultadd;
+    ccLWE->Decrypt(privateKeyFHEW, dec1[0], &resultadd, p);
+    std::cout << "addition: " << resultadd << std::endl;
+
+    auto lut = ccLWE->GenerateLUTviaFunction(fp, p);
+    auto ctfunc1 = ccLWE->EvalFunc(dec1[0], lut);
+    // auto ctfunc2 = ccLWE->EvalFunc(dec2[0], lut);
+
+    // auto ctfunc3 = ccLWE->EvalBinGate(AND,ctfunc1,ctfunc2);
+
+    // ccLWE->GetLWEScheme()->EvalAddEq(ctfunc1,ctfunc2);
+    // ccLWE->GetLWEScheme()->EvalAddEq(ctfunc1,ctfunc2);
+
+    LWEPlaintext resultDecomp;
+    // auto p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();
+    std::cout << "decryption: ";
+    ccLWE->Decrypt(privateKeyFHEW, ctfunc1, &resultDecomp, p);
+    std::cout << resultDecomp << std::endl;
+
+
+
+
+
+
+    
+
+    for (uint32_t j = 0; j < cTemp2.size(); j++) {
+        // Decompose the large ciphertext into small ciphertexts that fit in q
+        auto decomp = ccLWE->EvalDecomp(cTemp2[j]);
+
+        // Decryption
+        auto p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();
+        std::cout << "p: " << p << std::endl;
+        LWECiphertext ct;
+        for (size_t i = 0; i < decomp.size(); i++) {
+            ct = decomp[i];
+            LWEPlaintext resultDecomp;
+            // The last digit should be up to P / p^floor(log_p(P))
+            if (i == decomp.size() - 1) {
+                p = pLWE2 / std::pow(static_cast<double>(pLWE1), std::floor(std::log(pLWE2) / std::log(pLWE1)));
+            }
+            ccLWE->Decrypt(privateKeyFHEW, ct, &resultDecomp, p);
+            std::cout << "(" << resultDecomp << " * " << NativeInteger(pLWE1) << "^" << i << ")";
+            if (i != decomp.size() - 1) {
+                std::cout << " + ";
+            }
+        }
+        std::cout << std::endl;
+    }
 }
 
 void test(){
@@ -495,49 +599,10 @@ void decomp() {
     cout << endl;
 }
 
-Ciphertext<DCRTPoly> SWITCHCKKSRNS::EvalCompareSchemeSwitching(ConstCiphertext<DCRTPoly> ciphertext1,
-                                                               ConstCiphertext<DCRTPoly> ciphertext2, uint32_t numCtxts,
-                                                               uint32_t numSlots, uint32_t pLWE, double scaleSign,
-                                                               bool unit) {
-    auto ccCKKS             = ciphertext1->GetCryptoContext();
-    const auto cryptoParams = dynamic_pointer_cast<CryptoParametersCKKSRNS>(ccCKKS->GetCryptoParameters());
 
-    auto cDiff = ccCKKS->EvalSub(ciphertext1, ciphertext2);
-
-    if (unit) {
-        if (pLWE == 0)
-            OPENFHE_THROW("To scale to the unit circle, pLWE must be non-zero.");
-        else {
-            cDiff = ccCKKS->EvalMult(cDiff, 1.0 / static_cast<double>(pLWE));
-            cDiff = ccCKKS->Rescale(cDiff);
-        }
-    }
-
-    // The precomputation has already been performed, but if it is scaled differently than desired, recompute it
-    if (pLWE != 0) {
-        double scaleCF = 1.0;
-        if ((pLWE != 0) && (!unit)) {
-            scaleCF = 1.0 / pLWE;
-        }
-        scaleCF *= scaleSign;
-
-        EvalCKKStoFHEWPrecompute(*ccCKKS, scaleCF);
-    }
-
-    auto LWECiphertexts = EvalCKKStoFHEW(cDiff, numCtxts);
-
-    vector<LWECiphertext> cSigns(LWECiphertexts.size());
-#pragma omp parallel for
-    for (uint32_t i = 0; i < LWECiphertexts.size(); i++) {
-        cSigns[i] = m_ccLWE->EvalSign(LWECiphertexts[i], true);
-    }
-
-    return EvalFHEWtoCKKS(cSigns, numCtxts, numSlots, 4, -1.0, 1.0, 0);
-}
 
 int main() {
-    // SwitchFHEWtoCKKS();
-    decomp();
+    SwitchCKKSToFHEW();
     // test();
     // sag();
     return 0;

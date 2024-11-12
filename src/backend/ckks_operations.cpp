@@ -226,6 +226,7 @@ CKKS::FHEdouble FHEeq(FHEcontext* ctx, CKKS::FHEdouble a, CKKS::FHEdouble b){
 }
 
 CKKS::FHEdouble FHEselect(FHEcontext* ctx, CKKS::FHEdouble sign, CKKS::FHEdouble value1, CKKS::FHEdouble value2){
-    auto sign_prime = FHEsubfP(ctx, 1.0,sign);
-    return FHEaddf(ctx, FHEmulf(ctx, sign,value1),FHEmulf(ctx, sign_prime,value2));
+    // auto sign_prime = FHEsubfP(ctx, 1.0,sign);
+    // return FHEaddf(ctx, FHEmulf(ctx, sign,value1),FHEmulf(ctx, sign_prime,value2));
+    return FHEaddf(ctx, FHEmulf(ctx, sign, CKKS::FHEsubf(ctx,value1,value2)),value2);
 }
