@@ -197,9 +197,6 @@ void cmux() {
 }
 
 void SwitchCKKSToFHEW() {
-    /*
-  Example of switching a packed ciphertext from CKKS to multiple FHEW ciphertexts.
- */
 
     std::cout << "\n-----SwitchCKKSToFHEW-----\n" << std::endl;
 
@@ -212,7 +209,7 @@ void SwitchCKKSToFHEW() {
     uint32_t ringDim      = 4096;
     SecurityLevel sl      = HEStd_NotSet;
     BINFHE_PARAMSET slBin = TOY;
-    uint32_t logQ_ccLWE   = 25;
+    uint32_t logQ_ccLWE   = 26;
     // uint32_t slots        = ringDim / 2;  // Uncomment for fully-packed
     uint32_t slots     = 16;  // sparsely-packed
     uint32_t batchSize = slots;
@@ -248,9 +245,18 @@ void SwitchCKKSToFHEW() {
     params.SetSecurityLevelFHEW(slBin);
     params.SetCtxtModSizeFHEWLargePrec(logQ_ccLWE);
     params.SetNumSlotsCKKS(slots);
+    // params.SetArbitraryFunctionEvaluation(true);
+    // params.GetArbitraryFunctionEvaluation();
     auto privateKeyFHEW = cc->EvalCKKStoFHEWSetup(params);
-    auto ccLWE          = cc->GetBinCCForSchemeSwitch();
+
+
+    auto ccLWE = std::make_shared<lbcrypto::BinFHEContext>();
+    auto logQ = 27;
+    ccLWE->GenerateBinFHEContext(TOY, true, logQ,GINX);
+    cc->SetBinCCForSchemeSwitch(ccLWE);
+    // auto ccLWE          = cc->GetBinCCForSchemeSwitch();
     cc->EvalCKKStoFHEWKeyGen(keys, privateKeyFHEW);
+    
 
     std::cout << "FHEW scheme is using lattice parameter " << ccLWE->GetParams()->GetLWEParams()->Getn();
     std::cout << ", logQ " << logQ_ccLWE;
@@ -258,60 +264,29 @@ void SwitchCKKSToFHEW() {
 
     // Compute the scaling factor to decrypt correctly in FHEW; under the hood, the LWE mod switch will performed on the ciphertext at the last level
     auto pLWE1       = ccLWE->GetMaxPlaintextSpace().ConvertToInt();  // Small precision
+    std::cout << "pLWE1: " << pLWE1 << std::endl;
     auto modulus_LWE = 1 << logQ_ccLWE;
     auto beta        = ccLWE->GetBeta().ConvertToInt();
     auto pLWE2       = modulus_LWE / (2 * beta);  // Large precision
-
+    std::cout << "pLWE2: " << pLWE2 << std::endl;
     double scale1 = 1.0 / pLWE1;
     double scale2 = 1.0 / pLWE2;
 
     // Perform the precomputation for switching
     cc->EvalCKKStoFHEWPrecompute(scale1);
+    
 
     // Step 3: Encoding and encryption of inputs
 
     // Inputs
-    std::vector<double> x1  = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    std::vector<double> x2  = {3, 271.0, 30000.0, static_cast<double>(pLWE2) - 2};
-    uint32_t encodedLength1 = x1.size();
+    std::vector<double> x2  = {5,6};
+
     uint32_t encodedLength2 = x2.size();
 
-    // Encoding as plaintexts
-    Plaintext ptxt1 = cc->MakeCKKSPackedPlaintext(x1, 1, 0, nullptr);
     Plaintext ptxt2 = cc->MakeCKKSPackedPlaintext(x2, 1, 0, nullptr);
 
-    // Encrypt the encoded vectors
-    auto c1 = cc->Encrypt(keys.publicKey, ptxt1);
     auto c2 = cc->Encrypt(keys.publicKey, ptxt2);
 
-    // Step 4: Scheme switching from CKKS to FHEW
-
-    // A: First scheme switching case
-
-    // Transform the ciphertext from CKKS to FHEW
-    auto cTemp = cc->EvalCKKStoFHEW(c1, encodedLength1);
-
-    std::cout << "\n---Decrypting switched ciphertext with small precision (plaintext modulus " << NativeInteger(pLWE1)
-              << ")---\n"
-              << std::endl;
-
-    std::vector<int32_t> x1Int(encodedLength1);
-    std::transform(x1.begin(), x1.end(), x1Int.begin(), [&](const double& elem) {
-        return static_cast<int32_t>(static_cast<int32_t>(std::round(elem)) % pLWE1);
-    });
-    ptxt1->SetLength(encodedLength1);
-    std::cout << "Input x1: " << ptxt1->GetRealPackedValue() << "; which rounds to: " << x1Int << std::endl;
-    std::cout << "FHEW decryption: ";
-    LWEPlaintext result;
-    for (uint32_t i = 0; i < cTemp.size(); ++i) {
-        ccLWE->Decrypt(privateKeyFHEW, cTemp[i], &result, pLWE1);
-        std::cout << result << " ";
-    }
-    std::cout << "\n" << std::endl;
-
-    // B: Second scheme switching case
-
-    // Perform the precomputation for switching
     cc->EvalCKKStoFHEWPrecompute(scale2);
 
     // Transform the ciphertext from CKKS to FHEW (only for the number of inputs given)
@@ -322,6 +297,7 @@ void SwitchCKKSToFHEW() {
               << std::endl;
 
     ptxt2->SetLength(encodedLength2);
+    LWEPlaintext result;
     std::cout << "Input x2: " << ptxt2->GetRealPackedValue() << std::endl;
     std::cout << "FHEW decryption: ";
     for (uint32_t i = 0; i < cTemp2.size(); ++i) {
@@ -330,18 +306,15 @@ void SwitchCKKSToFHEW() {
     }
     std::cout << "\n" << std::endl;
 
-    // C: Decompose the FHEW ciphertexts in smaller digits
-    std::cout << "Decomposed values for digit size of " << NativeInteger(pLWE1) << ": " << std::endl;
+
     // Generate the bootstrapping keys (refresh and switching keys)
     ccLWE->BTKeyGen(privateKeyFHEW);
 
 
-    // ccLWE->GetLWEScheme()->EvalAddEq(cTemp2[1],cTemp2[3]);
-    // LWEPlaintext resultadd;
-    // ccLWE->Decrypt(privateKeyFHEW, cTemp2[1], &resultadd, pLWE2);
-    // std::cout << "addition: " << resultadd << std::endl;
-
-
+    auto modtemp = cTemp2[0]->GetModulus();
+    std::cout << "modtemp: " << modtemp << std::endl;
+    auto qtemp = ccLWE->GetParams()->GetLWEParams()->Getq();
+    std::cout << "qtemp: " << qtemp << std::endl;
 
     auto dec1 = ccLWE->EvalDecomp(cTemp2[0]);
     auto dec2 = ccLWE->EvalDecomp(cTemp2[1]);
@@ -363,79 +336,32 @@ void SwitchCKKSToFHEW() {
     std::cout << "p: " << p << std::endl;
 
 
+    
+
 
 
     // Initialize Function f(x) = x^3 % p
     auto fp = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
-        auto im = m.ConvertToInt();
-        auto r = im & 0b0011;
-        auto l = im & 0b1100;
-        r = r & (r/2);
-        l = l & (l/2);
-
-
-        // auto lhs = (m/p1) % p1;
-        // auto rhs= (m%p1) % p1;
-        // auto l = lhs.ConvertToInt();
-        // auto r = rhs.ConvertToInt();
-        auto res = r;
-        NativeInteger result(res);
-        return result;
+        auto l = (m>>1)%2;
+        auto r = (m)%2;
+        return NativeInteger(l.ConvertToInt() & r.ConvertToInt());
     };
-    auto fshift = [](NativeInteger m, NativeInteger p2) -> NativeInteger {
-        auto im = m.ConvertToInt();
-        auto res = im & 0b0001;
-        return NativeInteger(res);
-    };
-    auto lutshift = ccLWE->GenerateLUTviaFunction(fshift, p);
-    auto ctxshift1 = ccLWE->EvalFunc(dec1[0],lutshift);
-    auto ctxshift2 = ccLWE->EvalFunc(dec2[0],lutshift);
 
-    ccLWE->GetLWEScheme()->EvalMultConstEq(ctxshift1,2);
-    ccLWE->GetLWEScheme()->EvalAddEq(ctxshift1,ctxshift2);
-
-    auto lutand = ccLWE->GenerateLUTviaFunction(fp,p);
-    auto ctand1 = ccLWE->EvalFunc(ctxshift1, lutand);
-    LWEPlaintext resultand;
-    ccLWE->Decrypt(privateKeyFHEW, ctand1, &resultand, p);
-    std::cout << "and: " << resultand << std::endl;
-
-    LWEPlaintext resultshift;
-    ccLWE->Decrypt(privateKeyFHEW, ctxshift1, &resultshift, p);
-    std::cout << "shift: " << resultshift << std::endl;
-
-
-
-
-
+    auto d1 = dec1[0];
+    auto d2 = dec2[0];
+    ccLWE->GetLWEScheme()->EvalMultConstEq(d1,2);
+    ccLWE->GetLWEScheme()->EvalAddEq(d1,d2);
 
     
-    // Generate LUT from function f(x)
-    ccLWE->GetLWEScheme()->EvalMultConstEq(dec1[0], 16);
-    ccLWE->GetLWEScheme()->EvalAddEq(dec1[0],dec2[0]);
 
-    LWEPlaintext resultadd;
-    ccLWE->Decrypt(privateKeyFHEW, dec1[0], &resultadd, p);
-    std::cout << "addition: " << resultadd << std::endl;
 
     auto lut = ccLWE->GenerateLUTviaFunction(fp, p);
-    auto ctfunc1 = ccLWE->EvalFunc(dec1[0], lut);
-    // auto ctfunc2 = ccLWE->EvalFunc(dec2[0], lut);
-
-    // auto ctfunc3 = ccLWE->EvalBinGate(AND,ctfunc1,ctfunc2);
-
-    // ccLWE->GetLWEScheme()->EvalAddEq(ctfunc1,ctfunc2);
-    // ccLWE->GetLWEScheme()->EvalAddEq(ctfunc1,ctfunc2);
+    auto ctfunc1 = ccLWE->EvalFunc(d1, lut);
 
     LWEPlaintext resultDecomp;
-    // auto p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();
-    std::cout << "decryption: ";
+    std::cout << "decryption eval func: ";
     ccLWE->Decrypt(privateKeyFHEW, ctfunc1, &resultDecomp, p);
     std::cout << resultDecomp << std::endl;
-
-
-
-
 
 
     
@@ -454,6 +380,7 @@ void SwitchCKKSToFHEW() {
             // The last digit should be up to P / p^floor(log_p(P))
             if (i == decomp.size() - 1) {
                 p = pLWE2 / std::pow(static_cast<double>(pLWE1), std::floor(std::log(pLWE2) / std::log(pLWE1)));
+                std::cout << "\np last digit: " << p << std::endl;
             }
             ccLWE->Decrypt(privateKeyFHEW, ct, &resultDecomp, p);
             std::cout << "(" << resultDecomp << " * " << NativeInteger(pLWE1) << "^" << i << ")";
@@ -464,6 +391,8 @@ void SwitchCKKSToFHEW() {
         std::cout << std::endl;
     }
 }
+
+
 
 void test(){
     auto cc = BinFHEContext();
@@ -510,78 +439,45 @@ void test(){
 
 void decomp() {
     // Sample Program: Step 1: Set CryptoContext
-
     auto cc = BinFHEContext();
+    auto logQ = 27;
+    cc.GenerateBinFHEContext(TOY, true, logQ,GINX);
 
-    // Set the ciphertext modulus to be 1 << 23
-    // Note that normally we do not use this way to obtain the input ciphertext.
-    // Instead, we assume that an LWE ciphertext with large ciphertext
-    // modulus is already provided (e.g., by extracting from a CKKS ciphertext).
-    // However, we do not provide such a step in this example.
-    // Therefore, we use a brute force way to create a large LWE ciphertext.
-    uint32_t logQ = 23;
-    cc.GenerateBinFHEContext(TOY, false, logQ, 0, GINX, false);
-
+    auto ccq = cc.GetParams()->GetLWEParams()->Getq();
+    std::cout << "ccq: " << ccq << std::endl;
+    auto N = cc.GetParams()->GetLWEParams()->GetN();
+    std::cout << "N: " << N << std::endl;
+    // Sample Program: Step 2: Key Generation
     uint32_t Q = 1 << logQ;
 
-    int q      = 4096;                                               // q
+    int q      = ccq.ConvertToInt();                                               // q
     int factor = 1 << int(logQ - log2(q));                           // Q/q
     uint64_t P = cc.GetMaxPlaintextSpace().ConvertToInt() * factor;  // Obtain the maximum plaintext space
 
-    // Sample Program: Step 2: Key Generation
+    std::cout << "P: " << P << std::endl;
     // Generate the secret key
-    auto sk = cc.KeyGen(); 
+    auto sk = cc.KeyGen();
 
-    cout << "Generating the bootstrapping keys..." << endl;
+    std::cout << "Generating the bootstrapping keys..." << std::endl;
 
-    // Generate the bootstrapping keys (refresh and switching keys)
-    cc.BTKeyGen(sk);
+    // Generate the bootstrapping keys (refresh, switching and public keys)
+    cc.BTKeyGen(sk, PUB_ENCRYPT);
 
-    cout << "Completed the key generation." << endl;
+    auto pk = cc.GetPublicKey();
 
-    // Sample Program: Step 3: Encryption
-    auto value = 23;
-    auto ct1 = cc.Encrypt(sk, value, FRESH, P, Q);
-    cout << "Encrypted value: " << value << endl;
+    std::cout << "Completed the key generation." << std::endl;
+
+    auto num = 3;
+    auto ct1 = cc.Encrypt(sk, num, LARGE_DIM, P, Q);
+    std::cout << "Encrypted value: " << num<< std::endl;
 
     // Sample Program: Step 4: Evaluation
     // Decompose the large ciphertext into small ciphertexts that fit in q
-
-    auto mod = ct1->GetptModulus();
-    cout << "mod: " << mod << endl;
     auto decomp = cc.EvalDecomp(ct1);
-    // decomp.
-    cout << decomp.size() << " decomposed ciphertexts" << endl;
     // Sample Program: Step 5: Decryption
     uint64_t p = cc.GetMaxPlaintextSpace().ConvertToInt();
-    cout << "Decomposed value: " << p << endl;
-
-
-    auto ctxt1 = decomp[0];
-
-    auto c = cc.EvalSign(ct1);
-    auto cmod = c->GetptModulus();
-    cout << "cmod: " << cmod << endl;
-    LWEPlaintext result1;
-    cc.Decrypt(sk, c, &result1,2);
-    cout << "Result of encrypted computation of Sign: " << result1 << endl;
-
-    auto pmod = decomp[1]->GetptModulus();
-    cout << "pmod: " << pmod << endl;
-    auto ctxt2 = decomp[1];
-    auto or1 = cc.EvalBinGate(OR,decomp[0],decomp[1]);
-    decomp[3]->SetModulus(4096);
-    auto mod1 = decomp[3]->GetModulus();
-    cout << "mod1: " << mod1 << endl;
-    auto mod2 = decomp[2]->GetModulus();
-    cout << "mod2: " << mod2 << endl;
-    auto or2 = cc.EvalBinGate(OR,decomp[2],decomp[3]);
-    auto or3 = cc.EvalBinGate(OR,or1,or2);
-
-    LWEPlaintext result;
-    cc.Decrypt(sk,or3,&result,4);
-    cout<<"result: "<<result<<"\n";
-
+    std::cout << "p: " << p << std::endl;
+    std::cout << "Decomposed value: ";
     for (size_t i = 0; i < decomp.size(); i++) {
         ct1 = decomp[i];
         LWEPlaintext result;
@@ -591,18 +487,59 @@ void decomp() {
             p         = 1 << logp;
         }
         cc.Decrypt(sk, ct1, &result, p);
-        cout << "(" << result << " * " << cc.GetMaxPlaintextSpace() << "^" << i << ")";
+        std::cout << "(" << result << " * " << cc.GetMaxPlaintextSpace() << "^" << i << ")";
         if (i != decomp.size() - 1) {
-            cout << " + ";
+            std::cout << " + ";
         }
     }
-    cout << endl;
+    std::cout << std::endl;
+
+
+    // Sample Program: Step 3: Create the to-be-evaluated funciton and obtain its corresponding LUT
+    int psag = cc.GetMaxPlaintextSpace().ConvertToInt();  // Obtain the maximum plaintext space
+    std::cout << "psag: " << psag << std::endl;
+    // Initialize Function f(x) = x^3 % p
+    auto fp = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
+        return (m >> 2)%2;
+    };
+
+    // Generate LUT from function f(x)
+    p = cc.GetMaxPlaintextSpace().ConvertToInt();
+    auto lut = cc.GenerateLUTviaFunction(fp, p);
+    std::cout << "Evaluate x^3%" << p << "." << std::endl;
+
+    auto d1 = decomp[0];
+
+    auto dmod = d1->GetModulus();
+    std::cout << "dmod: " << dmod << std::endl;
+    auto pmod = d1->GetptModulus();
+    std::cout << "pmod: " << pmod << std::endl;
+
+    auto dres = cc.EvalFunc(d1, lut);
+    LWEPlaintext resd1;
+    cc.Decrypt(sk, dres, &resd1, p);
+    std::cout << "Decrypted result: " << resd1 << std::endl;
+
+    // // Sample Program: Step 4: evalute f(x) homomorphically and decrypt
+    // // Note that we check for all the possible plaintexts.
+    // for (int i = 0; i < p; i++) {
+    //     auto ct1 = cc.Encrypt(pk, i % p, SMALL_DIM, p);
+
+    //     auto ct_cube = cc.EvalFunc(ct1, lut);
+
+    //     LWEPlaintext result;
+
+    //     cc.Decrypt(sk, ct_cube, &result, p);
+
+    //     std::cout << "Input: " << i << ". Expected: " << fp(i, p) << ". Evaluated = " << result << std::endl;
+    // }
 }
 
 
 
 int main() {
     SwitchCKKSToFHEW();
+    // decomp();
     // test();
     // sag();
     return 0;
