@@ -363,6 +363,12 @@ void SwitchCKKSToFHEW() {
     ccLWE->Decrypt(privateKeyFHEW, ctfunc1, &resultDecomp, p);
     std::cout << resultDecomp << std::endl;
 
+    auto d3 = ccLWE->EvalBinGate(XOR,d1,d2);
+    LWEPlaintext resultand;
+    std::cout << "decryption and: ";
+    ccLWE->Decrypt(privateKeyFHEW, d3, &resultand, p);
+    std::cout << resultand << std::endl;
+
 
     
 
@@ -437,16 +443,49 @@ void test(){
 
 }
 
+NativeInteger RoundqQAlter(const NativeInteger& v, const NativeInteger& q, const NativeInteger& Q) {
+    return NativeInteger(
+               (BasicInteger)std::floor(0.5 + v.ConvertToDouble() * q.ConvertToDouble() / Q.ConvertToDouble()))
+        .Mod(q);
+}
+
 void decomp() {
     // Sample Program: Step 1: Set CryptoContext
     auto cc = BinFHEContext();
-    auto logQ = 27;
-    cc.GenerateBinFHEContext(TOY, true, logQ,GINX);
+    auto logQ = 29;
+    auto N = 1 << 12;
+    cc.GenerateBinFHEContext(TOY, true, logQ, N ,GINX);
+    // cc.GenerateBinFHEContext(STD256Q,GINX);
+
+    // auto n = 32;
+    // auto N = 1 << 11;
+    // auto q = 1 << 11;
+    // auto logQprime = 54;
+    // NativeInteger Q = LastPrime<NativeInteger>(logQprime, 2 * N);
+    // auto stddev = 3.19;
+    // auto baseKS = 32;
+    // auto baseG = 1 << 14;
+    // auto baseR = 23;
+    // auto keyDist = UNIFORM_TERNARY;
+    // auto method = GINX;
+    // auto minRingDim  = StdLatticeParm::FindRingDim(HEStd_ternary, HEStd_128_classic, logQprime);
+    // std::cout << "minRingDim: " << minRingDim << std::endl;
+    // cc.GenerateBinFHEContext(n, N, q, Q, stddev, baseKS, baseG, baseR, keyDist, method);
+
+
+    auto ccbaseks = cc.GetParams()->GetLWEParams()->GetBaseKS();
+    std::cout << "ccbaseks: " << ccbaseks << std::endl;
+    auto ccqks = cc.GetParams()->GetLWEParams()->GetqKS();
+    std::cout << "ccqks: " << ccqks << std::endl;
+    // auto ccbaseg = cc.GetParams()->GetLWEParams()->GetDgg()
+
+    auto ccn = cc.GetParams()->GetLWEParams()->Getn();
+    std::cout << "ccn: " << ccn << std::endl;
 
     auto ccq = cc.GetParams()->GetLWEParams()->Getq();
     std::cout << "ccq: " << ccq << std::endl;
-    auto N = cc.GetParams()->GetLWEParams()->GetN();
-    std::cout << "N: " << N << std::endl;
+    auto ccN = cc.GetParams()->GetLWEParams()->GetN();
+    std::cout << "N: " << ccN << std::endl;
     // Sample Program: Step 2: Key Generation
     uint32_t Q = 1 << logQ;
 
@@ -467,28 +506,34 @@ void decomp() {
 
     std::cout << "Completed the key generation." << std::endl;
 
-    auto num = 3;
-    auto ct1 = cc.Encrypt(sk, num, LARGE_DIM, P, Q);
-    std::cout << "Encrypted value: " << num<< std::endl;
+    auto num1 = 11;
+    auto ct1 = cc.Encrypt(sk, num1, LARGE_DIM, P, Q);
+    auto num2 = 6;
+    auto ct2 = cc.Encrypt(sk, num2, LARGE_DIM, P, Q);
 
     // Sample Program: Step 4: Evaluation
     // Decompose the large ciphertext into small ciphertexts that fit in q
     auto decomp = cc.EvalDecomp(ct1);
+    auto decomp2 = cc.EvalDecomp(ct2);
+
+
+
+
     // Sample Program: Step 5: Decryption
     uint64_t p = cc.GetMaxPlaintextSpace().ConvertToInt();
     std::cout << "p: " << p << std::endl;
     std::cout << "Decomposed value: ";
-    for (size_t i = 0; i < decomp.size(); i++) {
-        ct1 = decomp[i];
+    for (size_t i = 0; i < decomp2.size(); i++) {
+        ct1 = decomp2[i];
         LWEPlaintext result;
-        if (i == decomp.size() - 1) {
+        if (i == decomp2.size() - 1) {
             // after every evalfloor, the least significant digit is dropped so the last modulus is computed as log p = (log P) mod (log GetMaxPlaintextSpace)
             auto logp = GetMSB(P - 1) % GetMSB(p - 1);
             p         = 1 << logp;
         }
         cc.Decrypt(sk, ct1, &result, p);
         std::cout << "(" << result << " * " << cc.GetMaxPlaintextSpace() << "^" << i << ")";
-        if (i != decomp.size() - 1) {
+        if (i != decomp2.size() - 1) {
             std::cout << " + ";
         }
     }
@@ -500,46 +545,85 @@ void decomp() {
     std::cout << "psag: " << psag << std::endl;
     // Initialize Function f(x) = x^3 % p
     auto fp = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
-        return (m >> 2)%2;
+        // auto im = m.ConvertToInt();
+        // auto r = im & 0b000111;
+        // auto l = im & 0b111000;
+        // l = l >> 3;
+        // return NativeInteger(l & r);
+        return (m/2)%p1;
     };
 
     // Generate LUT from function f(x)
     p = cc.GetMaxPlaintextSpace().ConvertToInt();
+    
     auto lut = cc.GenerateLUTviaFunction(fp, p);
-    std::cout << "Evaluate x^3%" << p << "." << std::endl;
 
     auto d1 = decomp[0];
+    auto d2 = decomp2[0];
 
-    auto dmod = d1->GetModulus();
-    std::cout << "dmod: " << dmod << std::endl;
-    auto pmod = d1->GetptModulus();
-    std::cout << "pmod: " << pmod << std::endl;
+    // auto d1mod = d2->GetModulus();
+    // std::cout << "dmod: " << d1mod << std::endl;
 
-    auto dres = cc.EvalFunc(d1, lut);
-    LWEPlaintext resd1;
-    cc.Decrypt(sk, dres, &resd1, p);
-    std::cout << "Decrypted result: " << resd1 << std::endl;
+    // auto qks = cc.GetParams()->GetLWEParams()->GetqKS();
+    // auto qksmod = qks.ConvertToInt();
+    // std::cout << "qksmod: " << qksmod << std::endl;
 
-    // // Sample Program: Step 4: evalute f(x) homomorphically and decrypt
-    // // Note that we check for all the possible plaintexts.
-    // for (int i = 0; i < p; i++) {
-    //     auto ct1 = cc.Encrypt(pk, i % p, SMALL_DIM, p);
+    auto dres = cc.EvalFunc(d2, lut);
+    // cc.GetLWEScheme()->ModSwitch(qks, dres);
 
-    //     auto ct_cube = cc.EvalFunc(ct1, lut);
+    // auto d1newmod = dres->GetModulus();
+    // std::cout << "d1newmod: " << d1newmod << std::endl;
 
-    //     LWEPlaintext result;
 
-    //     cc.Decrypt(sk, ct_cube, &result, p);
+    // cc.GetLWEScheme()->EvalMultConstEq(dres, 2);
+    // LWEPlaintext resd1;
+    // cc.Decrypt(sk, dres, &resd1, 128);
+    // std::cout << "Decrypted result: " << resd1 << std::endl;
 
-    //     std::cout << "Input: " << i << ". Expected: " << fp(i, p) << ". Evaluated = " << result << std::endl;
+
+    auto tempctxt2 = cc.Encrypt(sk, 0, SMALL_DIM, p*2, q);
+
+    // cc.GetLWEScheme()->ModSwitch(q, tempctxt2);
+
+    // auto original_a = tempctxt2->GetA();
+    // auto original_b = tempctxt2->GetB();
+    // // multiply by Q_LWE/Q' and round to Q_LWE
+    // NativeVector a_round(ccn, q);
+    // for (uint32_t j = 0; j < ccn; ++j) {
+    //     a_round[j] = RoundqQAlter(original_a[j], q, q*2);
     // }
+    // NativeInteger b_round = RoundqQAlter(original_b, q, q*2);
+    // tempctxt2     = std::make_shared<LWECiphertextImpl>(std::move(a_round), std::move(b_round));
+
+
+    auto tempq = tempctxt2->GetModulus();
+    std::cout << "tempq: " << tempq << std::endl;
+
+    auto dresq = dres->GetModulus();
+    std::cout << "dresq: " << dresq << std::endl;
+
+
+    cc.GetLWEScheme()->EvalAddEq(tempctxt2,d2);
+    auto templut = cc.GenerateLUTviaFunction(fp, p*2);
+    auto ctxtres = cc.EvalFunc(tempctxt2,templut);
+    // cc.GetLWEScheme()->EvalMultConstEq(tempctxt2,2);
+    LWEPlaintext restemp2;
+    cc.Decrypt(sk, ctxtres, &restemp2, p*2);
+    std::cout << "restemp2: " << restemp2 << std::endl;
+
+    // auto lut2 = cc.GenerateLUTviaFunction(fp, P);
+    // auto dres2 = cc.EvalFunc(ct2, lut2);
+    // LWEPlaintext resd2;
+    // cc.Decrypt(sk, ct2, &resd2, P);
+    // std::cout << "Decrypted result high precision: " << resd2 << std::endl;
+
 }
 
 
 
 int main() {
-    SwitchCKKSToFHEW();
-    // decomp();
+    // SwitchCKKSToFHEW();
+    decomp();
     // test();
     // sag();
     return 0;
