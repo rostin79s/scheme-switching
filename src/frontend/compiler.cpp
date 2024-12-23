@@ -31,6 +31,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <mlir/Dialect/Affine/IR/AffineOps.h>
 #include <mlir/Dialect/Func/IR/FuncOps.h>
+#include <mlir/Dialect/MemRef/IR/MemRef.h>
 #include <mlir/Dialect/SCF/IR/SCF.h>
 #include <mlir/Dialect/Vector/IR/VectorOps.h>
 #include <mlir/IR/BuiltinAttributes.h>
@@ -72,12 +73,12 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
     void runOnOperation() override {
         ModuleOp module = getOperation();
 
-        module->removeAttr("llvm.data_layout");
-        module->removeAttr("llvm.target_triple");
-        module->removeAttr("dlti.dl_spec");
-        module->removeAttr("polygeist.target-cpu");
-        module->removeAttr("polygeist.target-features");
-        module->removeAttr("polygeist.tune-cpu");
+        auto attrDict = module->getAttrDictionary();
+
+        // Iterate over all attributes and remove them
+        for (auto attr : attrDict) {
+            module->removeAttr(attr.getName());
+        }
 
 
         OpBuilder builder(module.getContext());
@@ -85,6 +86,7 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
         auto context = emitc::OpaqueType::get(builder.getContext(), "FHEcontext");
         auto fhecontext = emitc::PointerType::get(context);
         auto fhedouble = emitc::OpaqueType::get(builder.getContext(), "FHEdouble");
+        auto fhei32 = emitc::OpaqueType::get(builder.getContext(), "FHEi32");
 
         // Iterate over functions in the module.
         module.walk([&](func::FuncOp func) {
@@ -106,16 +108,27 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
             if (inputType.isF64()) {
             newInputTypes.push_back(fhedouble);
             } 
+            else if(inputType.isInteger(32)) {
+                newInputTypes.push_back(fhei32);
+            }
             else if(auto vecType = inputType.dyn_cast<mlir::VectorType>()) {
                 auto elemType = vecType.getElementType();
                 if (elemType.isF64()) {
                     newInputTypes.push_back(fhedouble);
                 }
+                else if(elemType.isInteger(32)) {
+                    newInputTypes.push_back(fhei32);
+                }
             }
             else if(auto memRefType = inputType.dyn_cast<mlir::MemRefType>()) {
                 auto elemType = memRefType.getElementType();
+                outs() << "MemRefType: " << elemType << "\n";
                 if (elemType.isF64()) {
                     newInputTypes.push_back(fhedouble);
+                }
+                else if(elemType.isInteger(32)) {
+                    outs() << "Integer 32\n";
+                    newInputTypes.push_back(fhei32);
                 }
             }
             else {
@@ -123,28 +136,40 @@ struct ArithToEmitc : public PassWrapper<ArithToEmitc, OperationPass<ModuleOp>> 
             }
         }
 
-        // Convert the return type similarly.
-        mlir::Type newReturnType = funcType.getResult(0).isF64()
-                                ? fhedouble
-                                : funcType.getResult(0);
+        mlir::Type newReturnType;
+        if (funcType.getNumResults() > 0) {
+            mlir::Type returnType = funcType.getResult(0);
+            if (returnType.isF64()) {
+                newReturnType = fhedouble;  // Convert f64 to fhedouble
+            } else if (returnType.isInteger(32)) {
+                newReturnType = fhei32;  // Convert i32 to fhei32
+            } else {
+                newReturnType = returnType;  // Keep the original type
+            }
+        }
+        else {
+            newReturnType = mlir::NoneType::get(builder.getContext());  // Void function
+        }
 
         func.setType(mlir::FunctionType::get(builder.getContext(), newInputTypes, newReturnType));
 
         Block &entryBlock = func.getBody().front();
 
         SmallVector<BlockArgument, 4> newArgs;
-        // Add new CKKS_scheme& argument at the beginning
         newArgs.push_back(entryBlock.insertArgument(
             entryBlock.args_begin(), 
             newInputTypes[0], 
             builder.getUnknownLoc()
         ));
+        outs() << "Adding argument 0 of type " << newInputTypes[0] << "\n";
 
         for (size_t i = 1; i < newInputTypes.size(); ++i) {
             auto oldArg = entryBlock.getArgument(i);
             if (newInputTypes[i] != oldArg.getType()) {
+                outs() << "Changing type of argument " << i << " from " << oldArg.getType() << " to " << newInputTypes[i] << "\n";
                 oldArg.setType(newInputTypes[i]);
             }
+            outs() << "Adding argument " << i << " of type " << newInputTypes[i] << "\n";
         }
 
 
@@ -452,9 +477,10 @@ int main(int argc, char **argv) {
     context.getOrLoadDialect<mlir::scf::SCFDialect>();
     context.getOrLoadDialect<mlir::LLVM::LLVMDialect>();
     context.getLoadedDialect<mlir::vector::VectorDialect>();
+    context.getLoadedDialect<mlir::memref::MemRefDialect>();
 
     mlir::DialectRegistry registry;
-    registry.insert<mlir::DLTIDialect>();  // Assuming DLTI dialect is available
+    // registry.insert<mlir::DLTIDialect>();  // Assuming DLTI dialect is available
     registry.insert<mlir::arith::ArithDialect>();
     registry.insert<mlir::LLVM::LLVMDialect>();
     registry.insert<mlir::func::FuncDialect>();
@@ -462,9 +488,11 @@ int main(int argc, char **argv) {
     registry.insert<mlir::affine::AffineDialect>();
     registry.insert<mlir::scf::SCFDialect>();
     registry.insert<mlir::vector::VectorDialect>();
+    registry.insert<mlir::memref::MemRefDialect>();
 
     // Attach the registry to the context
     context.appendDialectRegistry(registry);
+    context.allowUnregisteredDialects();
 
     // Open and parse the MLIR file
     std::string filename = "frontend/output1.mlir";

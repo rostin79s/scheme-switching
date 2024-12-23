@@ -1,11 +1,321 @@
 #include "binfhe-constants.h"
+#include "lattice/stdlatticeparms.h"
+#include "lwe-ciphertext-fwd.h"
 #include "math/hal/nativeintbackend.h"
 #include "openfhe.h"
 #include "binfhecontext.h"
+#include <chrono>
 #include <iostream>
+#include <random>
+// #include <omp.h>
 
 using namespace lbcrypto;
 using namespace std;
+
+void min_index(){
+    
+}
+
+void ArgminViaSchemeSwitching() {
+    std::cout << "\n-----ArgminViaSchemeSwitching-----\n" << std::endl;
+    std::cout << "Output precision is only wrt the operations in CKKS after switching back\n" << std::endl;
+
+    // Step 1: Setup CryptoContext for CKKS
+    uint32_t scaleModSize = 50;
+    uint32_t firstModSize = 60;
+    // uint32_t ringDim      = 8192;
+    SecurityLevel sl      = HEStd_128_classic;
+    BINFHE_PARAMSET slBin = STD128;
+    // SecurityLevel sl      = lbcrypto::HEStd_NotSet;
+    // BINFHE_PARAMSET slBin = lbcrypto::TOY;
+    uint32_t logQ_ccLWE   = 26;
+    bool oneHot           = true;  // Change to false if the output should not be one-hot encoded
+    bool clean            = true;
+
+    uint32_t slots          = 256;  // sparsely-packed
+    uint32_t batchSize      = slots;
+    uint32_t numValues      = 256;
+    ScalingTechnique scTech = FLEXIBLEAUTOEXT;
+    // 13 for FHEW to CKKS, log2(numValues) for argmin
+    uint32_t multDepth = 9 + 3 + 1 + static_cast<int>(std::log2(numValues));
+    if (scTech == FLEXIBLEAUTOEXT)
+        multDepth += 1;
+    multDepth += 2 * clean;
+
+    CCParams<CryptoContextCKKSRNS> parameters;
+    parameters.SetMultiplicativeDepth(multDepth);
+    parameters.SetScalingModSize(scaleModSize);
+    parameters.SetFirstModSize(firstModSize);
+    parameters.SetScalingTechnique(scTech);
+    parameters.SetSecurityLevel(sl);
+    // parameters.SetRingDim(ringDim);
+    parameters.SetBatchSize(batchSize);
+
+    CryptoContext<DCRTPoly> cc = GenCryptoContext(parameters);
+
+    // Enable the features that you wish to use
+    cc->Enable(PKE);
+    cc->Enable(KEYSWITCH);
+    cc->Enable(LEVELEDSHE);
+    cc->Enable(ADVANCEDSHE);
+    cc->Enable(SCHEMESWITCH);
+
+    std::cout << "CKKS scheme is using ring dimension " << cc->GetRingDimension();
+    std::cout << ", and number of slots " << slots << ", and supports a depth of " << multDepth << std::endl
+              << std::endl;
+
+    // Generate encryption keys
+    auto keys = cc->KeyGen();
+
+    // Step 2: Prepare the FHEW cryptocontext and keys for FHEW and scheme switching
+    SchSwchParams params;
+    params.SetSecurityLevelCKKS(sl);
+    params.SetSecurityLevelFHEW(slBin);
+    params.SetCtxtModSizeFHEWLargePrec(logQ_ccLWE);
+    params.SetNumSlotsCKKS(slots);
+    params.SetNumValues(numValues);
+    params.SetComputeArgmin(true);
+    auto privateKeyFHEW = cc->EvalSchemeSwitchingSetup(params);
+    auto ccLWE          = cc->GetBinCCForSchemeSwitch();
+
+    cc->EvalSchemeSwitchingKeyGen(keys, privateKeyFHEW);
+
+    std::cout << "FHEW scheme is using lattice parameter " << ccLWE->GetParams()->GetLWEParams()->Getn();
+    std::cout << ", logQ " << logQ_ccLWE;
+    std::cout << ", and modulus q " << ccLWE->GetParams()->GetLWEParams()->Getq() << std::endl << std::endl;
+
+    // Scale the inputs to ensure their difference is correctly represented after switching to FHEW
+    double scaleSign = 1;
+    auto modulus_LWE = 1 << logQ_ccLWE;
+    auto beta        = ccLWE->GetBeta().ConvertToInt();
+    auto pLWE        = modulus_LWE / (2 * beta);  // Large precision
+    // This formulation is for clarity
+    cc->EvalCompareSwitchPrecompute(pLWE, scaleSign);
+    // But we can also include the scaleSign in pLWE (here we use the fact both pLWE and scaleSign are powers of two)
+    // cc->EvalCompareSwitchPrecompute(pLWE / scaleSign, 1);
+
+    // Step 3: Encoding and encryption of inputs
+    // Inputs
+    std::vector<double> x1(256);
+
+    // Generate and assign random x1 to the vector
+    for (int i = 0; i < 256; ++i) {
+        x1[i] = std::rand() % 1001 - 500; // Range: -500 to 500
+    }
+    if (x1.size() < numValues) {
+        std::vector<int> zeros(numValues - x1.size(), 0);
+        x1.insert(x1.end(), zeros.begin(), zeros.end());
+    }
+
+    std::cout << "Expected minimum value " << *(std::min_element(x1.begin(), x1.begin() + numValues)) << " at location "
+              << std::min_element(x1.begin(), x1.begin() + numValues) - x1.begin() << std::endl;
+    std::cout << "Expected maximum value " << *(std::max_element(x1.begin(), x1.begin() + numValues)) << " at location "
+              << std::max_element(x1.begin(), x1.begin() + numValues) - x1.begin() << std::endl
+              << std::endl;
+
+    // Encoding as plaintexts
+    Plaintext ptxt1 = cc->MakeCKKSPackedPlaintext(x1);  // Only if we we set batchsize
+    // Plaintext ptxt1 = cc->MakeCKKSPackedPlaintext(x1, 1, 0, nullptr, slots); // If batchsize is not set
+
+    // Encrypt the encoded vectors
+    auto c1 = cc->Encrypt(keys.publicKey, ptxt1);
+
+    // Step 4: Argmin evaluation
+
+
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    auto result = cc->EvalMinSchemeSwitching(c1, keys.publicKey, numValues, slots, 0, 1.0);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = end - start;
+    std::cout << "Time to compute argmin: " << diff.count() << " s" << std::endl;
+
+
+
+    Plaintext ptxtMin;
+    cc->Decrypt(keys.secretKey, result[0], &ptxtMin);
+    ptxtMin->SetLength(1);
+    std::cout << "Minimum value: " << ptxtMin << std::endl;
+    cc->Decrypt(keys.secretKey, result[1], &ptxtMin);
+    if (oneHot) {
+        ptxtMin->SetLength(numValues);
+        std::cout << "Argmin indicator vector: " << ptxtMin << std::endl;
+    }
+    else {
+        ptxtMin->SetLength(1);
+        std::cout << "Argmin: " << ptxtMin << std::endl;
+    }
+
+    result = cc->EvalMaxSchemeSwitching(c1, keys.publicKey, numValues, slots, 0, 1.0);
+
+    Plaintext ptxtMax;
+    cc->Decrypt(keys.secretKey, result[0], &ptxtMax);
+    ptxtMax->SetLength(1);
+    std::cout << "Maximum value: " << ptxtMax << std::endl;
+    cc->Decrypt(keys.secretKey, result[1], &ptxtMax);
+    if (oneHot) {
+        ptxtMax->SetLength(numValues);
+        std::cout << "Argmax indicator vector: " << ptxtMax << std::endl;
+    }
+    else {
+        ptxtMax->SetLength(1);
+        std::cout << "Argmax: " << ptxtMax << std::endl;
+    }
+}
+
+void SwitchFHEWtoCKKS() {
+    std::cout << "\n-----SwitchFHEWtoCKKS-----\n" << std::endl;
+    std::cout << "Output precision is only wrt the operations in CKKS after switching back.\n" << std::endl;
+
+    // Step 1: Setup CryptoContext for CKKS to be switched into
+
+    // A. Specify main parameters
+    ScalingTechnique scTech = FIXEDAUTO;
+    // for r = 3 in FHEWtoCKKS, Chebyshev max depth allowed is 9, 1 more level for postscaling
+    uint32_t multDepth = 3 + 9 + 1;
+    if (scTech == FLEXIBLEAUTOEXT)
+        multDepth += 1;
+    uint32_t scaleModSize = 50;
+    uint32_t ringDim      = 8192;
+    SecurityLevel sl      = HEStd_NotSet;  // If this is not HEStd_NotSet, ensure ringDim is compatible
+    uint32_t logQ_ccLWE   = 28;
+
+    // uint32_t slots = ringDim/2; // Uncomment for fully-packed
+    uint32_t slots     = 16;  // sparsely-packed
+    uint32_t batchSize = slots;
+
+    CCParams<CryptoContextCKKSRNS> parameters;
+    parameters.SetMultiplicativeDepth(multDepth);
+    parameters.SetScalingModSize(scaleModSize);
+    parameters.SetScalingTechnique(scTech);
+    parameters.SetSecurityLevel(sl);
+    parameters.SetRingDim(ringDim);
+    parameters.SetBatchSize(batchSize);
+
+    CryptoContext<DCRTPoly> cc = GenCryptoContext(parameters);
+
+    // Enable the features that you wish to use
+    cc->Enable(PKE);
+    cc->Enable(KEYSWITCH);
+    cc->Enable(LEVELEDSHE);
+    cc->Enable(ADVANCEDSHE);
+    cc->Enable(SCHEMESWITCH);
+
+    std::cout << "CKKS scheme is using ring dimension " << cc->GetRingDimension();
+    std::cout << ", number of slots " << slots << ", and supports a multiplicative depth of " << multDepth << std::endl
+              << std::endl;
+
+    // Generate encryption keys.
+    auto keys = cc->KeyGen();
+
+    // Step 2: Prepare the FHEW cryptocontext and keys for FHEW and scheme switching
+    auto ccLWE = std::make_shared<BinFHEContext>();
+    ccLWE->BinFHEContext::GenerateBinFHEContext(TOY, false, logQ_ccLWE, 0, GINX, false);
+
+    // LWE private key
+    LWEPrivateKey lwesk;
+    lwesk = ccLWE->KeyGen();
+
+    std::cout << "FHEW scheme is using lattice parameter " << ccLWE->GetParams()->GetLWEParams()->Getn();
+    std::cout << ", logQ " << logQ_ccLWE;
+    std::cout << ", and modulus q " << ccLWE->GetParams()->GetLWEParams()->Getq() << std::endl << std::endl;
+
+    // Step 3. Precompute the necessary keys and information for switching from FHEW to CKKS
+    cc->EvalFHEWtoCKKSSetup(ccLWE, slots, logQ_ccLWE);
+    cc->SetBinCCForSchemeSwitch(ccLWE);
+
+    cc->EvalFHEWtoCKKSKeyGen(keys, lwesk);
+
+    // Step 4: Encoding and encryption of inputs
+    // For correct CKKS decryption, the messages have to be much smaller than the FHEW plaintext modulus!
+
+    auto pLWE1       = ccLWE->GetMaxPlaintextSpace().ConvertToInt();  // Small precision
+    uint32_t pLWE2   = 256;                                           // Medium precision
+    auto modulus_LWE = 1 << logQ_ccLWE;
+    auto beta        = ccLWE->GetBeta().ConvertToInt();
+    auto pLWE3       = modulus_LWE / (2 * beta);  // Large precision
+    // Inputs
+    std::vector<int> x1 = {1, 2, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0};
+    std::vector<int> x2 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 64};
+    if (x1.size() < slots) {
+        std::vector<int> zeros(slots - x1.size(), 0);
+        x1.insert(x1.end(), zeros.begin(), zeros.end());
+        x2.insert(x2.end(), zeros.begin(), zeros.end());
+    }
+
+    // Encrypt
+    std::vector<LWECiphertext> ctxtsLWE1(slots);
+    for (uint32_t i = 0; i < slots; i++) {
+        // encrypted under small plantext modulus p = 4 and ciphertext modulus
+        ctxtsLWE1[i] = ccLWE->Encrypt(lwesk, x1[i]);
+    }
+
+    std::vector<LWECiphertext> ctxtsLWE2(slots);
+    for (uint32_t i = 0; i < slots; i++) {
+        // encrypted under larger plaintext modulus p = 16 but small ciphertext modulus
+        ctxtsLWE2[i] = ccLWE->Encrypt(lwesk, x1[i], LARGE_DIM, pLWE1);
+    }
+
+    std::vector<LWECiphertext> ctxtsLWE3(slots);
+    for (uint32_t i = 0; i < slots; i++) {
+        // encrypted under larger plaintext modulus and large ciphertext modulus
+        ctxtsLWE3[i] = ccLWE->Encrypt(lwesk, x2[i], LARGE_DIM, pLWE2, modulus_LWE);
+    }
+
+    std::vector<LWECiphertext> ctxtsLWE4(slots);
+    for (uint32_t i = 0; i < slots; i++) {
+        // encrypted under large plaintext modulus and large ciphertext modulus
+        ctxtsLWE4[i] = ccLWE->Encrypt(lwesk, x2[i], LARGE_DIM, pLWE3, modulus_LWE);
+    }
+
+    // Step 5. Perform the scheme switching
+    auto cTemp = cc->EvalFHEWtoCKKS(ctxtsLWE1, slots, slots);
+
+    std::cout << "\n---Input x1: " << x1 << " encrypted under p = " << 4 << " and Q = " << ctxtsLWE1[0]->GetModulus()
+              << "---" << std::endl;
+
+    // Step 6. Decrypt
+    Plaintext plaintextDec;
+    cc->Decrypt(keys.secretKey, cTemp, &plaintextDec);
+    plaintextDec->SetLength(slots);
+    std::cout << "Switched CKKS decryption 1: " << plaintextDec << std::endl;
+
+    // Step 5'. Perform the scheme switching
+    cTemp = cc->EvalFHEWtoCKKS(ctxtsLWE2, slots, slots, pLWE1, 0, pLWE1);
+
+    std::cout << "\n---Input x1: " << x1 << " encrypted under p = " << NativeInteger(pLWE1)
+              << " and Q = " << ctxtsLWE2[0]->GetModulus() << "---" << std::endl;
+
+    // Step 6'. Decrypt
+    cc->Decrypt(keys.secretKey, cTemp, &plaintextDec);
+    plaintextDec->SetLength(slots);
+    std::cout << "Switched CKKS decryption 2: " << plaintextDec << std::endl;
+
+    // Step 5''. Perform the scheme switching
+    cTemp = cc->EvalFHEWtoCKKS(ctxtsLWE3, slots, slots, pLWE2, 0, pLWE2);
+
+    std::cout << "\n---Input x2: " << x2 << " encrypted under p = " << pLWE2
+              << " and Q = " << ctxtsLWE3[0]->GetModulus() << "---" << std::endl;
+
+    // Step 6''. Decrypt
+    cc->Decrypt(keys.secretKey, cTemp, &plaintextDec);
+    plaintextDec->SetLength(slots);
+    std::cout << "Switched CKKS decryption 3: " << plaintextDec << std::endl;
+
+    // Step 5'''. Perform the scheme switching
+    std::setprecision(logQ_ccLWE + 10);
+    auto cTemp2 = cc->EvalFHEWtoCKKS(ctxtsLWE4, slots, slots, pLWE3, 0, pLWE3);
+
+    std::cout << "\n---Input x2: " << x2 << " encrypted under p = " << NativeInteger(pLWE3)
+              << " and Q = " << ctxtsLWE4[0]->GetModulus() << "---" << std::endl;
+
+    // Step 6'''. Decrypt
+    Plaintext plaintextDec2;
+    cc->Decrypt(keys.secretKey, cTemp2, &plaintextDec2);
+    plaintextDec2->SetLength(slots);
+    std::cout << "Switched CKKS decryption 4: " << plaintextDec2 << std::endl;
+}
 
 void sag(){
     // Sample Program: Step 1: Set CryptoContext
@@ -318,6 +628,7 @@ void SwitchCKKSToFHEW() {
 
     auto dec1 = ccLWE->EvalDecomp(cTemp2[0]);
     auto dec2 = ccLWE->EvalDecomp(cTemp2[1]);
+    // cc->EvalFHEWtoCKKS(std::vector<std::shared_ptr<LWECiphertextImpl>> &LWECiphertexts)
 
 
 
@@ -399,7 +710,6 @@ void SwitchCKKSToFHEW() {
 }
 
 
-
 void test(){
     auto cc = BinFHEContext();
 
@@ -451,124 +761,293 @@ NativeInteger RoundqQAlter(const NativeInteger& v, const NativeInteger& q, const
 
 void decomp() {
     // Sample Program: Step 1: Set CryptoContext
-    auto cc = BinFHEContext();
+    auto ccLWE = std::make_shared<BinFHEContext>();
     auto logQ = 29;
-    auto N = 1 << 12;
-    cc.GenerateBinFHEContext(TOY, true, logQ, N ,GINX);
-    // cc.GenerateBinFHEContext(STD256Q,GINX);
-
-    // auto n = 32;
-    // auto N = 1 << 11;
-    // auto q = 1 << 11;
-    // auto logQprime = 54;
-    // NativeInteger Q = LastPrime<NativeInteger>(logQprime, 2 * N);
-    // auto stddev = 3.19;
-    // auto baseKS = 32;
-    // auto baseG = 1 << 14;
-    // auto baseR = 23;
-    // auto keyDist = UNIFORM_TERNARY;
-    // auto method = GINX;
-    // auto minRingDim  = StdLatticeParm::FindRingDim(HEStd_ternary, HEStd_128_classic, logQprime);
-    // std::cout << "minRingDim: " << minRingDim << std::endl;
-    // cc.GenerateBinFHEContext(n, N, q, Q, stddev, baseKS, baseG, baseR, keyDist, method);
+    // auto N = 1 << 10;
+    // ccLWE->BinFHEContext::GenerateBinFHEContext(TOY, false, logQ_ccLWE, 0, GINX, false);
+    // auto cc = BinFHEContext();
+    ccLWE->BinFHEContext::GenerateBinFHEContext(STD128, true ,11, GINX);
 
 
-    auto ccbaseks = cc.GetParams()->GetLWEParams()->GetBaseKS();
+    auto ccbaseks = ccLWE->GetParams()->GetLWEParams()->GetBaseKS();
     std::cout << "ccbaseks: " << ccbaseks << std::endl;
-    auto ccqks = cc.GetParams()->GetLWEParams()->GetqKS();
+    auto ccqks = ccLWE->GetParams()->GetLWEParams()->GetqKS();
     std::cout << "ccqks: " << ccqks << std::endl;
-    // auto ccbaseg = cc.GetParams()->GetLWEParams()->GetDgg()
+    // auto ccbaseg = ccLWE->GetParams()->GetLWEParams()->GetDgg()
 
-    auto ccn = cc.GetParams()->GetLWEParams()->Getn();
+    auto ccn = ccLWE->GetParams()->GetLWEParams()->Getn();
     std::cout << "ccn: " << ccn << std::endl;
 
-    auto ccq = cc.GetParams()->GetLWEParams()->Getq();
+    auto ccq = ccLWE->GetParams()->GetLWEParams()->Getq();
     std::cout << "ccq: " << ccq << std::endl;
-    auto ccN = cc.GetParams()->GetLWEParams()->GetN();
+    auto ccN = ccLWE->GetParams()->GetLWEParams()->GetN();
     std::cout << "N: " << ccN << std::endl;
     // Sample Program: Step 2: Key Generation
-    uint32_t Q = 1 << logQ;
+    // uint32_t Q = 1 << logQ;
 
     int q      = ccq.ConvertToInt();                                               // q
     int factor = 1 << int(logQ - log2(q));                           // Q/q
-    uint64_t P = cc.GetMaxPlaintextSpace().ConvertToInt() * factor;  // Obtain the maximum plaintext space
+    uint64_t P = ccLWE->GetMaxPlaintextSpace().ConvertToInt() * factor;  // Obtain the maximum plaintext space
 
     std::cout << "P: " << P << std::endl;
     // Generate the secret key
-    auto sk = cc.KeyGen();
+    auto sk = ccLWE->KeyGen();
 
     std::cout << "Generating the bootstrapping keys..." << std::endl;
 
     // Generate the bootstrapping keys (refresh, switching and public keys)
-    cc.BTKeyGen(sk, PUB_ENCRYPT);
+    ccLWE->BTKeyGen(sk, PUB_ENCRYPT);
 
-    auto pk = cc.GetPublicKey();
+    auto pk = ccLWE->GetPublicKey();
 
     std::cout << "Completed the key generation." << std::endl;
 
-    auto num1 = 11;
-    auto ct1 = cc.Encrypt(sk, num1, LARGE_DIM, P, Q);
-    auto num2 = 6;
-    auto ct2 = cc.Encrypt(sk, num2, LARGE_DIM, P, Q);
-
-    // Sample Program: Step 4: Evaluation
-    // Decompose the large ciphertext into small ciphertexts that fit in q
-    auto decomp = cc.EvalDecomp(ct1);
-    auto decomp2 = cc.EvalDecomp(ct2);
-
-
-
-
-    // Sample Program: Step 5: Decryption
-    uint64_t p = cc.GetMaxPlaintextSpace().ConvertToInt();
+    uint64_t p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();
     std::cout << "p: " << p << std::endl;
-    std::cout << "Decomposed value: ";
-    for (size_t i = 0; i < decomp2.size(); i++) {
-        ct1 = decomp2[i];
-        LWEPlaintext result;
-        if (i == decomp2.size() - 1) {
-            // after every evalfloor, the least significant digit is dropped so the last modulus is computed as log p = (log P) mod (log GetMaxPlaintextSpace)
-            auto logp = GetMSB(P - 1) % GetMSB(p - 1);
-            p         = 1 << logp;
+
+    vector<int> array = {32,24,123,1,4,21,85,90,
+                        48,96,64,3,7,12,167,35};
+
+    vector<vector<LWECiphertext>> LWEarray;
+    int index = 0;
+    for (int num : array) {
+        std::vector<int> base4Digits;
+
+        // Extract base 4 digits
+        while (num > 0) {
+            base4Digits.push_back(num % 4);
+            num /= 4;
         }
-        cc.Decrypt(sk, ct1, &result, p);
-        std::cout << "(" << result << " * " << cc.GetMaxPlaintextSpace() << "^" << i << ")";
-        if (i != decomp2.size() - 1) {
-            std::cout << " + ";
+
+        // Ensure the number has exactly 4 digits by padding with zeros
+        while (base4Digits.size() < 4) {
+            base4Digits.push_back(0); // Pad with zeros
         }
+
+        // Print the original number and its base 4 digits
+        std::cout << "Number: " << array[index] << ", Base 4 digits: ";
+        for (int digit : base4Digits) {
+            std::cout << digit << " ";
+        }
+        std::cout << std::endl;
+
+        // Encrypt the digits
+        vector<LWECiphertext> encryptedDigits;
+        for (int digit : base4Digits) {
+            auto encryptedDigit = ccLWE->Encrypt(sk, digit, LARGE_DIM, 32);
+            encryptedDigits.push_back(encryptedDigit);
+        }
+
+        // Add the encrypted digits to LWEarray
+        LWEarray.push_back(encryptedDigits);
+        index++;
     }
-    std::cout << std::endl;
-
-
-    // Sample Program: Step 3: Create the to-be-evaluated funciton and obtain its corresponding LUT
-    int psag = cc.GetMaxPlaintextSpace().ConvertToInt();  // Obtain the maximum plaintext space
-    std::cout << "psag: " << psag << std::endl;
-    // Initialize Function f(x) = x^3 % p
-    auto fp = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
-        // auto im = m.ConvertToInt();
-        // auto r = im & 0b000111;
-        // auto l = im & 0b111000;
-        // l = l >> 3;
-        // return NativeInteger(l & r);
-        return (m/2)%p1;
-    };
 
     // Generate LUT from function f(x)
-    p = cc.GetMaxPlaintextSpace().ConvertToInt();
+    p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();
+
+    auto fp = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
+        return (m/4)%4;
+    };
+
     
-    auto lut = cc.GenerateLUTviaFunction(fp, p);
+    auto lut = ccLWE->GenerateLUTviaFunction(fp, p);
 
-    auto d1 = decomp[0];
-    auto d2 = decomp2[0];
+        auto fmul = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
+        auto l = (m>>1)%4;
+        auto r = m%2;
+        return r*l;
+    };
 
-    // auto d1mod = d2->GetModulus();
-    // std::cout << "dmod: " << d1mod << std::endl;
+    auto lutmul = ccLWE->GenerateLUTviaFunction(fmul, p);
 
-    // auto qks = cc.GetParams()->GetLWEParams()->GetqKS();
-    // auto qksmod = qks.ConvertToInt();
-    // std::cout << "qksmod: " << qksmod << std::endl;
 
-    auto dres = cc.EvalFunc(d2, lut);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // #pragma omp parallel for
+    int size = LWEarray.size()-1;
+    // int size = 1;
+    for (size_t i = 0; i < size; i++) {
+        // Grab two adjacent encrypted arrays
+        const auto& digits1 = LWEarray[i];
+        const auto& digits2 = LWEarray[i + 1];
+
+        vector<LWECiphertext> primes(digits1.size());
+
+        for (size_t j = 0; j < digits1.size(); ++j) {
+            primes[j] = ccLWE->Encrypt(sk, 3, LARGE_DIM, 16);
+        }
+
+        for (size_t j = 0; j < digits1.size(); ++j) {
+            ccLWE->GetLWEScheme()->EvalSubEq(primes[j], digits1[j]);
+        }
+
+        // Perform digit-wise operations
+        ccLWE->GetLWEScheme()->EvalAddEq(primes[0], digits2[0]);
+        auto dres = ccLWE->EvalFunc(primes[0], lut);
+        for (size_t j = 1; j < digits1.size(); ++j) {
+            ccLWE->GetLWEScheme()->EvalAddEq(primes[j], digits2[j]);
+            ccLWE->GetLWEScheme()->EvalAddEq(primes[j], dres);
+            dres = ccLWE->EvalFunc(primes[j], lut);
+        }
+
+        auto dres_prime = ccLWE->Encrypt(sk, 1, LARGE_DIM, 16);
+        ccLWE->GetLWEScheme()->EvalSubEq(dres_prime, dres);
+
+        for (size_t j = 0; j < digits2.size(); ++j) {
+            auto mutableDigits2 = digits2;
+            ccLWE->GetLWEScheme()->EvalMultConstEq(mutableDigits2[j], 2);
+            ccLWE->GetLWEScheme()->EvalAddEq(mutableDigits2[j], dres_prime);
+            auto temp2 = ccLWE->EvalFunc(digits2[j], lutmul);
+
+            auto mutableDigits1 = digits1;
+            ccLWE->GetLWEScheme()->EvalMultConstEq(mutableDigits1[j], 2);
+            ccLWE->GetLWEScheme()->EvalAddEq(mutableDigits1[j], dres);
+            auto temp1 = ccLWE->EvalFunc(digits1[j], lutmul);
+
+            ccLWE->GetLWEScheme()->EvalAddEq(temp1,temp2);
+            LWEarray[i + 1][j] = temp1;
+
+            LWEPlaintext resd;
+            ccLWE->Decrypt(sk, temp1, &resd, p);
+            std::cout << "Decrypted result [" << i << "," << j << "]: " << resd << std::endl;
+        }
+    
+
+        // Process the two arrays (e.g., element-wise addition)
+        // auto result = processAdjacentEncryptedArrays(array1, array2, ccLWE);
+
+        // Store the result
+        // LWEarray[i+1] = result;
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "Time taken: " << duration << " milliseconds" << std::endl;
+    
+
+
+    // A. Specify main parameters
+    ScalingTechnique scTech = FIXEDAUTO;
+    // for r = 3 in FHEWtoCKKS, Chebyshev max depth allowed is 9, 1 more level for postscaling
+    uint32_t multDepth = 3 + 9 + 1;
+    if (scTech == FLEXIBLEAUTOEXT)
+        multDepth += 1;
+    uint32_t scaleModSize = 50;
+    uint32_t ringDim      = 8192;
+    SecurityLevel sl      = HEStd_NotSet;  // If this is not HEStd_NotSet, ensure ringDim is compatible
+    // uint32_t logQ_ccLWE   = 28;
+
+    // uint32_t slots = ringDim/2; // Uncomment for fully-packed
+    uint32_t slots     = 16;  // sparsely-packed
+    uint32_t batchSize = slots;
+
+    CCParams<CryptoContextCKKSRNS> parameters;
+    parameters.SetMultiplicativeDepth(multDepth);
+    parameters.SetScalingModSize(scaleModSize);
+    parameters.SetScalingTechnique(scTech);
+    parameters.SetSecurityLevel(sl);
+    parameters.SetRingDim(ringDim);
+    parameters.SetBatchSize(batchSize);
+
+    CryptoContext<DCRTPoly> cc_ck = GenCryptoContext(parameters);
+
+    // Enable the features that you wish to use
+    cc_ck->Enable(PKE);
+    cc_ck->Enable(KEYSWITCH);
+    cc_ck->Enable(LEVELEDSHE);
+    cc_ck->Enable(ADVANCEDSHE);
+    cc_ck->Enable(SCHEMESWITCH);
+
+    std::cout << "CKKS scheme is using ring dimension " << cc_ck->GetRingDimension();
+    std::cout << ", number of slots " << slots << ", and supports a multiplicative depth of " << multDepth << std::endl
+              << std::endl;
+
+    // Generate encryption keys.
+    auto keys = cc_ck->KeyGen();
+
+    
+    cc_ck->SetBinCCForSchemeSwitch(ccLWE);
+
+
+    // auto num1d1 = cc.Encrypt(sk, 1, LARGE_DIM, 16);
+    // auto num1d2 = cc.Encrypt(sk, 2, LARGE_DIM, 16);
+    // auto num1d3 = cc.Encrypt(sk, 3, LARGE_DIM, 16);
+    // auto num1d4 = cc.Encrypt(sk, 2, LARGE_DIM, 16);
+
+    // auto num2d1 = cc.Encrypt(sk, 3, LARGE_DIM, 16);
+    // auto num2d2 = cc.Encrypt(sk, 0, LARGE_DIM, 16);
+    // auto num2d3 = cc.Encrypt(sk, 1, LARGE_DIM, 16);
+    // auto num2d4 = cc.Encrypt(sk, 2, LARGE_DIM, 16);
+
+
+    // auto time = std::chrono::high_resolution_clock::now();
+
+  
+    // auto num1d1_prime = cc.Encrypt(sk, 3, LARGE_DIM, 16);
+    // auto num1d2_prime = cc.Encrypt(sk, 3, LARGE_DIM, 16);
+    // auto num1d3_prime = cc.Encrypt(sk, 3, LARGE_DIM, 16);
+    // auto num1d4_prime = cc.Encrypt(sk, 3, LARGE_DIM, 16);
+
+
+    // cc.GetLWEScheme()->EvalSubEq(num1d1_prime,num1d1);
+    // cc.GetLWEScheme()->EvalSubEq(num1d2_prime,num1d2);
+    // cc.GetLWEScheme()->EvalSubEq(num1d3_prime,num1d3);
+    // cc.GetLWEScheme()->EvalSubEq(num1d4_prime,num1d4);
+
+
+
+    
+
+
+    // cc.GetLWEScheme()->EvalAddEq(num1d1_prime,num2d1);
+    // auto dres1 = cc.EvalFunc(num1d1_prime, lut);
+
+    // cc.GetLWEScheme()->EvalAddEq(num1d2_prime,num2d2);
+    // cc.GetLWEScheme()->EvalAddEq(num1d2_prime, dres1);
+    // auto dres2 = cc.EvalFunc(num1d2_prime, lut);
+
+    // cc.GetLWEScheme()->EvalAddEq(num1d3_prime,num2d3);
+    // cc.GetLWEScheme()->EvalAddEq(num1d3_prime, dres2);
+    // auto dres3 = cc.EvalFunc(num1d3_prime, lut);
+
+    // cc.GetLWEScheme()->EvalAddEq(num1d4_prime,num2d4);
+    // cc.GetLWEScheme()->EvalAddEq(num1d4_prime, dres3);
+    // auto dres4 = cc.EvalFunc(num1d4_prime, lut);
+
+    // auto dres4_prime = cc.Encrypt(sk, 1, LARGE_DIM, 16);
+    // cc.GetLWEScheme()->EvalSubEq(dres4_prime, dres4);
+
+
+    // cc.GetLWEScheme()->EvalMultConstEq(num2d1, 2);
+    // cc.GetLWEScheme()->EvalAddEq(num2d1,dres4_prime);
+    // auto num1d1_tmp = cc.EvalFunc(num2d1, lutmul);
+
+    // cc.GetLWEScheme()->EvalMultConstEq(num2d2, 2);
+    // cc.GetLWEScheme()->EvalAddEq(num2d2,dres4_prime);
+    // auto num1d2_tmp = cc.EvalFunc(num2d2, lutmul);
+
+    // cc.GetLWEScheme()->EvalMultConstEq(num2d3, 2);
+    // cc.GetLWEScheme()->EvalAddEq(num2d3,dres4_prime);
+    // auto num1d3_tmp = cc.EvalFunc(num2d3, lutmul);
+
+    // cc.GetLWEScheme()->EvalMultConstEq(num2d4, 2);
+    // cc.GetLWEScheme()->EvalAddEq(num2d4,dres4_prime);
+    // auto num1d4_tmp = cc.EvalFunc(num2d4, lutmul);
+
+
+
+
+
+    // auto time2 = std::chrono::high_resolution_clock::now();
+    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(time2 - time).count();
+    // std::cout << "Time taken: " << duration << " milliseconds" << std::endl;
+
+
+    // LWEPlaintext resd;
+    // cc.Decrypt(sk, num1d1_tmp, &resd, p);
+    // std::cout << "Decrypted result: " << resd << std::endl;
+
     // cc.GetLWEScheme()->ModSwitch(qks, dres);
 
     // auto d1newmod = dres->GetModulus();
@@ -581,7 +1060,7 @@ void decomp() {
     // std::cout << "Decrypted result: " << resd1 << std::endl;
 
 
-    auto tempctxt2 = cc.Encrypt(sk, 0, SMALL_DIM, p*2, q);
+    // auto tempctxt2 = cc.Encrypt(sk, 0, SMALL_DIM, p*2, q);
 
     // cc.GetLWEScheme()->ModSwitch(q, tempctxt2);
 
@@ -596,20 +1075,20 @@ void decomp() {
     // tempctxt2     = std::make_shared<LWECiphertextImpl>(std::move(a_round), std::move(b_round));
 
 
-    auto tempq = tempctxt2->GetModulus();
-    std::cout << "tempq: " << tempq << std::endl;
+    // auto tempq = tempctxt2->GetModulus();
+    // std::cout << "tempq: " << tempq << std::endl;
 
-    auto dresq = dres->GetModulus();
-    std::cout << "dresq: " << dresq << std::endl;
+    // auto dresq = dres->GetModulus();
+    // std::cout << "dresq: " << dresq << std::endl;
 
 
-    cc.GetLWEScheme()->EvalAddEq(tempctxt2,d2);
-    auto templut = cc.GenerateLUTviaFunction(fp, p*2);
-    auto ctxtres = cc.EvalFunc(tempctxt2,templut);
-    // cc.GetLWEScheme()->EvalMultConstEq(tempctxt2,2);
-    LWEPlaintext restemp2;
-    cc.Decrypt(sk, ctxtres, &restemp2, p*2);
-    std::cout << "restemp2: " << restemp2 << std::endl;
+    // cc.GetLWEScheme()->EvalAddEq(tempctxt2,d2);
+    // auto templut = cc.GenerateLUTviaFunction(fp, p*2);
+    // auto ctxtres = cc.EvalFunc(tempctxt2,templut);
+    // // cc.GetLWEScheme()->EvalMultConstEq(tempctxt2,2);
+    // LWEPlaintext restemp2;
+    // cc.Decrypt(sk, ctxtres, &restemp2, p*2);
+    // std::cout << "restemp2: " << restemp2 << std::endl;
 
     // auto lut2 = cc.GenerateLUTviaFunction(fp, P);
     // auto dres2 = cc.EvalFunc(ct2, lut2);
@@ -622,6 +1101,8 @@ void decomp() {
 
 
 int main() {
+    // ArgminViaSchemeSwitching();
+    // SwitchFHEWtoCKKS();
     // SwitchCKKSToFHEW();
     decomp();
     // test();
