@@ -762,11 +762,11 @@ NativeInteger RoundqQAlter(const NativeInteger& v, const NativeInteger& q, const
 void decomp() {
     // Sample Program: Step 1: Set CryptoContext
     auto ccLWE = std::make_shared<BinFHEContext>();
-    auto logQ = 29;
-    // auto N = 1 << 10;
+    auto logQ = 13;
+    auto N = 1 << 11;
     // ccLWE->BinFHEContext::GenerateBinFHEContext(TOY, false, logQ_ccLWE, 0, GINX, false);
     // auto cc = BinFHEContext();
-    ccLWE->BinFHEContext::GenerateBinFHEContext(STD128, true ,11, GINX);
+    ccLWE->BinFHEContext::GenerateBinFHEContext(TOY, true, logQ, N, GINX);
 
 
     auto ccbaseks = ccLWE->GetParams()->GetLWEParams()->GetBaseKS();
@@ -790,6 +790,8 @@ void decomp() {
     uint64_t P = ccLWE->GetMaxPlaintextSpace().ConvertToInt() * factor;  // Obtain the maximum plaintext space
 
     std::cout << "P: " << P << std::endl;
+    uint64_t p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();
+    std::cout << "p: " << p << std::endl;
     // Generate the secret key
     auto sk = ccLWE->KeyGen();
 
@@ -802,11 +804,15 @@ void decomp() {
 
     std::cout << "Completed the key generation." << std::endl;
 
-    uint64_t p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();
-    std::cout << "p: " << p << std::endl;
-
-    vector<int> array = {32,24,123,1,4,21,85,90,
-                        48,96,64,3,7,12,167,35};
+    int n = 16;
+    int bit = 8;
+    int num = 1 << bit;
+    std::vector<int> array(n);
+    std::srand(static_cast<unsigned>(std::time(0))); // Seed random number generator
+    
+    for (int i = 0; i < n; ++i) {
+        array[i] = std::rand() % num; // Random value in range [0, 255]
+    }
 
     vector<vector<LWECiphertext>> LWEarray;
     int index = 0;
@@ -820,7 +826,7 @@ void decomp() {
         }
 
         // Ensure the number has exactly 4 digits by padding with zeros
-        while (base4Digits.size() < 4) {
+        while (base4Digits.size() < bit/2) {
             base4Digits.push_back(0); // Pad with zeros
         }
 
@@ -834,7 +840,7 @@ void decomp() {
         // Encrypt the digits
         vector<LWECiphertext> encryptedDigits;
         for (int digit : base4Digits) {
-            auto encryptedDigit = ccLWE->Encrypt(sk, digit, LARGE_DIM, 32);
+            auto encryptedDigit = ccLWE->Encrypt(sk, digit, LARGE_DIM, p);
             encryptedDigits.push_back(encryptedDigit);
         }
 
@@ -843,8 +849,25 @@ void decomp() {
         index++;
     }
 
-    // Generate LUT from function f(x)
-    p = ccLWE->GetMaxPlaintextSpace().ConvertToInt();
+    auto fp_prime = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
+        auto im = m.ConvertToInt();
+        im = im & 0b0111;
+        return NativeInteger((im/4)%4);
+        // return (m/4)%4;
+    };
+    auto lut_prime = ccLWE->GenerateLUTviaFunction(fp_prime, p);
+
+    auto fmul_prime = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
+        auto im = m.ConvertToInt();
+        im = im & 0b0111;
+        auto l = (im>>1)%4;
+        auto r = im%2;
+        return NativeInteger(r*l);
+    };
+
+    auto lutmul_prime = ccLWE->GenerateLUTviaFunction(fmul_prime, p);
+
+
 
     auto fp = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
         return (m/4)%4;
@@ -853,7 +876,7 @@ void decomp() {
     
     auto lut = ccLWE->GenerateLUTviaFunction(fp, p);
 
-        auto fmul = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
+    auto fmul = [](NativeInteger m, NativeInteger p1) -> NativeInteger {
         auto l = (m>>1)%4;
         auto r = m%2;
         return r*l;
@@ -862,68 +885,67 @@ void decomp() {
     auto lutmul = ccLWE->GenerateLUTviaFunction(fmul, p);
 
 
-    auto start = std::chrono::high_resolution_clock::now();
 
-    // #pragma omp parallel for
     int size = LWEarray.size()-1;
-    // int size = 1;
+    vector<vector<LWECiphertext>> primes(size, vector<LWECiphertext>(bit/2));
+    vector<LWECiphertext> dres_prime(size);
     for (size_t i = 0; i < size; i++) {
-        // Grab two adjacent encrypted arrays
-        const auto& digits1 = LWEarray[i];
-        const auto& digits2 = LWEarray[i + 1];
-
-        vector<LWECiphertext> primes(digits1.size());
-
-        for (size_t j = 0; j < digits1.size(); ++j) {
-            primes[j] = ccLWE->Encrypt(sk, 3, LARGE_DIM, 16);
+        for (size_t j = 0; j < bit/2; ++j) {
+            primes[i][j] = ccLWE->Encrypt(sk, 3, LARGE_DIM, p);
         }
+        dres_prime[i] = ccLWE->Encrypt(sk, 1, LARGE_DIM, p);
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < size; i++) {
+        auto& digits1 = LWEarray[i];
+        auto& digits2 = LWEarray[i + 1];
 
         for (size_t j = 0; j < digits1.size(); ++j) {
-            ccLWE->GetLWEScheme()->EvalSubEq(primes[j], digits1[j]);
+            ccLWE->GetLWEScheme()->EvalSubEq(primes[i][j], digits1[j]);
         }
 
         // Perform digit-wise operations
-        ccLWE->GetLWEScheme()->EvalAddEq(primes[0], digits2[0]);
-        auto dres = ccLWE->EvalFunc(primes[0], lut);
+        ccLWE->GetLWEScheme()->EvalAddEq(primes[i][0], digits2[0]);
+        auto dres = ccLWE->EvalFunc(primes[i][0], lut);
         for (size_t j = 1; j < digits1.size(); ++j) {
-            ccLWE->GetLWEScheme()->EvalAddEq(primes[j], digits2[j]);
-            ccLWE->GetLWEScheme()->EvalAddEq(primes[j], dres);
-            dres = ccLWE->EvalFunc(primes[j], lut);
+            ccLWE->GetLWEScheme()->EvalAddEq(primes[i][j], digits2[j]);
+            ccLWE->GetLWEScheme()->EvalAddEq(primes[i][j], dres);
+            dres = ccLWE->EvalFunc(primes[i][j], lut);
         }
 
-        auto dres_prime = ccLWE->Encrypt(sk, 1, LARGE_DIM, 16);
-        ccLWE->GetLWEScheme()->EvalSubEq(dres_prime, dres);
+        ccLWE->GetLWEScheme()->EvalSubEq(dres_prime[i], dres);
 
         for (size_t j = 0; j < digits2.size(); ++j) {
-            auto mutableDigits2 = digits2;
-            ccLWE->GetLWEScheme()->EvalMultConstEq(mutableDigits2[j], 2);
-            ccLWE->GetLWEScheme()->EvalAddEq(mutableDigits2[j], dres_prime);
+            ccLWE->GetLWEScheme()->EvalMultConstEq(digits2[j], 2);
+            ccLWE->GetLWEScheme()->EvalAddEq(digits2[j], dres_prime[i]);
             auto temp2 = ccLWE->EvalFunc(digits2[j], lutmul);
 
-            auto mutableDigits1 = digits1;
-            ccLWE->GetLWEScheme()->EvalMultConstEq(mutableDigits1[j], 2);
-            ccLWE->GetLWEScheme()->EvalAddEq(mutableDigits1[j], dres);
+            ccLWE->GetLWEScheme()->EvalMultConstEq(digits1[j], 2);
+            ccLWE->GetLWEScheme()->EvalAddEq(digits1[j], dres);
             auto temp1 = ccLWE->EvalFunc(digits1[j], lutmul);
 
             ccLWE->GetLWEScheme()->EvalAddEq(temp1,temp2);
             LWEarray[i + 1][j] = temp1;
-
-            LWEPlaintext resd;
-            ccLWE->Decrypt(sk, temp1, &resd, p);
-            std::cout << "Decrypted result [" << i << "," << j << "]: " << resd << std::endl;
         }
-    
-
-        // Process the two arrays (e.g., element-wise addition)
-        // auto result = processAdjacentEncryptedArrays(array1, array2, ccLWE);
-
-        // Store the result
-        // LWEarray[i+1] = result;
     }
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::cout << "Time taken: " << duration << " milliseconds" << std::endl;
+
+
+    cout << "Min: ";
+    auto minElement = *std::min_element(array.begin(), array.end());
+    cout << minElement << endl;
+
+    cout << "Result: ";
+    for (auto elem:LWEarray[size]){
+        LWEPlaintext resd;
+        ccLWE->Decrypt(sk, elem, &resd, p);
+        std::cout <<  resd << " ";
+    }
+    cout << endl;
     
 
 

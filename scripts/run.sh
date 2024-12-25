@@ -8,5 +8,6 @@ make
 # ./ir
 # ./execute
 ./main
+# ./experiments
 # ./example
 cd "$original_dir"
