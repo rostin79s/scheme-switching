@@ -7,7 +7,7 @@ make
 
 # ./ir
 # ./execute
-./main
+# ./main
 # ./experiments
 # ./example
 cd "$original_dir"
